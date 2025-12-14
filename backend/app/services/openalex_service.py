@@ -30,32 +30,160 @@ DISCIPLINE_SEARCH_TERMS = {
         "infant development",
         "social development",
         "emotional development",
+        "clinical psychology",
+        "cognitive psychology",
     ],
     "medicine": [
-        "medical imaging",
-        "clinical diagnosis",
-        "cancer research",
-        "medical AI",
+        "clinical medicine",
+        "internal medicine",
+        "medical research",
+        "systematic review",
+        "meta-analysis",
+        "clinical trial",
+        "epidemiology",
+        "public health",
+    ],
+    "gynecology": [
+        "gynecology obstetrics",
+        "women's health",
+        "reproductive medicine",
+        "maternal health",
+        "urogynecology",
+    ],
+    "urology": [
+        "urology",
+        "bladder research",
+        "urinary tract",
+        "nephrology",
+    ],
+    "urogynecology": [
+        "urogynecology",
+        "female pelvic medicine",
+        "pelvic floor disorders",
+        "international urogynecology",
+    ],
+    "rheumatology": [
+        "rheumatology",
+        "fibromyalgia research",
+        "chronic pain",
+        "pain medicine",
     ],
     "computer_science": [
         "machine learning",
         "artificial intelligence",
         "deep learning",
         "neural networks",
+        "pattern recognition",
     ],
     "biology": [
         "molecular biology",
         "genetics",
         "cell biology",
+        "biotechnology",
+        "nature biotechnology",
+    ],
+    "physics": [
+        "physical review",
+        "quantum physics",
+        "condensed matter",
+        "applied physics",
+        "optics",
+    ],
+    "chemistry": [
+        "chemical society",
+        "organic chemistry",
+        "analytical chemistry",
+        "electrochemistry",
+    ],
+    "economics": [
+        "economic review",
+        "monetary economics",
+        "finance economics",
+        "econometrics",
+    ],
+    "engineering": [
+        "structural engineering",
+        "civil engineering",
+        "mechanical engineering",
+        "construction materials",
+    ],
+    "law": [
+        "law review",
+        "legal studies",
+        "jurisprudence",
+        "constitutional law",
+    ],
+    "literature": [
+        "literary studies",
+        "comparative literature",
+        "modern fiction",
+        "postcolonial studies",
+    ],
+    "environmental_science": [
+        "environmental science",
+        "sustainability",
+        "climate research",
+        "ecology",
+    ],
+}
+
+# Sub-discipline detection based on keywords
+SUB_DISCIPLINE_KEYWORDS = {
+    "gynecology": [
+        "gynecology", "obstetrics", "women's health", "pregnancy", "menstrual",
+        "uterus", "ovary", "cervical", "vaginal", "pelvic floor", "menopause",
+        "maternal", "fetal", "reproductive", "fertility", "contraception",
+    ],
+    "urology": [
+        "urology", "bladder", "urinary", "kidney", "renal", "prostate",
+        "incontinence", "overactive bladder", "urination", "voiding",
+        "nephrology", "ureter", "urethra", "oab",
+    ],
+    "urogynecology": [
+        "urogynecology", "pelvic floor", "urinary incontinence", "bladder",
+        "overactive bladder", "women", "female", "pelvic organ prolapse",
+    ],
+    "rheumatology": [
+        "rheumatology", "fibromyalgia", "arthritis", "lupus", "chronic pain",
+        "autoimmune", "connective tissue", "joint pain", "inflammation",
+    ],
+    "cardiology": [
+        "cardiology", "cardiac", "heart", "cardiovascular", "coronary",
+        "arrhythmia", "hypertension", "myocardial",
+    ],
+    "oncology": [
+        "oncology", "cancer", "tumor", "malignant", "metastasis",
+        "chemotherapy", "radiotherapy", "carcinoma",
+    ],
+    "neurology": [
+        "neurology", "neurological", "brain", "stroke", "epilepsy",
+        "parkinson", "alzheimer", "multiple sclerosis", "neuropathy",
+    ],
+    "gastroenterology": [
+        "gastroenterology", "gastrointestinal", "liver", "hepatic",
+        "digestive", "intestinal", "colon", "stomach",
     ],
 }
 
 # Topics that indicate relevance for filtering (lowercase)
+# Note: These are used for soft-boosting, not hard filtering
 RELEVANT_TOPIC_KEYWORDS = {
-    "psychology": ["psychology", "child", "infant", "development", "emotion", "behavior", "cognitive", "social"],
-    "medicine": ["medicine", "medical", "clinical", "health", "disease", "therapy", "diagnosis"],
-    "computer_science": ["computer", "machine learning", "artificial intelligence", "software", "algorithm"],
-    "biology": ["biology", "molecular", "cell", "gene", "organism"],
+    "psychology": ["psychology", "child", "infant", "development", "emotion", "cognitive", "social", "mental"],
+    "medicine": [
+        "medicine", "medical", "clinical", "health", "disease", "therapy", "diagnosis",
+        "patient", "treatment", "surgery", "cardiology", "neurology", "oncology",
+        "gastroenterology", "urology", "rheumatology", "epidemiology", "pharmacology",
+        "pathology", "radiology", "internal medicine", "general practice", "vaccine",
+    ],
+    "computer_science": ["computer", "machine learning", "artificial intelligence", "software", "neural", "deep learning"],
+    "biology": ["biology", "molecular", "cell", "gene", "organism", "genetic", "crispr", "biotechnology"],
+    "physics": ["physics", "quantum", "particle", "optics", "condensed matter", "superconductor", "qubit"],
+    "chemistry": ["chemistry", "chemical", "catalyst", "synthesis", "electrochemical", "molecular", "compound"],
+    "economics": ["economics", "economic", "market", "financial", "monetary", "fiscal", "trade"],
+    "engineering": ["engineering", "structural", "civil", "mechanical", "construction", "seismic"],
+    "law": ["law", "legal", "court", "judicial", "statute", "rights", "constitutional"],
+    "literature": ["literature", "literary", "fiction", "novel", "postcolonial", "narrative", "poetry"],
+    "environmental_science": ["environmental", "climate", "ecology", "sustainability", "pollution", "carbon"],
 }
 
 
@@ -65,6 +193,21 @@ class OpenAlexService:
     def __init__(self):
         self.max_results = 25
         self.min_journal_works = 1000  # Only recommend established journals
+
+    def _detect_sub_disciplines(self, text: str) -> List[str]:
+        """
+        Detect medical sub-disciplines from text.
+        Returns list of detected sub-disciplines (e.g., ['gynecology', 'urology']).
+        """
+        text_lower = text.lower()
+        detected = []
+
+        for sub_discipline, keywords in SUB_DISCIPLINE_KEYWORDS.items():
+            matches = sum(1 for kw in keywords if kw in text_lower)
+            if matches >= 2:  # Require at least 2 keyword matches
+                detected.append(sub_discipline)
+
+        return detected
 
     def _find_journals_from_works(
         self,
@@ -145,33 +288,26 @@ class OpenAlexService:
 
         return specialized_journals
 
-    def _is_journal_relevant(self, source: dict, discipline: str) -> bool:
+    def _get_journal_relevance_score(self, source: dict, discipline: str) -> float:
         """
-        Check if a journal is relevant to the detected discipline.
-        Uses journal topics and name to filter out irrelevant results.
+        Calculate a relevance score for a journal based on discipline match.
+        Returns a score from 0.0 to 1.0 (higher = more relevant).
+
+        IMPORTANT: This is a SOFT-BOOST, not a hard filter.
+        Even journals with low scores are kept - they just rank lower.
         """
         relevant_keywords = RELEVANT_TOPIC_KEYWORDS.get(discipline, [])
         if not relevant_keywords:
-            return True  # No filtering for unknown disciplines
+            return 0.5  # Neutral score for unknown disciplines
 
-        # Irrelevant journal names to always exclude
-        irrelevant_names = [
-            "sexuality", "religion", "theology", "philosophy",
-            "islamic", "christian", "buddhist", "hindu",
-            "law review", "legal", "jurisprudence",
-        ]
-
+        score = 0.0
         journal_name = source.get("display_name", "").lower()
 
-        # First check if journal name contains irrelevant terms
-        for irrelevant in irrelevant_names:
-            if irrelevant in journal_name:
-                return False
-
-        # Check journal name for relevant keywords
+        # Check journal name for relevant keywords (strong signal)
         for keyword in relevant_keywords:
             if keyword in journal_name:
-                return True
+                score += 0.4
+                break
 
         # Check journal topics for relevance
         topics = source.get("topics", []) or []
@@ -187,8 +323,18 @@ class OpenAlexService:
                         relevant_topic_count += 1
                         break
 
-        # Require at least one relevant topic
-        return relevant_topic_count >= 1
+        # Add score based on topic matches (up to 0.6 for 3+ matches)
+        score += min(relevant_topic_count * 0.2, 0.6)
+
+        return min(score, 1.0)
+
+    def _is_journal_relevant(self, source: dict, discipline: str) -> bool:
+        """
+        DEPRECATED: Kept for backward compatibility but now always returns True.
+        Use _get_journal_relevance_score() for soft-boosting instead.
+        """
+        # Always return True - we use soft-boost scoring instead of hard filtering
+        return True
 
     def _get_full_source_details(self, source_id: str) -> Optional[dict]:
         """Get full details for a source/journal by ID."""
@@ -200,6 +346,129 @@ class OpenAlexService:
         except Exception as e:
             print(f"Error fetching source {source_id}: {e}")
             return None
+
+    def _get_topic_ids_from_similar_works(self, search_query: str) -> List[str]:
+        """
+        Search for similar papers and extract their Topic IDs.
+        Uses the new Topics API (not deprecated Concepts).
+
+        Args:
+            search_query: Combined title and abstract text.
+
+        Returns:
+            List of top 5 most frequent Topic IDs.
+        """
+        topic_ids: Counter = Counter()
+
+        try:
+            works = pyalex.Works().search(search_query).filter(
+                type="article",
+                from_publication_date="2020-01-01"
+            ).get(per_page=50)
+
+            for work in works:
+                topics = work.get("topics", [])
+                for topic in topics:
+                    topic_id = topic.get("id")
+                    if topic_id:
+                        # Weight by score if available
+                        score = topic.get("score", 1.0)
+                        topic_ids[topic_id] += score
+
+        except Exception as e:
+            print(f"Topic extraction error: {e}")
+
+        # Return top 5 most frequent topics
+        return [tid for tid, _ in topic_ids.most_common(5)]
+
+    def _find_journals_by_topics(self, topic_ids: List[str]) -> Dict[str, dict]:
+        """
+        Find top journals across all identified topics in one efficient query.
+        Uses group_by for server-side aggregation.
+
+        Args:
+            topic_ids: List of OpenAlex Topic IDs.
+
+        Returns:
+            Dict of source_id -> {count, reason}.
+        """
+        if not topic_ids:
+            return {}
+
+        try:
+            # Single API call with OR logic on all topics
+            # + group_by for efficient server-side aggregation
+            res = (
+                pyalex.Works()
+                .filter(
+                    topics={"id": topic_ids},  # List = automatic OR
+                    type="article",
+                    from_publication_date="2020-01-01",
+                )
+                .group_by("primary_location.source.id")
+                .get()
+            )
+
+            # Convert to dict format
+            journals = {}
+            for entry in res:
+                source_id = entry.get("key")
+                count = entry.get("count", 0)
+                if source_id and count > 0:
+                    journals[source_id] = {
+                        "count": count,
+                        "reason": "High activity in relevant research topics"
+                    }
+
+            return journals
+
+        except Exception as e:
+            print(f"Error searching by topics: {e}")
+            return {}
+
+    def _merge_journal_results(
+        self,
+        keyword_journals: Dict[str, Journal],
+        topic_journals: Dict[str, dict],
+    ) -> List[Journal]:
+        """
+        Merge results from keyword search and topic search.
+        Journals appearing in both get a significant boost.
+
+        Args:
+            keyword_journals: Dict of journal_id -> Journal from keyword search.
+            topic_journals: Dict of source_id -> {count, reason} from topic search.
+
+        Returns:
+            Merged and sorted list of journals.
+        """
+        merged: Dict[str, Journal] = {}
+
+        # Add journals from keyword search
+        for jid, journal in keyword_journals.items():
+            journal.relevance_score = 1.0
+            merged[jid] = journal
+
+        # Add/boost journals from topic search
+        for source_id, data in topic_journals.items():
+            if source_id in merged:
+                # Appears in both - boost!
+                merged[source_id].relevance_score += 2.0
+                merged[source_id].match_reason = "Found in both keyword and topic search"
+            else:
+                # New from topics - need to load full details
+                full_source = self._get_full_source_details(source_id)
+                if full_source:
+                    works_count = full_source.get("works_count", 0)
+                    if works_count >= self.min_journal_works:
+                        journal = self._convert_to_journal(full_source)
+                        if journal:
+                            journal.relevance_score = 0.8
+                            journal.match_reason = data.get("reason", "Topic match")
+                            merged[source_id] = journal
+
+        # Sort by relevance_score
+        return sorted(merged.values(), key=lambda j: j.relevance_score, reverse=True)
 
     def search_journals_by_keywords(
         self,
@@ -246,13 +515,14 @@ class OpenAlexService:
             if works_count < self.min_journal_works:
                 continue
 
-            # Filter by relevance to discipline
-            if discipline != "general" and not self._is_journal_relevant(full_source, discipline):
-                continue
+            # SOFT-BOOST: Calculate relevance score instead of filtering
+            # This ensures Topic-based journals aren't filtered out due to wrong discipline detection
+            relevance_boost = self._get_journal_relevance_score(full_source, discipline)
 
             journal = self._convert_to_journal(full_source)
             if journal and journal.id not in all_journals:
                 journal.match_reason = f"Published {data['count']} papers on this topic"
+                journal.relevance_score = relevance_boost + (data['count'] / 100.0)  # Boost by paper count
                 all_journals[journal.id] = journal
 
         # 2. Find specialized journals in the discipline
@@ -270,10 +540,11 @@ class OpenAlexService:
 
         journals = list(all_journals.values())
 
-        # Sort by quality and relevance
+        # Sort by relevance_score (soft-boost) and quality metrics
         journals.sort(
             key=lambda j: (
                 j.is_oa if prefer_open_access else False,
+                j.relevance_score,  # Use calculated relevance score
                 # Prioritize journals with topic match over generic ones
                 1 if "papers on this topic" in (j.match_reason or "") else 0,
                 j.metrics.h_index or 0,
@@ -281,7 +552,7 @@ class OpenAlexService:
             reverse=True
         )
 
-        return journals[:10]
+        return journals[:15]  # Return more candidates for hybrid merge
 
     def search_journals_by_text(
         self,
@@ -292,7 +563,7 @@ class OpenAlexService:
     ) -> tuple[List[Journal], str]:
         """
         Search for journals based on article title and abstract.
-        Also detects the discipline.
+        Uses HYBRID approach: Keywords + Topics for best results.
 
         Args:
             title: Article title.
@@ -303,32 +574,75 @@ class OpenAlexService:
         Returns:
             Tuple of (journals list, detected discipline).
         """
-        # Extract key terms from title and abstract
         combined_text = f"{title} {abstract}"
         search_terms = self._extract_search_terms(combined_text, keywords or [])
 
         # Detect discipline from text
         discipline = self._detect_discipline(combined_text)
+        sub_disciplines = self._detect_sub_disciplines(combined_text)
 
-        # Search with discipline context
-        journals = self.search_journals_by_keywords(
+        # === HYBRID APPROACH ===
+
+        # 1. KEYWORD-BASED SEARCH (existing approach)
+        keyword_journals_list = self.search_journals_by_keywords(
             search_terms,
             prefer_open_access=prefer_open_access,
             discipline=discipline
         )
 
-        # If no results, try broader search
-        if not journals:
-            journals = self.search_journals_by_keywords(
+        # Add specialized journals from sub-disciplines
+        all_journal_ids = {j.id for j in keyword_journals_list}
+        for sub_disc in sub_disciplines:
+            specialized = self._find_specialized_journals(sub_disc, keywords or [])
+            for source in specialized:
+                source_id = source.get("id", "")
+                if source_id and source_id not in all_journal_ids:
+                    full_source = self._get_full_source_details(source_id)
+                    if full_source:
+                        journal = self._convert_to_journal(full_source)
+                        if journal:
+                            journal.match_reason = f"Specialized {sub_disc} journal"
+                            keyword_journals_list.append(journal)
+                            all_journal_ids.add(journal.id)
+
+        # Convert to dict for merging
+        keyword_journals: Dict[str, Journal] = {j.id: j for j in keyword_journals_list}
+
+        # 2. TOPIC-BASED SEARCH (new ML-based approach)
+        topic_ids = self._get_topic_ids_from_similar_works(combined_text)
+        topic_journals = self._find_journals_by_topics(topic_ids)
+
+        # 3. MERGE RESULTS - journals in both lists get boosted
+        merged_journals = self._merge_journal_results(keyword_journals, topic_journals)
+
+        # If no results from hybrid, try broader search
+        if not merged_journals:
+            merged_journals = self.search_journals_by_keywords(
                 search_terms[:3],
                 prefer_open_access=prefer_open_access,
-                discipline="general"  # Remove discipline filter
+                discipline="general"
             )
 
         # Categorize journals
-        categorized = self._categorize_journals(journals)
+        categorized = self._categorize_journals(merged_journals)
 
-        return categorized, discipline
+        # Final sort: prioritize by relevance_score, then h_index
+        categorized.sort(
+            key=lambda j: (
+                j.is_oa if prefer_open_access else False,
+                j.relevance_score,
+                # Boost journals found in both keyword and topic search
+                3 if "both keyword and topic" in (j.match_reason or "") else (
+                    2 if "Specialized" in (j.match_reason or "") else (
+                        1 if "papers on this topic" in (j.match_reason or "") else 0
+                    )
+                ),
+                j.metrics.h_index or 0,
+            ),
+            reverse=True
+        )
+
+        return categorized[:15], discipline
 
     def _convert_to_journal(self, source: dict) -> Optional[Journal]:
         """Convert OpenAlex source to Journal model."""
@@ -402,36 +716,117 @@ class OpenAlexService:
         text_lower = text.lower()
 
         # Extended keyword-based detection with more specificity
+        # Note: Removed generic words like "behavior", "analysis", "system", "model"
+        # that cause false positives across disciplines
         disciplines = {
             "psychology": [
-                "behavior", "cognitive", "mental", "psychological", "emotion",
+                # Removed "behavior" - too generic, conflicts with physics/biology
+                "cognitive", "mental health", "psychological", "emotion",
                 "perception", "child development", "infant", "toddler", "empathy",
                 "kindness", "prosocial", "emotional regulation", "social-emotional",
-                "developmental", "psychometric", "validation study", "questionnaire",
+                "developmental psychology", "psychometric", "validation study", "questionnaire",
+                "therapy session", "counseling", "psychotherapy", "anxiety disorder",
+                "depression", "ptsd", "personality", "social psychology",
             ],
             "medicine": [
+                # Clinical terms
                 "clinical", "patient", "treatment", "disease", "diagnosis",
                 "medical", "health", "therapy", "cancer", "tumor", "CT scan",
+                # Study types
+                "meta-analysis", "systematic review", "randomized controlled",
+                "cohort study", "case-control", "clinical trial", "retrospective",
+                # Conditions and syndromes
+                "syndrome", "fibromyalgia", "chronic pain", "arthritis",
+                "diabetes", "hypertension", "cardiovascular", "stroke",
+                "obesity", "inflammation", "autoimmune",
+                # Body systems and organs
+                "bladder", "urinary", "kidney", "renal", "liver", "hepatic",
+                "cardiac", "heart", "lung", "pulmonary", "gastrointestinal",
+                "neurological", "musculoskeletal", "endocrine",
+                # Epidemiology
+                "prevalence", "incidence", "association", "comorbidity",
+                "epidemiology", "mortality", "morbidity", "risk factor",
+                # Medications and procedures
+                "drug", "medication", "pharmaceutical", "surgery", "surgical",
+                "transplant", "chemotherapy", "radiotherapy",
+                "vaccine", "mrna", "immunization", "antibody",
             ],
             "computer_science": [
-                "algorithm", "machine learning", "neural network", "software",
-                "database", "ai", "deep learning", "convolutional", "model",
+                # Removed generic "algorithm" - conflicts with other fields
+                "machine learning", "neural network", "software",
+                "database", "deep learning", "convolutional neural",
+                "artificial intelligence", "natural language processing",
+                "computer vision", "reinforcement learning", "transformer model",
+                "bert", "gpt", "classification model", "prediction model",
+                "cnn", "image recognition", "object detection", "nlp",
+                "programming", "code", "api", "computing",
             ],
             "biology": [
                 "cell", "gene", "protein", "organism", "species", "evolution",
-                "molecular", "dna", "rna",
+                "molecular biology", "dna", "rna", "genomic", "transcriptome",
+                "crispr", "genome editing", "genetic", "plant biology",
+                "microbiome", "microbial", "bacteria", "virus", "ecosystem",
+                "biodiversity", "ecology", "biotechnology", "bioinformatics",
             ],
             "physics": [
-                "quantum", "particle", "energy", "wave", "electron", "photon",
+                # Significantly expanded physics keywords
+                "quantum", "particle physics", "electron", "photon",
+                "quantum mechanics", "quantum entanglement", "superconducting",
+                "qubit", "magnetic field", "electromagnetic", "optics",
+                "thermodynamics", "relativity", "gravitational", "nuclear",
+                "plasma", "condensed matter", "semiconductor", "laser",
+                "wave function", "schrödinger", "heisenberg", "boson", "fermion",
+                "atomic", "subatomic", "hadron", "collider", "accelerator",
+                "topological", "insulator", "superconductor", "cryogenic",
             ],
             "chemistry": [
-                "reaction", "compound", "molecule", "synthesis", "catalyst",
+                "chemical reaction", "compound", "molecule", "synthesis", "catalyst",
+                "electrochemical", "organic chemistry", "inorganic", "polymer",
+                "spectroscopy", "chromatography", "oxidation", "reduction",
+                "catalysis", "nanomaterial", "graphene", "carbon nanotube",
+                "electrochemistry", "photochemistry", "biochemistry",
+                "co2 reduction", "carbon dioxide", "electrolysis",
             ],
             "economics": [
                 "market", "economic", "financial", "trade", "investment",
+                "monetary policy", "inflation", "gdp", "fiscal",
+                "macroeconomic", "microeconomic", "econometric", "price",
+                "supply demand", "banking", "currency", "stock market",
+                "cost-effectiveness", "health economics", "welfare",
             ],
             "engineering": [
-                "design", "mechanical", "electrical", "structural", "optimization",
+                # Expanded engineering with sub-disciplines
+                "mechanical engineering", "electrical engineering", "structural",
+                "civil engineering", "earthquake", "seismic", "bridge",
+                "construction", "building materials", "concrete", "steel",
+                "composite material", "aerodynamic", "thermodynamic",
+                "robotics", "automation", "control system", "manufacturing",
+                "sustainable materials", "earthquake-resistant",
+            ],
+            "law": [
+                # New discipline
+                "legal", "law", "jurisprudence", "court", "statute",
+                "judicial", "constitutional", "legislation", "rights",
+                "attorney", "lawsuit", "litigation", "contract law",
+                "criminal law", "civil law", "privacy law", "regulation",
+                "compliance", "intellectual property", "patent",
+                "harvard law", "stanford law", "yale law",
+            ],
+            "literature": [
+                # New discipline
+                "literature", "fiction", "novel", "poetry", "narrative",
+                "postcolonial", "literary", "prose", "drama", "playwright",
+                "african fiction", "modernist", "postmodernist", "feminist",
+                "comparative literature", "literary criticism", "author",
+                "pmla", "novel", "short story", "memoir",
+            ],
+            "environmental_science": [
+                # New discipline
+                "climate", "pollution", "carbon capture", "environmental",
+                "sustainability", "ecology", "conservation", "renewable",
+                "emission", "greenhouse", "carbon footprint", "biodegradable",
+                "recycling", "waste management", "air quality", "water quality",
+                "deforestation", "ecosystem", "climate change", "global warming",
             ],
         }
 
@@ -439,7 +834,9 @@ class OpenAlexService:
         for discipline, keywords in disciplines.items():
             for keyword in keywords:
                 if keyword in text_lower:
-                    scores[discipline] += 1
+                    # Give extra weight to longer/more specific keywords
+                    weight = 2 if len(keyword) > 15 else 1
+                    scores[discipline] += weight
 
         if scores:
             return scores.most_common(1)[0][0]

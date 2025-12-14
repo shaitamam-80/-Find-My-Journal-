@@ -66,13 +66,20 @@ class SearchRequest(BaseModel):
     prefer_open_access: bool = False
     min_works_count: Optional[int] = Field(None, ge=0)
 
+    # Privacy
+    incognito_mode: bool = Field(
+        default=False,
+        description="When enabled, search history is not saved"
+    )
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
                 "title": "Deep Learning for Medical Image Analysis",
                 "abstract": "This study explores the application of convolutional neural networks for automated detection of abnormalities in chest X-rays...",
                 "keywords": ["deep learning", "medical imaging", "CNN"],
-                "prefer_open_access": True
+                "prefer_open_access": True,
+                "incognito_mode": False
             }
         }
     )

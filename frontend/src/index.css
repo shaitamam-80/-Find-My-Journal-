@@ -8,3 +8,49 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* Print styles */
+@media print {
+  /* Hide elements not needed in print */
+  .no-print,
+  header,
+  form,
+  button:not(.print-visible) {
+    display: none !important;
+  }
+
+  /* Reset background for printing */
+  body {
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Ensure cards print nicely */
+  .bg-white {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Single column layout for print */
+  .grid {
+    display: block !important;
+  }
+
+  .grid > * {
+    margin-bottom: 1rem;
+    page-break-inside: avoid;
+  }
+
+  /* Print header */
+  main::before {
+    content: "Find My Journal - Search Results";
+    display: block;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #312e81;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #312e81;
+  }
+}

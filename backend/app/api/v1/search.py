@@ -4,6 +4,7 @@ Search endpoints for finding academic journals.
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Optional
 import uuid
+import hashlib
 
 from app.core.security import check_search_limit, increment_search_count
 from app.models.user import UserProfile
@@ -50,19 +51,19 @@ async def search_journals(
     # Generate search ID for logging
     search_id = str(uuid.uuid4())
 
-    # Build query summary for logging
-    query_summary = f"{request.title[:50]}..."
+    # Build query summary for response (no raw content)
+    query_summary = f"Search in {discipline or 'unknown field'}"
 
-    # Log search to database
+    # Generate SHA-256 hash of abstract for duplicate detection (privacy-preserving)
+    query_hash = hashlib.sha256(request.abstract.encode('utf-8')).hexdigest()
+
+    # Log search to database (privacy-focused: no raw title/abstract stored)
     try:
         await db_service.log_search(
             user_id=user.id,
-            query={
-                "title": request.title[:100],
-                "abstract": request.abstract[:200],
-                "keywords": request.keywords,
-                "prefer_open_access": request.prefer_open_access,
-            },
+            discipline=discipline,
+            query_hash=query_hash,
+            is_incognito=request.incognito_mode,
             results_count=len(journals),
         )
     except Exception as e:

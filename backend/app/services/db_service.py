@@ -69,13 +69,22 @@ class DBService:
         except Exception:
             return None
 
-    async def log_search(self, user_id: str, query: dict, results_count: int = 0) -> bool:
+    async def log_search(
+        self,
+        user_id: str,
+        discipline: str | None = None,
+        query_hash: str | None = None,
+        is_incognito: bool = False,
+        results_count: int = 0,
+    ) -> bool:
         """
-        Log a search query to the database.
+        Log a search to the database (privacy-focused).
 
         Args:
             user_id: The UUID of the user.
-            query: The search query data as dict.
+            discipline: The detected academic discipline (e.g., "Medicine").
+            query_hash: SHA-256 hash of the abstract for duplicate detection.
+            is_incognito: Whether the user opted for incognito mode.
             results_count: Number of results returned.
 
         Returns:
@@ -84,8 +93,10 @@ class DBService:
         try:
             self.client.table("search_logs").insert({
                 "user_id": user_id,
-                "query": query,
-                "results_count": results_count
+                "discipline": discipline,
+                "query_hash": query_hash,
+                "is_incognito": is_incognito,
+                "results_count": results_count,
             }).execute()
             return True
         except Exception as e:

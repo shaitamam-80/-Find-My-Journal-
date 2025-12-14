@@ -37,7 +37,9 @@
       "Bash(cmd //c \"taskkill /F /IM python.exe\")",
       "Bash(../venv/Scripts/python.exe -c \"\nfrom supabase import create_client\n\nSUPABASE_URL = ''https://kshrhufpoltrbgzuagyb.supabase.co''\nSUPABASE_SERVICE_KEY = ''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzaHJodWZwb2x0cmJnenVhZ3liIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTcwODA2MCwiZXhwIjoyMDgxMjg0MDYwfQ.XmiaE1VClRsh6xsV39iqCfk3PaikmpN3oSm0FXc8aXo''\n\nsupabase = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)\n\n# Find user by email\nusers = supabase.auth.admin.list_users()\nuser = next((u for u in users if u.email == ''shaitamam@gmail.com''), None)\n\nif user:\n    print(f''Found user: {user.id}'')\n    # Update tier to admin\n    result = supabase.table(''profiles'').update({''tier'': ''admin''}).eq(''id'', user.id).execute()\n    print(f''Updated profile to admin: {result.data}'')\nelse:\n    print(''User not found'')\n\")",
       "Bash(../venv/Scripts/python.exe:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd complete Find My Journal SaaS application\n\nFeatures:\n- FastAPI backend with OpenAlex journal search integration\n- React + Vite + Tailwind CSS frontend\n- Supabase authentication with JWT tokens\n- Role-based access control (free/paid/admin tiers)\n- Rate limiting for free users (5 searches/day)\n- Hybrid search algorithm with discipline detection\n- Specialized journal filtering by topic relevance\n- E2E tests with Playwright\n\nBackend:\n- OpenAlex API integration for journal discovery\n- Works-based and source-based hybrid search strategy\n- Discipline-specific filtering to improve relevance\n- Supabase integration for auth and search logging\n\nFrontend:\n- Login/SignUp pages with Supabase Auth\n- Protected search page with form validation\n- Journal results with metrics display\n- Search limit indicator in header\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)"
     ]
   }
 }

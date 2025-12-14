@@ -1,0 +1,162 @@
+[
+  {
+    "type": "Standard",
+    "discipline": "Computer Science",
+    "title": "Deep Learning Approaches for Image Recognition in Noisy Environments",
+    "abstract": "This study presents an improved CNN model for image recognition in noisy environments, achieving a 15% accuracy boost.",
+    "keywords": ["Deep Learning", "CNN", "Image Recognition", "Noise Reduction"],
+    "correct_journal": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Biology",
+    "title": "CRISPR-Cas9 Editing Efficiency in Plant Genomes",
+    "abstract": "Efficiency of genetic editing in plant genomes using CRISPR was tested, yielding promising preliminary results.",
+    "keywords": ["CRISPR", "Genome Editing", "Plant Biology", "Cas9"],
+    "correct_journal": "Nature Biotechnology"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Physics",
+    "title": "Quantum Entanglement in Superconducting Qubits",
+    "abstract": "Analysis of quantum entanglement behavior in superconducting qubits at low temperatures.",
+    "keywords": ["Quantum Entanglement", "Qubits", "Superconductors"],
+    "correct_journal": "Physical Review Letters"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Medicine",
+    "title": "Efficacy of mRNA Vaccines Against Emerging Variants",
+    "abstract": "A large-scale clinical trial evaluated mRNA vaccine effectiveness against new variants.",
+    "keywords": ["mRNA Vaccines", "COVID Variants", "Clinical Trial"],
+    "correct_journal": "The New England Journal of Medicine"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Economics",
+    "title": "Impact of Monetary Policy on Inflation Dynamics",
+    "abstract": "An economic model analyzes interest rate effects on inflation dynamics in developing economies.",
+    "keywords": ["Monetary Policy", "Inflation", "Economic Modeling"],
+    "correct_journal": "Journal of Monetary Economics"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Psychology",
+    "title": "Cognitive Behavioral Therapy for Anxiety Disorders in Adolescents",
+    "abstract": "Comparison of CBT versus alternative therapies for anxiety disorders in adolescents.",
+    "keywords": ["CBT", "Anxiety Disorders", "Adolescents"],
+    "correct_journal": "Journal of Consulting and Clinical Psychology"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Literature",
+    "title": "Postcolonial Themes in Contemporary African Fiction",
+    "abstract": "Analysis of postcolonial themes in modern African fiction.",
+    "keywords": ["Postcolonialism", "African Literature", "Fiction"],
+    "correct_journal": "PMLA"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Civil Engineering",
+    "title": "Sustainable Materials for Earthquake-Resistant Structures",
+    "abstract": "Development of eco-friendly materials for earthquake-resistant construction.",
+    "keywords": ["Sustainable Materials", "Earthquake Engineering"],
+    "correct_journal": "Journal of Structural Engineering"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Law",
+    "title": "Privacy Rights in the Age of Big Data Analytics",
+    "abstract": "Legal discussion on privacy protection amid big data analytics.",
+    "keywords": ["Privacy Law", "Big Data", "Analytics"],
+    "correct_journal": "Harvard Law Review"
+  },
+  {
+    "type": "Standard",
+    "discipline": "Chemistry",
+    "title": "Novel Catalysts for Carbon Dioxide Reduction",
+    "abstract": "Synthesis of new catalysts for electrochemical CO2 reduction processes.",
+    "keywords": ["Catalysts", "CO2 Reduction", "Electrochemistry"],
+    "correct_journal": "Journal of the American Chemical Society"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "CS/Biology",
+    "title": "Machine Learning Prediction of Protein Folding",
+    "abstract": "A neural network model predicts 3D protein structures from sequences, outperforming traditional simulations.",
+    "keywords": ["Protein Folding", "Neural Networks", "Bioinformatics"],
+    "correct_journal": "Nature Machine Intelligence"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Physics/Chemistry",
+    "title": "Quantum Simulations of Molecular Reactions",
+    "abstract": "Quantum algorithms simulate reaction pathways in catalysts at atomic scales.",
+    "keywords": ["Quantum Computing", "Molecular Dynamics", "Catalysis"],
+    "correct_journal": "Journal of Chemical Physics"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Medicine/Economics",
+    "title": "Cost-Effectiveness of AI Diagnostics in Healthcare",
+    "abstract": "Economic analysis of AI tools reducing diagnostic costs in low-resource settings.",
+    "keywords": ["Health Economics", "AI Diagnostics", "Cost-Benefit"],
+    "correct_journal": "Health Economics"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Psychology/Neuroscience",
+    "title": "Neural Correlates of Decision-Making Biases",
+    "abstract": "fMRI study links brain activity patterns to cognitive biases in risk assessment.",
+    "keywords": ["fMRI", "Decision Biases", "Neuroeconomics"],
+    "correct_journal": "Neuron"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Engineering/Env",
+    "title": "AI-Optimized Carbon Capture Materials",
+    "abstract": "Engineered nanomaterials for CO2 capture, optimized via genetic algorithms.",
+    "keywords": ["Carbon Capture", "Nanomaterials", "Machine Learning"],
+    "correct_journal": "Environmental Science & Technology"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Law/CS",
+    "title": "Algorithmic Bias in Judicial Decision Systems",
+    "abstract": "Legal frameworks for auditing AI in court sentencing algorithms.",
+    "keywords": ["Algorithmic Bias", "Judicial AI", "Legal Tech"],
+    "correct_journal": "Stanford Law Review"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Economics/Sociology",
+    "title": "Network Effects in Social Media Market Power",
+    "abstract": "Econometric models of platform monopolies based on social network data.",
+    "keywords": ["Network Economics", "Social Media", "Sociology"],
+    "correct_journal": "American Economic Review"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Biology/Medicine",
+    "title": "Microbiome Engineering for Personalized Therapy",
+    "abstract": "Synthetic biology alters gut microbiomes to treat metabolic disorders.",
+    "keywords": ["Microbiome", "Synthetic Biology", "Therapeutics"],
+    "correct_journal": "Cell"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Physics/Engineering",
+    "title": "Topological Insulators for Quantum Devices",
+    "abstract": "Material design of insulators enabling fault-tolerant quantum circuits.",
+    "keywords": ["Topological Materials", "Quantum Engineering"],
+    "correct_journal": "Nature Materials"
+  },
+  {
+    "type": "Edge Case",
+    "discipline": "Chemistry/Materials",
+    "title": "Graphene-Based Sensors for Biomedical Detection",
+    "abstract": "Functionalized graphene sensors detect biomarkers with high sensitivity.",
+    "keywords": ["Graphene Sensors", "Biomarkers", "Nanochemistry"],
+    "correct_journal": "ACS Nano"
+  }
+]

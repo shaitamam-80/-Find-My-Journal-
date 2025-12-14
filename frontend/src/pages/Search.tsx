@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
 import type { SearchResponse } from '../types'
 import { JournalCard } from '../components/JournalCard'
+import { Trash2, Download, Printer } from 'lucide-react'
 
 export function Search() {
   const { user, session, limits, signOut, refreshLimits } = useAuth()
@@ -13,6 +14,63 @@ export function Search() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [results, setResults] = useState<SearchResponse | null>(null)
+
+  // Filter state
+  const [filterOAOnly, setFilterOAOnly] = useState(false)
+  const [minCategory, setMinCategory] = useState<'all' | 'top_tier' | 'top_tier_broad'>('all')
+
+  // Filtered results based on client-side filters
+  const filteredJournals = useMemo(() => {
+    if (!results?.journals) return []
+
+    return results.journals.filter((journal) => {
+      // Open Access filter
+      if (filterOAOnly && !journal.is_oa) return false
+
+      // Category filter (using category as proxy for quartile)
+      if (minCategory === 'top_tier' && journal.category !== 'top_tier') return false
+      if (minCategory === 'top_tier_broad' &&
+          journal.category !== 'top_tier' &&
+          journal.category !== 'broad_audience') return false
+
+      return true
+    })
+  }, [results?.journals, filterOAOnly, minCategory])
+
+  const handleClearForm = () => {
+    setTitle('')
+    setAbstract('')
+    setKeywords('')
+    setPreferOA(false)
+    setError('')
+  }
+
+  const handleExportCSV = () => {
+    if (!filteredJournals.length) return
+
+    const headers = ['Name', 'Publisher', 'ISSN', 'H-Index', 'Category', 'Open Access']
+    const rows = filteredJournals.map((journal) => [
+      `"${journal.name.replace(/"/g, '""')}"`,
+      `"${(journal.publisher || '').replace(/"/g, '""')}"`,
+      journal.issn || journal.issn_l || '',
+      journal.metrics.h_index?.toString() || '',
+      journal.category || '',
+      journal.is_oa ? 'Yes' : 'No',
+    ])
+
+    const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'results.csv'
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
+  const handlePrint = () => {
+    window.print()
+  }
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -163,23 +221,33 @@ export function Search() {
               </label>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || (limits?.can_search === false)}
-              className="w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Searching...
-                </span>
-              ) : (
-                'Find Journals'
-              )}
-            </button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                type="submit"
+                disabled={loading || (limits?.can_search === false)}
+                className="w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Searching...
+                  </span>
+                ) : (
+                  'Find Journals'
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={handleClearForm}
+                className="w-full sm:w-auto px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors flex items-center justify-center gap-2"
+              >
+                <Trash2 className="w-4 h-4" />
+                Clear Form
+              </button>
+            </div>
 
             {limits?.can_search === false && (
               <p className="text-sm text-amber-600">
@@ -193,8 +261,13 @@ export function Search() {
         {results && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 print:text-xl">
                 Found {results.total_found} journals
+                {filteredJournals.length !== results.journals.length && (
+                  <span className="text-sm font-normal text-gray-500 ml-2">
+                    (showing {filteredJournals.length} after filters)
+                  </span>
+                )}
               </h3>
               {results.discipline && (
                 <span className="text-sm text-gray-500">
@@ -203,11 +276,70 @@ export function Search() {
               )}
             </div>
 
-            {results.journals.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2">
-                {results.journals.map((journal) => (
+            {/* Actions Bar */}
+            {results.journals.length > 0 && (
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4 no-print">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                  {/* Filter Bar */}
+                  <div className="flex flex-wrap items-center gap-4">
+                    <label className="flex items-center gap-2 text-sm text-gray-700">
+                      <input
+                        type="checkbox"
+                        checked={filterOAOnly}
+                        onChange={(e) => setFilterOAOnly(e.target.checked)}
+                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      />
+                      Open Access Only
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <label htmlFor="minCategory" className="text-sm text-gray-700">
+                        Category:
+                      </label>
+                      <select
+                        id="minCategory"
+                        value={minCategory}
+                        onChange={(e) => setMinCategory(e.target.value as 'all' | 'top_tier' | 'top_tier_broad')}
+                        className="text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-indigo-500 focus:border-indigo-500"
+                      >
+                        <option value="all">All Categories</option>
+                        <option value="top_tier">Top Tier Only</option>
+                        <option value="top_tier_broad">Top Tier + Broad Audience</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Export Actions */}
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleExportCSV}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                    >
+                      <Download className="w-4 h-4" />
+                      Export CSV
+                    </button>
+                    <button
+                      onClick={handlePrint}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                    >
+                      <Printer className="w-4 h-4" />
+                      Print Report
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {filteredJournals.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 print:grid-cols-1">
+                {filteredJournals.map((journal) => (
                   <JournalCard key={journal.id} journal={journal} />
                 ))}
+              </div>
+            ) : results.journals.length > 0 ? (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+                <p className="text-yellow-800">
+                  No journals match the current filters. Try adjusting your filter settings.
+                </p>
               </div>
             ) : (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">

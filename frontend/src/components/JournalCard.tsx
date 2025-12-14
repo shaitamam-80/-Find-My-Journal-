@@ -1,4 +1,5 @@
 import type { Journal } from '../types'
+import { Info } from 'lucide-react'
 
 interface JournalCardProps {
   journal: Journal
@@ -39,9 +40,17 @@ export function JournalCard({ journal }: JournalCardProps) {
       )}
 
       {journal.match_reason && (
-        <p className="text-sm text-gray-500 mb-3 italic">
-          {journal.match_reason}
-        </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+          <div className="flex items-start gap-2">
+            <Info className="w-4 h-4 text-blue-600 mt-0.5 shrink-0" />
+            <div>
+              <p className="text-xs font-medium text-blue-800 mb-1">Why this match?</p>
+              <p className="text-sm text-blue-700">
+                {journal.match_reason}
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
       <div className="space-y-2 text-sm text-gray-600">
