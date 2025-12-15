@@ -26,6 +26,7 @@ from app.services.openalex_service import openalex_service
 @dataclass
 class BenchmarkResult:
     """Result for a single benchmark test case."""
+
     test_case: dict
     returned_journals: List[str]
     position: int  # -1 if not found
@@ -36,6 +37,7 @@ class BenchmarkResult:
 @dataclass
 class BenchmarkSummary:
     """Summary statistics for benchmark run."""
+
     total: int = 0
     hit_at_1: int = 0
     hit_at_5: int = 0
@@ -60,7 +62,7 @@ def normalize_journal_name(name: str) -> str:
     prefixes = ["the ", "a "]
     for prefix in prefixes:
         if name.startswith(prefix):
-            name = name[len(prefix):]
+            name = name[len(prefix) :]
     # Remove punctuation and extra spaces
     name = "".join(c if c.isalnum() or c.isspace() else " " for c in name)
     name = " ".join(name.split())
@@ -155,10 +157,25 @@ def run_benchmark(data_path: str = None) -> BenchmarkSummary:
         BenchmarkSummary with all results and statistics
     """
     if data_path is None:
-        data_path = Path(__file__).parent.parent / "tests" / "data" / "benchmark_journals.json"
+        data_path = (
+            Path(__file__).parent.parent / "tests" / "data" / "benchmark_journals.json"
+        )
 
     with open(data_path, "r", encoding="utf-8") as f:
-        test_cases = json.load(f)
+        data = json.load(f)
+
+    test_cases = []
+    # Handle new schema (dict) vs old schema (list)
+    if isinstance(data, list):
+        test_cases = data
+    elif isinstance(data, dict):
+        print(
+            f"Loaded dataset: {data.get('dataset_info', {}).get('description', 'Unknown')}"
+        )
+        if "standard_articles" in data:
+            test_cases.extend(data["standard_articles"])
+        if "edge_case_articles" in data:
+            test_cases.extend(data["edge_case_articles"])
 
     summary = BenchmarkSummary()
 
@@ -168,7 +185,9 @@ def run_benchmark(data_path: str = None) -> BenchmarkSummary:
     print(f"\nRunning {len(test_cases)} test cases...\n")
 
     for i, case in enumerate(test_cases):
-        print(f"[{i+1}/{len(test_cases)}] {case['discipline']}: {case['title'][:50]}...")
+        print(
+            f"[{i+1}/{len(test_cases)}] {case['discipline']}: {case['title'][:50]}..."
+        )
 
         # Call the service
         start_time = time.time()
@@ -190,7 +209,9 @@ def run_benchmark(data_path: str = None) -> BenchmarkSummary:
 
         # Find target position
         target = case["correct_journal"]
-        position, match_type, matched_name = find_journal_position(target, journal_names)
+        position, match_type, matched_name = find_journal_position(
+            target, journal_names
+        )
 
         # Record result
         result = BenchmarkResult(
@@ -250,11 +271,21 @@ def print_summary(summary: BenchmarkSummary):
     print(f"\n{'Metric':<25} {'Count':>10} {'Percentage':>15}")
     print("-" * 50)
     print(f"{'Total Test Cases':<25} {summary.total:>10}")
-    print(f"{'Hit @ 1':<25} {summary.hit_at_1:>10} {summary.hit_at_1/summary.total*100:>14.1f}%")
-    print(f"{'Hit @ 5':<25} {summary.hit_at_5:>10} {summary.hit_at_5/summary.total*100:>14.1f}%")
-    print(f"{'Hit @ 10':<25} {summary.hit_at_10:>10} {summary.hit_at_10/summary.total*100:>14.1f}%")
-    print(f"{'Hit @ 15':<25} {summary.hit_at_15:>10} {summary.hit_at_15/summary.total*100:>14.1f}%")
-    print(f"{'Misses':<25} {summary.misses:>10} {summary.misses/summary.total*100:>14.1f}%")
+    print(
+        f"{'Hit @ 1':<25} {summary.hit_at_1:>10} {summary.hit_at_1/summary.total*100:>14.1f}%"
+    )
+    print(
+        f"{'Hit @ 5':<25} {summary.hit_at_5:>10} {summary.hit_at_5/summary.total*100:>14.1f}%"
+    )
+    print(
+        f"{'Hit @ 10':<25} {summary.hit_at_10:>10} {summary.hit_at_10/summary.total*100:>14.1f}%"
+    )
+    print(
+        f"{'Hit @ 15':<25} {summary.hit_at_15:>10} {summary.hit_at_15/summary.total*100:>14.1f}%"
+    )
+    print(
+        f"{'Misses':<25} {summary.misses:>10} {summary.misses/summary.total*100:>14.1f}%"
+    )
 
     # By type
     print("\n" + "-" * 50)
@@ -263,11 +294,15 @@ def print_summary(summary: BenchmarkSummary):
 
     if summary.standard_total > 0:
         std_pct = summary.standard_hits / summary.standard_total * 100
-        print(f"{'Standard Cases':<25} {summary.standard_hits:>3}/{summary.standard_total:<6} {std_pct:>14.1f}%")
+        print(
+            f"{'Standard Cases':<25} {summary.standard_hits:>3}/{summary.standard_total:<6} {std_pct:>14.1f}%"
+        )
 
     if summary.edge_total > 0:
         edge_pct = summary.edge_hits / summary.edge_total * 100
-        print(f"{'Edge Cases (Interdiscip.)':<25} {summary.edge_hits:>3}/{summary.edge_total:<6} {edge_pct:>14.1f}%")
+        print(
+            f"{'Edge Cases (Interdiscip.)':<25} {summary.edge_hits:>3}/{summary.edge_total:<6} {edge_pct:>14.1f}%"
+        )
 
     # Failed cases detail
     misses = [r for r in summary.results if r.position < 0]
@@ -279,7 +314,9 @@ def print_summary(summary: BenchmarkSummary):
             print(f"\n  [{r.test_case['type']}] {r.test_case['discipline']}")
             print(f"  Title: {r.test_case['title'][:60]}...")
             print(f"  Expected: {r.test_case['correct_journal']}")
-            print(f"  Got: {r.returned_journals[:3] if r.returned_journals else 'No results'}")
+            print(
+                f"  Got: {r.returned_journals[:3] if r.returned_journals else 'No results'}"
+            )
 
     # Overall grade
     print("\n" + "=" * 80)

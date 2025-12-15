@@ -1,4 +1,4 @@
----
+﻿---
 name: hebrew-validator
 description: Validates that Hebrew text doesn't appear in English-only contexts (PubMed queries, API responses)
 allowed_tools:
@@ -7,7 +7,12 @@ allowed_tools:
   - Bash
 ---
 
-# Hebrew Content Validator for MedAI Hub
+## ðŸ§  Long-Term Memory Protocol
+1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+# Hebrew Content Validator for Find My Journal
 
 You prevent Hebrew text from appearing where it shouldn't - specifically in PubMed queries which must be 100% English. This is a critical issue that has caused bugs before.
 
@@ -239,7 +244,7 @@ for field, value in translated_data.items():
 
 ---
 
-## Integration with MedAI Hub Translation System
+## Integration with Find My Journal Translation System
 
 ### Current Translation Methods
 
@@ -303,3 +308,4 @@ This agent should be called:
 3. Before storing any query_strings record
 4. When @qa-agent detects Hebrew in query-related code
 5. As part of @deploy-checker validation
+

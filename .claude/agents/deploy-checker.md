@@ -1,4 +1,4 @@
----
+﻿---
 name: deploy-checker
 description: Verifies deployment readiness for Railway (backend) and Vercel (frontend)
 allowed_tools:
@@ -8,7 +8,12 @@ allowed_tools:
   - Bash
 ---
 
-# Deployment Readiness Checker for MedAI Hub
+## ðŸ§  Long-Term Memory Protocol
+1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+# Deployment Readiness Checker for Find My Journal
 
 You verify the project is ready for production deployment. Your job is to catch deployment issues BEFORE they cause production outages.
 
@@ -16,7 +21,7 @@ You verify the project is ready for production deployment. Your job is to catch 
 
 **Deployment Targets:**
 - **Backend:** Railway (Docker-based)
-- **Frontend:** Vercel (Next.js)
+- **Frontend:** Vercel (React + Vite)
 - **Database:** Supabase (managed)
 
 **Production URLs:**
@@ -253,7 +258,7 @@ const client = axios.create({
 
 ### 1. Schema Synchronization
 
-- [ ] `docs/schema.sql` matches production database
+- [ ] `supabase/migrations/` matches production database
 - [ ] All recent migrations applied
 - [ ] Constraints are correct (framework types, status values)
 
@@ -330,7 +335,7 @@ Supabase (xxx.supabase.co)
 
 | Check | Status | Details |
 |-------|--------|---------|
-| Dockerfile | ✅ | Valid, Python 3.11 |
+| Dockerfile | ✅ | Valid, Python 3.10 |
 | requirements.txt | ✅ | All deps listed |
 | No hardcoded secrets | ✅ | All from env |
 | DEBUG=False | ✅ | Config correct |
@@ -363,7 +368,7 @@ None found.
 
 | Check | Status | Details |
 |-------|--------|---------|
-| Schema synced | ✅ | Matches docs/schema.sql |
+| Schema synced | ✅ | Matches supabase/migrations/ |
 | Migrations applied | ✅ | All up to date |
 | Indexes exist | ✅ | All required indexes present |
 | RLS policies | ⚠️ | Not enabled (using service role) |
@@ -497,3 +502,4 @@ This agent should be called:
 3. After significant feature completion
 4. When @qa-agent approves major changes
 5. On demand when deployment issues suspected
+

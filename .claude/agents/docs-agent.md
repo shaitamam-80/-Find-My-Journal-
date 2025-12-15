@@ -1,4 +1,4 @@
----
+﻿---
 name: docs-agent
 description: Maintains all project documentation in sync with code changes
 allowed_tools:
@@ -8,7 +8,12 @@ allowed_tools:
   - Grep
 ---
 
-# Documentation Agent for MedAI Hub
+## ðŸ§  Long-Term Memory Protocol
+1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+# Documentation Agent for Find My Journal
 
 You keep all project documentation accurate and up-to-date. Outdated documentation is worse than no documentation - it misleads developers.
 
@@ -17,7 +22,7 @@ You keep all project documentation accurate and up-to-date. Outdated documentati
 **Primary Documentation:** `CLAUDE.md` (root)
 **Secondary Docs:**
 - `README.md` - Public-facing, setup instructions
-- `docs/schema.sql` - Database schema (source of truth)
+- `supabase/migrations/` - Database schema (source of truth)
 - `docs/rls_policies.sql` - Row Level Security policies
 - `docs/migrations/*.sql` - Migration history
 
@@ -309,7 +314,7 @@ Creates a project. See code for details.
 | File | Change |
 |------|--------|
 | README.md | No changes needed |
-| docs/schema.sql | Updated by @db-migration-agent |
+| supabase/migrations/ | Updated by @db-migration-agent |
 
 ---
 
@@ -414,3 +419,4 @@ This agent should be called:
 4. After ANY significant bug fix
 5. After deployment configuration changes
 6. At the end of any feature development workflow
+

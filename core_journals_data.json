@@ -1,0 +1,1721 @@
+{
+  "title": "Core Journals Across Scientific Disciplines - Top 20 by Field",
+  "description": "Comprehensive reference of the top 20 core journals in each of 16 major scientific disciplines",
+  "generated_date": "2025-12-15",
+  "total_disciplines": 16,
+  "total_journals": 320,
+  "disciplines": [
+    {
+      "name": "Multidisciplinary",
+      "description": "General science journals publishing cutting-edge research across all scientific fields",
+      "rank": 1,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Science",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Science Advances",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Proceedings of the National Academy of Sciences (PNAS)",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "National Science Review",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Nature Communications",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Science Bulletin",
+          "impact_category": "High"
+        },
+        {
+          "rank": 8,
+          "title": "Innovation",
+          "impact_category": "High"
+        },
+        {
+          "rank": 9,
+          "title": "Journal of Advanced Research",
+          "impact_category": "High"
+        },
+        {
+          "rank": 10,
+          "title": "Research",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "Scientific Reports",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "iScience",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Royal Society Open Science",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 14,
+          "title": "PLoS ONE",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 15,
+          "title": "Heliyon",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 16,
+          "title": "Data in Brief",
+          "impact_category": "Medium"
+        },
+        {
+          "rank": 17,
+          "title": "Current Science",
+          "impact_category": "Medium"
+        },
+        {
+          "rank": 18,
+          "title": "Science, Technology and Society",
+          "impact_category": "Medium"
+        },
+        {
+          "rank": 19,
+          "title": "PNAS Nexus",
+          "impact_category": "Medium"
+        },
+        {
+          "rank": 20,
+          "title": "Fundamental Research",
+          "impact_category": "Medium"
+        }
+      ]
+    },
+    {
+      "name": "Medicine & Clinical",
+      "description": "Clinical medicine and healthcare research publications",
+      "rank": 2,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "New England Journal of Medicine",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "The Lancet",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "JAMA - Journal of the American Medical Association",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 4,
+          "title": "BMJ - British Medical Journal",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 5,
+          "title": "Nature Medicine",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "The Lancet Psychiatry",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "World Psychiatry",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Lancet Child & Adolescent Health",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Nature Reviews Drug Discovery",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Annals of Oncology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "Cancer Cell",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 12,
+          "title": "Nature Reviews Clinical Oncology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 13,
+          "title": "Hepatology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 14,
+          "title": "Blood",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 15,
+          "title": "Radiology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 16,
+          "title": "JACC - Cardiovascular Imaging",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Stroke",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "Journal of Medical Ethics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Clinical Pharmacology & Therapeutics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Nature Reviews Medicine",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Biology & Life Sciences",
+      "description": "Cellular and molecular biology, developmental biology",
+      "rank": 3,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Cell",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Neuron",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Nature Neuroscience",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Nature Cell Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Nature Structural and Molecular Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "EMBO Journal",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Molecular Cell",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Developmental Cell",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "eLife",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Current Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "PLoS Biology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Cell Research",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Nature Metabolism",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Cell Metabolism",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Cell Stem Cell",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Cell Host and Microbe",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Cell Death and Differentiation",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "Cell Systems",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Genome Biology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Nature Chemical Biology",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Neuroscience",
+      "description": "Brain science, neural systems, and neurodegenerative research",
+      "rank": 4,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Neuroscience",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Neuron",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "The Lancet Neurology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Brain",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Journal of Neuroscience",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Nature Reviews Neuroscience",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Annual Review of Neuroscience",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Trends in Neurosciences",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Current Opinion in Neurobiology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 10,
+          "title": "NeuroImage",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "Brain Pathology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Neuro-Oncology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Progress in Neurobiology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Journal of Neuroinflammation",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Neuropsychopharmacology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Brain Stimulation",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 17,
+          "title": "Human Brain Mapping",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 18,
+          "title": "Journal of Neurology, Neurosurgery & Psychiatry",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 19,
+          "title": "Nature Mental Health",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 20,
+          "title": "Open Biology",
+          "impact_category": "Medium-High"
+        }
+      ]
+    },
+    {
+      "name": "Chemistry",
+      "description": "Chemical science, materials chemistry, analytical chemistry",
+      "rank": 5,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Chemistry",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Chemical Reviews",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Journal of the American Chemical Society",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Journal of Chemical Information and Modeling",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Chemistry - A European Journal",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "ACS Nano",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "ACS Chemical Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "ACS Catalysis",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Analytical Chemistry",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Nature Reviews Materials",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "Advanced Materials",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 12,
+          "title": "Matter",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Nature Energy",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Materials Today",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Advanced Functional Materials",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Chemical Science",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "New Journal of Chemistry",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "Nanoscale",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "ACS Photonics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Physical Chemistry Chemical Physics",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Materials Science & Nanotechnology",
+      "description": "Advanced materials, nanomaterials, nanostructures",
+      "rank": 6,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Nanotechnology",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Nature Materials",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Advanced Materials",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Advanced Energy Materials",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "ACS Nano",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Nano Letters",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Nano Research",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Carbon",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Materials Science and Engineering R: Reports",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Progress in Materials Science",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "Advanced Functional Materials",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Nanoscale",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Nano Energy",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Energy Storage Materials",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "InfoMat",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Matter",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Materials Today",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "Interdisciplinary Materials",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 19,
+          "title": "Advanced Powder Materials",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 20,
+          "title": "Electrochemical Energy Reviews",
+          "impact_category": "Medium-High"
+        }
+      ]
+    },
+    {
+      "name": "Physics & Astronomy",
+      "description": "Fundamental physics, materials physics, astronomy",
+      "rank": 7,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Physics",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Physical Review Letters",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Physical Review X",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 4,
+          "title": "Science Advances",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Physical Review B",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Physical Review D",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Physical Review A",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Physical Review E",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Reviews of Modern Physics",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Applied Physics Letters",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "Journal of Applied Physics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Physics of Fluids",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Science Robotics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "PRX Quantum",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Physical Review Materials",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "PRX Energy",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Nature Astronomy",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 18,
+          "title": "Astrophysical Journal",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Astronomy & Astrophysics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Classical and Quantum Gravity",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Environmental Science & Ecology",
+      "description": "Environmental research, climate science, ecological studies",
+      "rank": 8,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Climate Change",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Global Change Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 3,
+          "title": "Environment International",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Science of The Total Environment",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Journal of Environmental Management",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Environmental Pollution",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Water Research",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Environmental Science & Technology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Chemosphere",
+          "impact_category": "High"
+        },
+        {
+          "rank": 10,
+          "title": "Journal of Hazardous Materials",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "Applied Catalysis B: Environmental",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Nature Water",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Annual Review of Environment and Resources",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 14,
+          "title": "Energy and Environmental Materials",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Communications Earth and Environment",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Bioresource Technology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Waste Management",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "Marine Pollution Bulletin",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 19,
+          "title": "Ecotoxicology and Environmental Safety",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 20,
+          "title": "Resources, Conservation and Recycling",
+          "impact_category": "Medium-High"
+        }
+      ]
+    },
+    {
+      "name": "Economics & Finance",
+      "description": "Economic theory, finance, econometrics",
+      "rank": 9,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Quarterly Journal of Economics",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Journal of Political Economy",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Econometrica",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 4,
+          "title": "American Economic Review",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 5,
+          "title": "Review of Economic Studies",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 6,
+          "title": "Journal of Finance",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Journal of Econometrics",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Journal of Monetary Economics",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Journal of International Economics",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Journal of Financial Economics",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "Review of Financial Studies",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 12,
+          "title": "Journal of Financial and Quantitative Analysis",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Journal of Banking and Finance",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Journal of Economic Growth",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Journal of Economic Theory",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Economic Journal",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Journal of Economic Dynamics and Control",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "International Economic Review",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Journal of Development Economics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Games and Economic Behavior",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Computer Science & AI",
+      "description": "Machine learning, artificial intelligence, computing systems",
+      "rank": 10,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Foundations and Trends in Machine Learning",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Nature Machine Intelligence",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Science Robotics",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "ACM Computing Surveys",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "IEEE Journal on Selected Areas in Communications",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Proceedings of the IEEE",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Nature Biomedical Engineering",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Artificial Intelligence",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "ACM Transactions on Graphics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "ACM Transactions on Database Systems",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Information Systems Research",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "International Journal of Information Management",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Communications of the ACM",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "IEEE Software",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 16,
+          "title": "ACM Transactions on Software Engineering and Methodology",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 17,
+          "title": "Algorithmica",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 18,
+          "title": "Journal of Machine Learning Research",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "IEEE Transactions on Knowledge and Data Engineering",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Data Mining and Knowledge Discovery",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Pharmacology & Drug Development",
+      "description": "Drug discovery, pharmacology, medicinal chemistry",
+      "rank": 11,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Reviews Drug Discovery",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Pharmacological Reviews",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Drug Resistance Updates",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Molecular Therapy",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Pharmacology and Therapeutics",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Trends in Pharmacological Sciences",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Journal for ImmunoTherapy of Cancer",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Annual Review of Pharmacology and Toxicology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Medicinal Research Reviews",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Neuropsychopharmacology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "Pharmacological Research",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "British Journal of Pharmacology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Journal of Medicinal Chemistry",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Cell Chemical Biology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "BioDrugs",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Clinical Pharmacology and Therapeutics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Acta Pharmacologica Sinica",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 18,
+          "title": "European Journal of Pharmacology",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 19,
+          "title": "Cellular and Molecular Life Sciences",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Asian Journal of Pharmaceutical Sciences",
+          "impact_category": "Medium-High"
+        }
+      ]
+    },
+    {
+      "name": "Psychology & Behavioral Sciences",
+      "description": "Psychology, psychiatry, behavioral science",
+      "rank": 12,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "World Psychiatry",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "The Lancet Psychiatry",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Nature Mental Health",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Neuropsychology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Journal of Abnormal Psychology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Psychological Review",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "American Psychologist",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Emotion Review",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Psychological Science",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Cognition",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "Memory & Cognition",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Social Psychiatry and Psychiatric Epidemiology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Psychology and Aging",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Journal of Research on Adolescence",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Child Development",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Mindfulness",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 17,
+          "title": "Assessment",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 18,
+          "title": "Journal of Consulting and Clinical Psychology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Behavior Therapy",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Eating Disorders",
+          "impact_category": "Medium"
+        }
+      ]
+    },
+    {
+      "name": "Engineering",
+      "description": "Chemical engineering, mechanical engineering, operations research",
+      "rank": 13,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Nanotechnology",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Advanced Materials",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 3,
+          "title": "Industrial & Engineering Chemistry Research",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Journal of Membrane Science",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Computers & Operations Research",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "European Journal of Operational Research",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "IEEE Transactions on Smart Grid",
+          "impact_category": "High"
+        },
+        {
+          "rank": 8,
+          "title": "Journal of Operations Management",
+          "impact_category": "High"
+        },
+        {
+          "rank": 9,
+          "title": "Transportation Research Part B",
+          "impact_category": "High"
+        },
+        {
+          "rank": 10,
+          "title": "International Journal of Production Economics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "Journal of Supply Chain Management",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "Mathematical Methods of Operations Research",
+          "impact_category": "High"
+        },
+        {
+          "rank": 13,
+          "title": "Computational Mechanics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Applied Mechanics Reviews",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Chemical Engineering Science",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Bioprocess and Biosystems Engineering",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 17,
+          "title": "Microfluidics and Nanofluidics",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 18,
+          "title": "Lab on a Chip",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Sensors and Actuators B: Chemical",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 20,
+          "title": "IEEE Transactions on Wireless Communications",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Mathematics & Statistics",
+      "description": "Mathematical theory, statistics, computational mathematics",
+      "rank": 14,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Annals of Statistics",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Journal of the American Statistical Association",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Biometrika",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 4,
+          "title": "Computational Statistics and Data Analysis",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "SIAM Journal on Optimization",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Journal of Combinatorial Theory",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Linear Algebra and Its Applications",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Computational Complexity",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Discrete Mathematics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 10,
+          "title": "Algorithmica",
+          "impact_category": "High"
+        },
+        {
+          "rank": 11,
+          "title": "Advances in Applied Mathematics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 12,
+          "title": "SIAM Review",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 13,
+          "title": "American Mathematical Monthly",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "Mathematical Programming",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Inverse Problems",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Numerical Algorithms",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 17,
+          "title": "Journal of Computational Physics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "Journal of Computational and Applied Mathematics",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "SIAM Journal on Scientific Computing",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Mathematics of Computation",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Genetics & Molecular Biology",
+      "description": "Genetics, molecular biology, plant biology",
+      "rank": 15,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Reviews Genetics",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Nature Reviews Molecular Cell Biology",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Nature Methods",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Genome Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Journal of Hematology and Oncology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Molecular Plant",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "Cell Research",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Physiological Reviews",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 9,
+          "title": "Trends in Cell Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 10,
+          "title": "Annual Review of Plant Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "Annual Review of Cell and Developmental Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 12,
+          "title": "Current Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 13,
+          "title": "Developmental Cell",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 14,
+          "title": "EMBO Journal",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 15,
+          "title": "Protein Science",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Nature Chemical Biology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 17,
+          "title": "Nature Structural and Molecular Biology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 18,
+          "title": "Molecular Neurodegeneration",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Genome Medicine",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Autophagy",
+          "impact_category": "High"
+        }
+      ]
+    },
+    {
+      "name": "Immunology & Microbiology",
+      "description": "Immunology, microbiology, infection disease",
+      "rank": 16,
+      "journals": [
+        {
+          "rank": 1,
+          "title": "Nature Reviews Immunology",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 2,
+          "title": "Nature Reviews Microbiology",
+          "impact_category": "Exceptional"
+        },
+        {
+          "rank": 3,
+          "title": "Trends in Immunology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 4,
+          "title": "Nature Immunology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 5,
+          "title": "Immunity",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 6,
+          "title": "Journal of Immunology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 7,
+          "title": "eLife",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 8,
+          "title": "Cellular and Molecular Life Sciences",
+          "impact_category": "High"
+        },
+        {
+          "rank": 9,
+          "title": "Current Opinion in Immunology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 10,
+          "title": "Immunological Reviews",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 11,
+          "title": "Microbiology and Molecular Biology Reviews",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 12,
+          "title": "Cell Host and Microbe",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 13,
+          "title": "PLoS Pathogens",
+          "impact_category": "High"
+        },
+        {
+          "rank": 14,
+          "title": "mBio",
+          "impact_category": "High"
+        },
+        {
+          "rank": 15,
+          "title": "Trends in Microbiology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 16,
+          "title": "Journal of Microbiological Methods",
+          "impact_category": "Medium-High"
+        },
+        {
+          "rank": 17,
+          "title": "FEMS Microbiology Reviews",
+          "impact_category": "High"
+        },
+        {
+          "rank": 18,
+          "title": "Applied and Environmental Microbiology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 19,
+          "title": "Infection and Immunity",
+          "impact_category": "High"
+        },
+        {
+          "rank": 20,
+          "title": "Microbiome",
+          "impact_category": "High"
+        }
+      ]
+    }
+  ]
+}

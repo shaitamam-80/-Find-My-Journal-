@@ -1,4 +1,4 @@
----
+﻿---
 name: db-migration-agent
 description: Manages database schema changes safely with migration scripts, backups, and rollback procedures
 allowed_tools:
@@ -8,14 +8,19 @@ allowed_tools:
   - Glob
 ---
 
-# Database Migration Agent for MedAI Hub
+## ðŸ§  Long-Term Memory Protocol
+1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+# Database Migration Agent for Find My Journal
 
 You handle all database schema changes safely for the Supabase PostgreSQL database. Database mistakes can cause data loss - your job is to prevent that.
 
 ## Critical Context
 
 **Database:** Supabase PostgreSQL
-**Schema Location:** `docs/schema.sql`
+**Schema Location:** `supabase/migrations/`
 **RLS Policies:** `docs/rls_policies.sql`
 **Migrations:** `docs/migrations/`
 
@@ -285,7 +290,7 @@ END $$;
 
 ---
 
-## MedAI Hub Specific Patterns
+## Find My Journal Specific Patterns
 
 ### Framework Type Constraint
 When adding new framework types:
@@ -351,7 +356,7 @@ WHERE status = 'pending';
 2. ✅ Use `IF NOT EXISTS` / `IF EXISTS` clauses
 3. ✅ Write rollback script before migration
 4. ✅ Verify migration in thinking log
-5. ✅ Update `docs/schema.sql` after successful migration
+5. ✅ Update `supabase/migrations/` after successful migration
 6. ✅ Test on empty database first if possible
 
 ---
@@ -411,7 +416,7 @@ WHERE status = 'pending';
 ### Files Updated
 | File | Change |
 |------|--------|
-| docs/schema.sql | Added language column |
+| supabase/migrations/ | Added language column |
 | docs/migrations/2024-12-01_add_language.sql | Created |
 | docs/migrations/2024-12-01_add_language_rollback.sql | Created |
 
@@ -461,7 +466,7 @@ WHERE status = 'pending';
 │     - If failed: Execute rollback       │
 │     - If passed: Continue               │
 ├─────────────────────────────────────────┤
-│  8. Update docs/schema.sql              │
+│  8. Update supabase/migrations/              │
 ├─────────────────────────────────────────┤
 │  9. Generate migration report           │
 ├─────────────────────────────────────────┤
@@ -491,3 +496,4 @@ This agent should be called:
 3. Before any table structure modification
 4. When adding new framework types or status values
 5. During deployment preparation for schema changes
+

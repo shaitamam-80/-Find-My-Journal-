@@ -1,6 +1,7 @@
 """
 Search endpoints for finding academic journals.
 """
+
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Optional
 import uuid
@@ -54,21 +55,14 @@ async def search_journals(
     # Build query summary for response (no raw content)
     query_summary = f"Search in {discipline or 'unknown field'}"
 
-    # Generate SHA-256 hash of abstract for duplicate detection (privacy-preserving)
-    query_hash = hashlib.sha256(request.abstract.encode('utf-8')).hexdigest()
-
-    # Log search to database (privacy-focused: no raw title/abstract stored)
-    try:
-        await db_service.log_search(
-            user_id=user.id,
-            discipline=discipline,
-            query_hash=query_hash,
-            is_incognito=request.incognito_mode,
-            results_count=len(journals),
-        )
-    except Exception as e:
-        # Don't fail the search if logging fails
-        print(f"Warning: Failed to log search: {e}")
+    # Handle search logging (async, non-blocking failure)
+    await _handle_search_logging(
+        user_id=user.id,
+        discipline=discipline,
+        abstract=request.abstract,
+        results_count=len(journals),
+        incognito=request.incognito_mode,
+    )
 
     # Increment search counter
     await increment_search_count(user.id)
@@ -97,13 +91,14 @@ async def get_search_history(
         List of recent searches
     """
     try:
-        result = db_service.client.table("search_logs").select(
-            "id, query, results_count, created_at"
-        ).eq(
-            "user_id", user.id
-        ).order(
-            "created_at", desc=True
-        ).limit(limit).execute()
+        result = (
+            db_service.client.table("search_logs")
+            .select("id, query, results_count, created_at")
+            .eq("user_id", user.id)
+            .order("created_at", desc=True)
+            .limit(limit)
+            .execute()
+        )
 
         return {
             "searches": result.data,
@@ -111,6 +106,28 @@ async def get_search_history(
         }
     except Exception as e:
         raise HTTPException(
-            status_code=500,
-            detail=f"Failed to fetch search history: {str(e)}"
+            status_code=500, detail=f"Failed to fetch search history: {str(e)}"
         )
+
+
+async def _handle_search_logging(
+    user_id: str, discipline: str, abstract: str, results_count: int, incognito: bool
+):
+    """
+    Handle privacy-preserving search logging.
+    Separated to maintain Single Responsibility Principle in the endpoint.
+    """
+    # Generate SHA-256 hash of abstract for duplicate detection (privacy-preserving)
+    query_hash = hashlib.sha256(abstract.encode("utf-8")).hexdigest()
+
+    try:
+        await db_service.log_search(
+            user_id=user_id,
+            discipline=discipline,
+            query_hash=query_hash,
+            is_incognito=incognito,
+            results_count=results_count,
+        )
+    except Exception as e:
+        # Don't fail the search if logging fails
+        print(f"Warning: Failed to log search: {e}")

@@ -1,19 +1,24 @@
----
+﻿---
 name: api-sync-agent
-description: Ensures perfect synchronization between FastAPI backend and Next.js frontend
+description: Ensures perfect synchronization between FastAPI backend and React + Vite frontend
 allowed_tools:
   - Read
   - Glob
   - Grep
 ---
 
-# API Sync Agent for MedAI Hub
+## ðŸ§  Long-Term Memory Protocol
+1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
 
-You ensure the FastAPI backend and Next.js frontend remain perfectly synchronized. Mismatches between backend and frontend cause subtle bugs that are hard to debug.
+# API Sync Agent for Find My Journal
+
+You ensure the FastAPI backend and React + Vite frontend remain perfectly synchronized. Mismatches between backend and frontend cause subtle bugs that are hard to debug.
 
 ## Critical Context
 
-MedAI Hub has a clear API contract:
+Find My Journal has a clear API contract:
 - Backend: `backend/app/api/routes/*.py` + `backend/app/api/models/schemas.py`
 - Frontend: `frontend/lib/api.ts` + TypeScript interfaces
 
@@ -190,7 +195,7 @@ try {
 
 ---
 
-## MedAI Hub API Inventory
+## Find My Journal API Inventory
 
 ### Projects API
 | Method | Backend Route | Frontend Method | Status |
@@ -322,3 +327,4 @@ This agent should be called:
 3. After any change to `frontend/lib/api.ts`
 4. Before deployment to production
 5. After @qa-agent approves backend changes
+

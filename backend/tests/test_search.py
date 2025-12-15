@@ -1,6 +1,7 @@
 """
 Tests for search functionality.
 """
+
 import pytest
 from unittest.mock import patch, MagicMock
 from app.services.openalex_service import OpenAlexService
@@ -203,8 +204,8 @@ class TestOpenAlexService:
 
         assert result == []
 
-    @patch('app.services.openalex_service.pyalex.Sources')
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Sources")
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_search_journals_by_keywords_with_mock(self, mock_works, mock_sources):
         """Test search with mocked OpenAlex API."""
         mock_source = {
@@ -221,25 +222,39 @@ class TestOpenAlexService:
 
         # Mock works search to return papers with source
         mock_works.return_value.search.return_value.filter.return_value.get.return_value = [
-            {"primary_location": {"source": {"id": "https://openalex.org/S12345", "type": "journal"}, "is_oa": True}}
+            {
+                "primary_location": {
+                    "source": {"id": "https://openalex.org/S12345", "type": "journal"},
+                    "is_oa": True,
+                }
+            }
         ]
 
         # Mock _get_full_source_details to return the source
-        with patch.object(self.service, '_get_full_source_details', return_value=mock_source):
-            # Mock _is_journal_relevant to always return True for this test
-            with patch.object(self.service, '_is_journal_relevant', return_value=True):
-                result = self.service.search_journals_by_keywords(["machine learning"], discipline="computer_science")
+        with patch.object(
+            self.service, "_get_full_source_details", return_value=mock_source
+        ):
+            # Mock _is_journal_relevant removed as method is deleted
+            result = self.service.search_journals_by_keywords(
+                ["machine learning"], discipline="computer_science"
+            )
 
         assert len(result) >= 1
         assert any(j.name == "Machine Learning Journal" for j in result)
 
-    @patch('app.services.openalex_service.pyalex.Sources')
-    @patch('app.services.openalex_service.pyalex.Works')
-    def test_search_journals_by_keywords_filters_min_works(self, mock_works, mock_sources):
+    @patch("app.services.openalex_service.pyalex.Sources")
+    @patch("app.services.openalex_service.pyalex.Works")
+    def test_search_journals_by_keywords_filters_min_works(
+        self, mock_works, mock_sources
+    ):
         """Test that min_works_count filter is applied via min_journal_works."""
         small_source = {"id": "1", "display_name": "Small Journal", "works_count": 100}
-        big_source = {"id": "2", "display_name": "Big Journal", "works_count": 10000,
-                      "summary_stats": {"h_index": 50, "i10_index": 100}}
+        big_source = {
+            "id": "2",
+            "display_name": "Big Journal",
+            "works_count": 10000,
+            "summary_stats": {"h_index": 50, "i10_index": 100},
+        }
 
         # Mock works search returning both journals
         mock_works.return_value.search.return_value.filter.return_value.get.return_value = [
@@ -252,24 +267,28 @@ class TestOpenAlexService:
                 return small_source
             return big_source
 
-        with patch.object(self.service, '_get_full_source_details', side_effect=get_source):
+        with patch.object(
+            self.service, "_get_full_source_details", side_effect=get_source
+        ):
             result = self.service.search_journals_by_keywords(["test"])
 
         # Small journal should be filtered by min_journal_works (1000)
         assert all(j.name != "Small Journal" for j in result)
 
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_search_journals_by_keywords_api_error(self, mock_works):
         """Test handling of API errors."""
-        mock_works.return_value.search.return_value.filter.return_value.get.side_effect = Exception("API Error")
+        mock_works.return_value.search.return_value.filter.return_value.get.side_effect = Exception(
+            "API Error"
+        )
 
         result = self.service.search_journals_by_keywords(["test"])
 
         # Should return empty list on API error
         assert result == []
 
-    @patch('app.services.openalex_service.pyalex.Sources')
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Sources")
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_search_journals_by_text(self, mock_works, mock_sources):
         """Test search by text with discipline detection."""
         mock_source = {
@@ -284,7 +303,9 @@ class TestOpenAlexService:
             {"primary_location": {"source": mock_source, "is_oa": False}}
         ]
 
-        with patch.object(self.service, '_get_full_source_details', return_value=mock_source):
+        with patch.object(
+            self.service, "_get_full_source_details", return_value=mock_source
+        ):
             journals, discipline = self.service.search_journals_by_text(
                 title="Deep Learning for Image Classification",
                 abstract="We present a neural network algorithm for machine learning based image classification.",
@@ -345,7 +366,7 @@ class TestTopicBasedSearch:
         """Set up test fixtures."""
         self.service = OpenAlexService()
 
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_get_topic_ids_from_similar_works(self, mock_works):
         """Test extraction of topic IDs from similar works."""
         # Mock works with topics
@@ -371,7 +392,7 @@ class TestTopicBasedSearch:
         # T12345 should be most frequent (appears twice)
         assert "https://openalex.org/T12345" in topic_ids
 
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_get_topic_ids_handles_empty_topics(self, mock_works):
         """Test handling of works without topics."""
         mock_works.return_value.search.return_value.filter.return_value.get.return_value = [
@@ -384,16 +405,18 @@ class TestTopicBasedSearch:
 
         assert topic_ids == []
 
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_get_topic_ids_handles_api_error(self, mock_works):
         """Test graceful handling of API errors."""
-        mock_works.return_value.search.return_value.filter.return_value.get.side_effect = Exception("API Error")
+        mock_works.return_value.search.return_value.filter.return_value.get.side_effect = Exception(
+            "API Error"
+        )
 
         topic_ids = self.service._get_topic_ids_from_similar_works("test query")
 
         assert topic_ids == []
 
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_find_journals_by_topics(self, mock_works):
         """Test finding journals by topic IDs with group_by."""
         # Mock group_by response
@@ -414,10 +437,12 @@ class TestTopicBasedSearch:
 
         assert result == {}
 
-    @patch('app.services.openalex_service.pyalex.Works')
+    @patch("app.services.openalex_service.pyalex.Works")
     def test_find_journals_by_topics_handles_api_error(self, mock_works):
         """Test graceful handling of API errors in topic search."""
-        mock_works.return_value.filter.return_value.group_by.return_value.get.side_effect = Exception("API Error")
+        mock_works.return_value.filter.return_value.group_by.return_value.get.side_effect = Exception(
+            "API Error"
+        )
 
         result = self.service._find_journals_by_topics(["T1"])
 
@@ -460,15 +485,17 @@ class TestTopicBasedSearch:
         }
 
         # Mock _get_full_source_details to return None (won't add new journal)
-        with patch.object(self.service, '_get_full_source_details', return_value=None):
-            result = self.service._merge_journal_results(keyword_journals, topic_journals)
+        with patch.object(self.service, "_get_full_source_details", return_value=None):
+            result = self.service._merge_journal_results(
+                keyword_journals, topic_journals
+            )
 
         # Should only have keyword journal since topic journal couldn't be fetched
         assert len(result) == 1
         assert result[0].id == "https://openalex.org/S11111"
 
-    @patch('app.services.openalex_service.pyalex.Works')
-    @patch('app.services.openalex_service.pyalex.Sources')
+    @patch("app.services.openalex_service.pyalex.Works")
+    @patch("app.services.openalex_service.pyalex.Sources")
     def test_hybrid_search_integration(self, mock_sources, mock_works):
         """Test the full hybrid search flow."""
         # Mock keyword search results
@@ -483,7 +510,10 @@ class TestTopicBasedSearch:
 
         mock_works.return_value.search.return_value.filter.return_value.get.return_value = [
             {
-                "primary_location": {"source": {"id": "https://openalex.org/S12345", "type": "journal"}, "is_oa": True},
+                "primary_location": {
+                    "source": {"id": "https://openalex.org/S12345", "type": "journal"},
+                    "is_oa": True,
+                },
                 "topics": [{"id": "https://openalex.org/T123", "score": 0.9}],
             }
         ]
@@ -493,12 +523,13 @@ class TestTopicBasedSearch:
             {"key": "https://openalex.org/S12345", "count": 50},
         ]
 
-        with patch.object(self.service, '_get_full_source_details', return_value=mock_source):
-            with patch.object(self.service, '_is_journal_relevant', return_value=True):
-                journals, discipline = self.service.search_journals_by_text(
-                    title="Deep Learning for Medical Imaging",
-                    abstract="We apply neural networks for medical image classification.",
-                )
+        with patch.object(
+            self.service, "_get_full_source_details", return_value=mock_source
+        ):
+            journals, discipline = self.service.search_journals_by_text(
+                title="Deep Learning for Medical Imaging",
+                abstract="We apply neural networks for medical image classification.",
+            )
 
         # Should return results
         assert len(journals) >= 0  # May vary based on mocking

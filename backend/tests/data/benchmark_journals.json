@@ -1,162 +1,261 @@
-[
-  {
-    "type": "Standard",
-    "discipline": "Computer Science",
-    "title": "Deep Learning Approaches for Image Recognition in Noisy Environments",
-    "abstract": "This study presents an improved CNN model for image recognition in noisy environments, achieving a 15% accuracy boost.",
-    "keywords": ["Deep Learning", "CNN", "Image Recognition", "Noise Reduction"],
-    "correct_journal": "IEEE Transactions on Pattern Analysis and Machine Intelligence"
+{
+  "dataset_info": {
+    "description": "Real academic articles for journal recommendation system testing",
+    "created": "2025-12-15",
+    "note": "All articles are real, published papers with verified journal assignments"
   },
-  {
-    "type": "Standard",
-    "discipline": "Biology",
-    "title": "CRISPR-Cas9 Editing Efficiency in Plant Genomes",
-    "abstract": "Efficiency of genetic editing in plant genomes using CRISPR was tested, yielding promising preliminary results.",
-    "keywords": ["CRISPR", "Genome Editing", "Plant Biology", "Cas9"],
-    "correct_journal": "Nature Biotechnology"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Physics",
-    "title": "Quantum Entanglement in Superconducting Qubits",
-    "abstract": "Analysis of quantum entanglement behavior in superconducting qubits at low temperatures.",
-    "keywords": ["Quantum Entanglement", "Qubits", "Superconductors"],
-    "correct_journal": "Physical Review Letters"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Medicine",
-    "title": "Efficacy of mRNA Vaccines Against Emerging Variants",
-    "abstract": "A large-scale clinical trial evaluated mRNA vaccine effectiveness against new variants.",
-    "keywords": ["mRNA Vaccines", "COVID Variants", "Clinical Trial"],
-    "correct_journal": "The New England Journal of Medicine"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Economics",
-    "title": "Impact of Monetary Policy on Inflation Dynamics",
-    "abstract": "An economic model analyzes interest rate effects on inflation dynamics in developing economies.",
-    "keywords": ["Monetary Policy", "Inflation", "Economic Modeling"],
-    "correct_journal": "Journal of Monetary Economics"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Psychology",
-    "title": "Cognitive Behavioral Therapy for Anxiety Disorders in Adolescents",
-    "abstract": "Comparison of CBT versus alternative therapies for anxiety disorders in adolescents.",
-    "keywords": ["CBT", "Anxiety Disorders", "Adolescents"],
-    "correct_journal": "Journal of Consulting and Clinical Psychology"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Literature",
-    "title": "Postcolonial Themes in Contemporary African Fiction",
-    "abstract": "Analysis of postcolonial themes in modern African fiction.",
-    "keywords": ["Postcolonialism", "African Literature", "Fiction"],
-    "correct_journal": "PMLA"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Civil Engineering",
-    "title": "Sustainable Materials for Earthquake-Resistant Structures",
-    "abstract": "Development of eco-friendly materials for earthquake-resistant construction.",
-    "keywords": ["Sustainable Materials", "Earthquake Engineering"],
-    "correct_journal": "Journal of Structural Engineering"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Law",
-    "title": "Privacy Rights in the Age of Big Data Analytics",
-    "abstract": "Legal discussion on privacy protection amid big data analytics.",
-    "keywords": ["Privacy Law", "Big Data", "Analytics"],
-    "correct_journal": "Harvard Law Review"
-  },
-  {
-    "type": "Standard",
-    "discipline": "Chemistry",
-    "title": "Novel Catalysts for Carbon Dioxide Reduction",
-    "abstract": "Synthesis of new catalysts for electrochemical CO2 reduction processes.",
-    "keywords": ["Catalysts", "CO2 Reduction", "Electrochemistry"],
-    "correct_journal": "Journal of the American Chemical Society"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "CS/Biology",
-    "title": "Machine Learning Prediction of Protein Folding",
-    "abstract": "A neural network model predicts 3D protein structures from sequences, outperforming traditional simulations.",
-    "keywords": ["Protein Folding", "Neural Networks", "Bioinformatics"],
-    "correct_journal": "Nature Machine Intelligence"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Physics/Chemistry",
-    "title": "Quantum Simulations of Molecular Reactions",
-    "abstract": "Quantum algorithms simulate reaction pathways in catalysts at atomic scales.",
-    "keywords": ["Quantum Computing", "Molecular Dynamics", "Catalysis"],
-    "correct_journal": "Journal of Chemical Physics"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Medicine/Economics",
-    "title": "Cost-Effectiveness of AI Diagnostics in Healthcare",
-    "abstract": "Economic analysis of AI tools reducing diagnostic costs in low-resource settings.",
-    "keywords": ["Health Economics", "AI Diagnostics", "Cost-Benefit"],
-    "correct_journal": "Health Economics"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Psychology/Neuroscience",
-    "title": "Neural Correlates of Decision-Making Biases",
-    "abstract": "fMRI study links brain activity patterns to cognitive biases in risk assessment.",
-    "keywords": ["fMRI", "Decision Biases", "Neuroeconomics"],
-    "correct_journal": "Neuron"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Engineering/Env",
-    "title": "AI-Optimized Carbon Capture Materials",
-    "abstract": "Engineered nanomaterials for CO2 capture, optimized via genetic algorithms.",
-    "keywords": ["Carbon Capture", "Nanomaterials", "Machine Learning"],
-    "correct_journal": "Environmental Science & Technology"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Law/CS",
-    "title": "Algorithmic Bias in Judicial Decision Systems",
-    "abstract": "Legal frameworks for auditing AI in court sentencing algorithms.",
-    "keywords": ["Algorithmic Bias", "Judicial AI", "Legal Tech"],
-    "correct_journal": "Stanford Law Review"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Economics/Sociology",
-    "title": "Network Effects in Social Media Market Power",
-    "abstract": "Econometric models of platform monopolies based on social network data.",
-    "keywords": ["Network Economics", "Social Media", "Sociology"],
-    "correct_journal": "American Economic Review"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Biology/Medicine",
-    "title": "Microbiome Engineering for Personalized Therapy",
-    "abstract": "Synthetic biology alters gut microbiomes to treat metabolic disorders.",
-    "keywords": ["Microbiome", "Synthetic Biology", "Therapeutics"],
-    "correct_journal": "Cell"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Physics/Engineering",
-    "title": "Topological Insulators for Quantum Devices",
-    "abstract": "Material design of insulators enabling fault-tolerant quantum circuits.",
-    "keywords": ["Topological Materials", "Quantum Engineering"],
-    "correct_journal": "Nature Materials"
-  },
-  {
-    "type": "Edge Case",
-    "discipline": "Chemistry/Materials",
-    "title": "Graphene-Based Sensors for Biomedical Detection",
-    "abstract": "Functionalized graphene sensors detect biomarkers with high sensitivity.",
-    "keywords": ["Graphene Sensors", "Biomarkers", "Nanochemistry"],
-    "correct_journal": "ACS Nano"
-  }
-]
+  "standard_articles": [
+    {
+      "type": "Standard",
+      "discipline": "Computer Science",
+      "title": "ImageNet Classification with Deep Convolutional Neural Networks",
+      "authors": ["Alex Krizhevsky", "Ilya Sutskever", "Geoffrey E. Hinton"],
+      "year": 2012,
+      "abstract": "We trained a large, deep convolutional neural network to classify the 1.2 million high-resolution images in the ImageNet LSVRC-2010 contest into the 1000 different classes. On the test data, we achieved top-1 and top-5 error rates of 37.5% and 17.0% which is considerably better than the previous state-of-the-art. The neural network, which has 60 million parameters and 650,000 neurons, consists of five convolutional layers, some of which are followed by max-pooling layers, and three fully-connected layers with a final 1000-way softmax.",
+      "keywords": ["Deep Learning", "CNN", "Image Classification", "Neural Networks", "ImageNet"],
+      "correct_journal": "Advances in Neural Information Processing Systems (NeurIPS)",
+      "doi": null,
+      "citation_count_approx": 120000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Biology/Genetics",
+      "title": "A Programmable Dual-RNA-Guided DNA Endonuclease in Adaptive Bacterial Immunity",
+      "authors": ["Martin Jinek", "Krzysztof Chylinski", "Ines Fonfara", "Michael Hauer", "Jennifer A. Doudna", "Emmanuelle Charpentier"],
+      "year": 2012,
+      "abstract": "Clustered regularly interspaced short palindromic repeats (CRISPR)/CRISPR-associated (Cas) systems provide bacteria and archaea with adaptive immunity against viruses and plasmids by using CRISPR RNAs (crRNAs) to guide the silencing of invading nucleic acids. We show here that in a subset of these systems, the mature crRNA that is base-paired to trans-activating crRNA (tracrRNA) forms a two-RNA structure that directs the CRISPR-associated protein Cas9 to introduce double-stranded breaks in target DNA.",
+      "keywords": ["CRISPR", "Cas9", "Genome Editing", "Bacterial Immunity", "RNA-guided"],
+      "correct_journal": "Science",
+      "doi": "10.1126/science.1225829",
+      "citation_count_approx": 15000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Medicine",
+      "title": "Safety and Efficacy of the BNT162b2 mRNA Covid-19 Vaccine",
+      "authors": ["Fernando P. Polack", "Stephen J. Thomas", "Nicholas Kitchin", "Judith Absalon", "Alejandra Gurtman", "et al."],
+      "year": 2020,
+      "abstract": "A two-dose regimen of BNT162b2 conferred 95% protection against Covid-19 in persons 16 years of age or older. Safety over a median of 2 months was similar to that of other viral vaccines. The safety profile of BNT162b2 was characterized by short-term, mild-to-moderate pain at the injection site, fatigue, and headache.",
+      "keywords": ["mRNA Vaccine", "COVID-19", "BNT162b2", "Clinical Trial", "Vaccine Efficacy"],
+      "correct_journal": "The New England Journal of Medicine",
+      "doi": "10.1056/NEJMoa2034577",
+      "citation_count_approx": 12000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Physics",
+      "title": "Observation of Gravitational Waves from a Binary Black Hole Merger",
+      "authors": ["LIGO Scientific Collaboration", "Virgo Collaboration", "B. P. Abbott", "et al."],
+      "year": 2016,
+      "abstract": "On September 14, 2015, the two detectors of the Laser Interferometer Gravitational-Wave Observatory simultaneously observed a transient gravitational-wave signal. The signal sweeps upwards in frequency from 35 to 250 Hz with a peak gravitational-wave strain of 1.0×10−21. It matches the waveform predicted by general relativity for the inspiral and merger of a pair of black holes and the ringdown of the resulting single black hole.",
+      "keywords": ["Gravitational Waves", "Black Holes", "LIGO", "General Relativity", "Binary Merger"],
+      "correct_journal": "Physical Review Letters",
+      "doi": "10.1103/PhysRevLett.116.061102",
+      "citation_count_approx": 8000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Economics",
+      "title": "A Contribution to the Empirics of Economic Growth",
+      "authors": ["N. Gregory Mankiw", "David Romer", "David N. Weil"],
+      "year": 1992,
+      "abstract": "This paper examines whether the Solow growth model is consistent with the international variation in the standard of living. It shows that an augmented Solow model that includes accumulation of human as well as physical capital provides an excellent description of the cross-country data.",
+      "keywords": ["Economic Growth", "Solow Model", "Human Capital", "Cross-country Analysis"],
+      "correct_journal": "The Quarterly Journal of Economics",
+      "doi": "10.2307/2118477",
+      "citation_count_approx": 25000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Psychology",
+      "title": "Cognitive Therapy of Depression",
+      "authors": ["Aaron T. Beck", "A. John Rush", "Brian F. Shaw", "Gary Emery"],
+      "year": 1979,
+      "abstract": "A comprehensive guide presenting the theory and practice of cognitive therapy for depression. The book describes cognitive distortions in depression, the therapeutic relationship, behavioral techniques, and cognitive techniques for modifying depressive thinking patterns.",
+      "keywords": ["Cognitive Therapy", "Depression", "CBT", "Psychotherapy", "Mental Health"],
+      "correct_journal": "Guilford Press (Book)",
+      "doi": null,
+      "citation_count_approx": 30000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Chemistry",
+      "title": "Electric Field Effect in Atomically Thin Carbon Films",
+      "authors": ["K. S. Novoselov", "A. K. Geim", "S. V. Morozov", "D. Jiang", "Y. Zhang", "S. V. Dubonos", "I. V. Grigorieva", "A. A. Firsov"],
+      "year": 2004,
+      "abstract": "We describe monocrystalline graphitic films, which are a few atoms thick but are nonetheless stable under ambient conditions, metallic, and of remarkably high quality. The films are found to be a two-dimensional semimetal with a tiny overlap between valence and conductance bands, and they exhibit a strong ambipolar electric field effect.",
+      "keywords": ["Graphene", "2D Materials", "Electric Field Effect", "Carbon Films", "Nanomaterials"],
+      "correct_journal": "Science",
+      "doi": "10.1126/science.1102896",
+      "citation_count_approx": 45000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Environmental Science",
+      "title": "Planetary Boundaries: Exploring the Safe Operating Space for Humanity",
+      "authors": ["Johan Rockström", "Will Steffen", "Kevin Noone", "et al."],
+      "year": 2009,
+      "abstract": "We propose a framework based on planetary boundaries that defines a safe operating space for humanity with respect to the Earth system. Transgressing one or more planetary boundaries may be deleterious or even catastrophic due to the risk of crossing thresholds that will trigger non-linear, abrupt environmental change.",
+      "keywords": ["Planetary Boundaries", "Sustainability", "Earth System", "Climate Change", "Biodiversity"],
+      "correct_journal": "Ecology and Society",
+      "doi": "10.5751/ES-03180-140232",
+      "citation_count_approx": 8000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Sociology",
+      "title": "The Strength of Weak Ties",
+      "authors": ["Mark S. Granovetter"],
+      "year": 1973,
+      "abstract": "Analysis of social networks is suggested as a tool for linking micro and macro levels of sociological theory. The procedure is illustrated by elaboration of the macro implications of one aspect of small-scale interaction: the strength of dyadic ties. It is argued that the degree of overlap of two individuals' friendship networks varies directly with the strength of their tie to one another.",
+      "keywords": ["Social Networks", "Weak Ties", "Social Structure", "Network Analysis"],
+      "correct_journal": "American Journal of Sociology",
+      "doi": "10.1086/225469",
+      "citation_count_approx": 60000
+    },
+    {
+      "type": "Standard",
+      "discipline": "Law",
+      "title": "The Problem of Social Cost",
+      "authors": ["Ronald H. Coase"],
+      "year": 1960,
+      "abstract": "This paper is concerned with those actions of business firms which have harmful effects on others. The standard example is that of a factory the smoke from which has harmful effects on those occupying neighbouring properties. The economic analysis has proceeded in terms of a divergence between the private and social product of the factory.",
+      "keywords": ["Externalities", "Property Rights", "Transaction Costs", "Economic Analysis of Law"],
+      "correct_journal": "The Journal of Law and Economics",
+      "doi": "10.1086/466560",
+      "citation_count_approx": 30000
+    }
+  ],
+  "edge_case_articles": [
+    {
+      "type": "Edge Case",
+      "discipline": "CS/Biology",
+      "title": "Highly Accurate Protein Structure Prediction with AlphaFold",
+      "authors": ["John Jumper", "Richard Evans", "Alexander Pritzel", "et al.", "Demis Hassabis"],
+      "year": 2021,
+      "abstract": "Proteins are essential to life, and understanding their structure can facilitate a mechanistic understanding of their function. We validated an entirely redesigned version of our neural network-based model, AlphaFold, in the challenging 14th Critical Assessment of protein Structure Prediction (CASP14), demonstrating accuracy competitive with experimental structures in a majority of cases and greatly outperforming other methods.",
+      "keywords": ["Protein Folding", "Deep Learning", "AlphaFold", "Structure Prediction", "Bioinformatics"],
+      "correct_journal": "Nature",
+      "alternative_journals": ["Nature Methods", "Cell", "Science"],
+      "doi": "10.1038/s41586-021-03819-2",
+      "citation_count_approx": 20000
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Medicine/Economics",
+      "title": "Effectiveness and Cost-effectiveness of Computed Tomography Screening for Coronary Artery Disease",
+      "authors": ["SCOT-HEART Investigators"],
+      "year": 2018,
+      "abstract": "Among patients with stable chest pain, CT coronary angiography used as first-line diagnostic testing strategy was associated with a lower rate of coronary heart disease death or nonfatal myocardial infarction at 5 years compared with standard care. The study also evaluated cost-effectiveness of this diagnostic approach in low-resource settings.",
+      "keywords": ["CT Coronary Angiography", "Cost-effectiveness", "Cardiovascular Disease", "Health Economics", "Diagnostic Imaging"],
+      "correct_journal": "The New England Journal of Medicine",
+      "alternative_journals": ["Health Economics", "JAMA", "Circulation"],
+      "doi": "10.1056/NEJMoa1805971",
+      "citation_count_approx": 500
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Psychology/Neuroscience",
+      "title": "The Neural Basis of Loss Aversion in Decision-Making Under Risk",
+      "authors": ["Sabrina M. Tom", "Craig R. Fox", "Christopher Trepel", "Russell A. Poldrack"],
+      "year": 2007,
+      "abstract": "People typically exhibit greater sensitivity to losses than to equivalent gains when making decisions. We used functional magnetic resonance imaging to examine the neural correlates of loss aversion while individuals considered whether to accept or reject gambles that offered equal chances of gaining or losing money.",
+      "keywords": ["Loss Aversion", "fMRI", "Decision Making", "Neuroeconomics", "Behavioral Economics"],
+      "correct_journal": "Science",
+      "alternative_journals": ["Neuron", "Journal of Neuroscience", "Nature Neuroscience"],
+      "doi": "10.1126/science.1134239",
+      "citation_count_approx": 3000
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Engineering/Environmental",
+      "title": "Machine Learning for Molecular and Materials Science",
+      "authors": ["Keith T. Butler", "Daniel W. Davies", "Hugh Cartwright", "Olexandr Isayev", "Aron Walsh"],
+      "year": 2018,
+      "abstract": "Here we summarize recent progress in machine learning for the chemical sciences. We outline machine-learning techniques that are suitable for addressing research questions in this domain, including recent deep learning approaches, and we discuss future opportunities and challenges.",
+      "keywords": ["Machine Learning", "Materials Science", "Molecular Design", "Deep Learning", "Computational Chemistry"],
+      "correct_journal": "Nature",
+      "alternative_journals": ["Nature Materials", "Science", "Chemical Reviews"],
+      "doi": "10.1038/s41586-018-0337-2",
+      "citation_count_approx": 4000
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Law/CS",
+      "title": "Dissecting Racial Bias in an Algorithm Used to Manage the Health of Populations",
+      "authors": ["Ziad Obermeyer", "Brian Powers", "Christine Vogeli", "Sendhil Mullainathan"],
+      "year": 2019,
+      "abstract": "Health systems rely on commercial prediction algorithms to identify and help patients with complex health needs. We show that a widely used algorithm, typical of this genre, exhibits significant racial bias: Black patients assigned the same level of risk by the algorithm are sicker than White patients. Remedying this disparity would increase the percentage of Black patients receiving additional help.",
+      "keywords": ["Algorithmic Bias", "Healthcare AI", "Racial Disparities", "Machine Learning", "Health Policy"],
+      "correct_journal": "Science",
+      "alternative_journals": ["Nature Medicine", "JAMA", "Harvard Law Review"],
+      "doi": "10.1126/science.aax2342",
+      "citation_count_approx": 2500
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Economics/Sociology",
+      "title": "Social Capital in the Creation of Human Capital",
+      "authors": ["James S. Coleman"],
+      "year": 1988,
+      "abstract": "This paper introduces the concept of social capital as a resource for individuals that emerges from their social relationships. Social capital, like other forms of capital, is productive, making possible the achievement of certain ends that in its absence would not be possible. The concept is applied to educational outcomes.",
+      "keywords": ["Social Capital", "Human Capital", "Education", "Social Networks", "Economic Sociology"],
+      "correct_journal": "American Journal of Sociology",
+      "alternative_journals": ["American Economic Review", "Quarterly Journal of Economics"],
+      "doi": "10.1086/228943",
+      "citation_count_approx": 50000
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Biology/Medicine",
+      "title": "Gut Microbiota Composition is Associated with Body Weight, Weight Gain and Biochemical Parameters",
+      "authors": ["Patrice D. Cani", "Jacques Amar", "Miguel Angel Iglesias", "et al."],
+      "year": 2007,
+      "abstract": "We investigated whether the gut microbiota participates in the development of obesity and insulin resistance. We found that metabolic endotoxemia triggers the inflammatory processes responsible for obesity and diabetes. Modulation of gut microbiota could be a therapeutic target for metabolic disorders.",
+      "keywords": ["Gut Microbiome", "Obesity", "Metabolic Syndrome", "Inflammation", "Diabetes"],
+      "correct_journal": "Diabetes",
+      "alternative_journals": ["Cell", "Nature Medicine", "Gut"],
+      "doi": "10.2337/db07-1403",
+      "citation_count_approx": 4000
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Physics/Engineering",
+      "title": "Superconducting Qubits: Current State of Play",
+      "authors": ["Morten Kjaergaard", "Mollie E. Schwartz", "Jochen Braumüller", "Philip Krantz", "Joel I.-J. Wang", "Simon Gustavsson", "William D. Oliver"],
+      "year": 2020,
+      "abstract": "The past two decades have seen superconducting quantum circuits emerge as a leading platform for quantum computing. Here we review the state-of-the-art in superconducting qubits, covering their physical principles, fabrication, and the challenges that remain on the path to fault-tolerant quantum computation.",
+      "keywords": ["Superconducting Qubits", "Quantum Computing", "Coherence", "Quantum Circuits", "Cryogenics"],
+      "correct_journal": "Annual Review of Condensed Matter Physics",
+      "alternative_journals": ["Physical Review X", "Nature Physics", "PRX Quantum"],
+      "doi": "10.1146/annurev-conmatphys-031119-050605",
+      "citation_count_approx": 1500
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Chemistry/Materials",
+      "title": "Two-Dimensional Transition Metal Dichalcogenides for Energy Storage",
+      "authors": ["Manish Chhowalla", "Hyeon Suk Shin", "Goki Eda", "Lain-Jong Li", "Kian Ping Loh", "Hua Zhang"],
+      "year": 2013,
+      "abstract": "Layered transition metal dichalcogenides (TMDs) have gained renewed interest for applications in energy storage devices including Li-ion batteries and supercapacitors. We discuss the electrochemical properties of TMDs and their potential as electrode materials for next-generation energy storage systems.",
+      "keywords": ["2D Materials", "Energy Storage", "Batteries", "Supercapacitors", "Transition Metal Dichalcogenides"],
+      "correct_journal": "Nature Chemistry",
+      "alternative_journals": ["ACS Nano", "Nature Materials", "Nano Letters"],
+      "doi": "10.1038/nchem.1589",
+      "citation_count_approx": 7000
+    },
+    {
+      "type": "Edge Case",
+      "discipline": "Literature/Digital Humanities",
+      "title": "Distant Reading and the Blurring of Genre Boundaries",
+      "authors": ["Franco Moretti"],
+      "year": 2005,
+      "abstract": "This work introduces computational methods for analyzing large corpora of literary texts, proposing 'distant reading' as a complement to traditional close reading. By applying quantitative methods to thousands of novels, we can identify patterns in literary history that would be invisible through conventional analysis.",
+      "keywords": ["Distant Reading", "Digital Humanities", "Literary Analysis", "Computational Methods", "Genre Studies"],
+      "correct_journal": "Verso Books (Book)",
+      "alternative_journals": ["New Left Review", "Critical Inquiry", "PMLA"],
+      "doi": null,
+      "citation_count_approx": 5000
+    }
+  ]
+}

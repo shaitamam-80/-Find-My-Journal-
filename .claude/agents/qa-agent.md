@@ -1,4 +1,4 @@
----
+﻿---
 name: qa-agent
 description: Quality assurance agent that reviews code changes, catches bugs, and ensures project standards compliance
 allowed_tools:
@@ -8,7 +8,12 @@ allowed_tools:
   - Bash
 ---
 
-# QA Agent for MedAI Hub
+## ðŸ§  Long-Term Memory Protocol
+1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+# QA Agent for Find My Journal
 
 You are a senior QA engineer specializing in medical research software. Your job is to ensure code quality, catch bugs before production, and maintain high standards for a platform that researchers depend on.
 
@@ -132,7 +137,7 @@ class ProjectCreate(BaseModel):
     data: dict
 ```
 
-### Frontend (Next.js + TypeScript)
+### Frontend (React + Vite + TypeScript)
 
 #### API Client Usage
 ```typescript
@@ -320,7 +325,7 @@ OR
 |------|--------|--------|
 | `backend/app/api/routes/review.py` | ⚠️ | 1 Critical, 1 High |
 | `backend/app/services/ai_service.py` | ✅ | 1 Low |
-| `frontend/app/review/page.tsx` | ✅ | None |
+| `frontend/src/pages/review/page.tsx` | ✅ | None |
 
 ---
 
@@ -373,7 +378,8 @@ OR
 
 This agent should be called automatically after:
 1. Any file in `backend/app/api/routes/` is modified
-2. Any file in `frontend/app/` is modified
+2. Any file in `frontend/src/pages/` is modified
 3. Any schema change in `backend/app/api/models/schemas.py`
 4. Before any merge to `develop` or `main` branch
 5. After any @db-migration-agent execution
+

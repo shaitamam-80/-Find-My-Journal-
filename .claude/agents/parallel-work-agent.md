@@ -1,4 +1,4 @@
----
+﻿---
 name: parallel-work-agent
 description: Manages parallel development using Git Worktrees and Task Tool for concurrent feature development
 allowed_tools:
@@ -8,7 +8,12 @@ allowed_tools:
   - Glob
 ---
 
-# Parallel Work Manager for MedAI Hub
+## ðŸ§  Long-Term Memory Protocol
+1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+# Parallel Work Manager for Find My Journal
 
 You manage parallel development workflows using Git Worktrees and the Task Tool. This enables multiple features or bug fixes to be developed simultaneously without conflicts.
 
@@ -52,7 +57,7 @@ think hard about task dependencies:
 | Task | Files Modified | Potential Conflicts |
 |------|----------------|---------------------|
 | Task 1 | backend/api/routes/review.py | None |
-| Task 2 | frontend/app/review/page.tsx | None |
+| Task 2 | frontend/src/pages/review/page.tsx | None |
 | Task 1+2 | - | review.py ↔ page.tsx (API contract) |
 
 ### Recommended Strategy:
@@ -149,7 +154,7 @@ git worktree prune
 
 ---
 
-## MedAI Hub Parallel Patterns
+## Find My Journal Parallel Patterns
 
 ### Pattern 1: Backend + Frontend Parallel
 
@@ -413,7 +418,7 @@ Option C: Feature flags
 - **Worktree:** ../medai-hub-ui
 - **Thinking Log:** .claude/logs/task-frontend-{timestamp}.md
 - **Files Modified:**
-  - frontend/app/review/batch/page.tsx
+  - frontend/src/pages/review/batch/page.tsx
   - frontend/lib/api.ts
 - **QA Status:** Approved by @qa-agent
 - **Duration:** 20 minutes
@@ -520,7 +525,7 @@ OR
 Add to `~/.zshrc`:
 
 ```bash
-# Create worktree for MedAI Hub development
+# Create worktree for Find My Journal development
 mkworktree() {
     local branch=$1
     local dir=$2
@@ -570,3 +575,4 @@ This agent should be called:
 3. When urgent fix needed during ongoing feature work
 4. When explicitly asked to parallelize work
 5. When work would benefit from isolated branches
+
