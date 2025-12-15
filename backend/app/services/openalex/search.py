@@ -80,7 +80,8 @@ def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
     works = client.search_works(search_query, per_page=50)
 
     for work in works:
-        for topic in work.get("topics", []):
+        topics = work.get("topics") or []
+        for topic in topics:
             topic_id = topic.get("id")
             if topic_id:
                 # Weight by score if available
