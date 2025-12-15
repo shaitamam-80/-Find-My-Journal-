@@ -1,0 +1,330 @@
+"""
+Journal Search Operations
+
+Hybrid search combining keywords and topic matching.
+"""
+from collections import Counter
+from typing import Dict, List, Optional, Tuple, Set
+
+from app.models.journal import Journal
+from .client import get_client
+from .config import get_min_journal_works
+from .constants import load_core_journals
+from .utils import extract_search_terms, detect_discipline
+from .scoring import calculate_relevance_score
+from .journals import convert_to_journal, categorize_journals, merge_journal_results
+
+
+def find_journals_from_works(
+    search_query: str,
+    prefer_open_access: bool = False,
+) -> Dict[str, dict]:
+    """
+    Find journals by searching for papers on the topic.
+
+    Fetches up to 2 pages (400 works) for better coverage.
+
+    Args:
+        search_query: Combined search terms.
+        prefer_open_access: Prioritize OA journals.
+
+    Returns:
+        Dict of source_id -> source data with frequency count.
+    """
+    client = get_client()
+    journal_counts: Dict[str, dict] = {}
+
+    def process_works(works: List[dict]) -> None:
+        for work in works:
+            primary_location = work.get("primary_location", {})
+            source = primary_location.get("source") if primary_location else None
+
+            if source and source.get("type") == "journal":
+                source_id = source.get("id", "")
+                if source_id:
+                    if source_id not in journal_counts:
+                        journal_counts[source_id] = {
+                            "source": source,
+                            "count": 0,
+                            "is_oa": primary_location.get("is_oa", False),
+                        }
+                    journal_counts[source_id]["count"] += 1
+
+    # Page 1
+    works_page1 = client.search_works(search_query, per_page=200, page=1)
+    process_works(works_page1)
+
+    # Page 2 if first was full
+    if len(works_page1) == 200:
+        works_page2 = client.search_works(search_query, per_page=200, page=2)
+        process_works(works_page2)
+
+    return journal_counts
+
+
+def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
+    """
+    Extract Topic IDs from similar papers.
+
+    Uses the Topics API (not deprecated Concepts).
+
+    Args:
+        search_query: Combined title and abstract text.
+
+    Returns:
+        Top 5 most frequent topic IDs.
+    """
+    client = get_client()
+    topic_ids: Counter = Counter()
+
+    works = client.search_works(search_query, per_page=50)
+
+    for work in works:
+        for topic in work.get("topics", []):
+            topic_id = topic.get("id")
+            if topic_id:
+                # Weight by score if available
+                score = topic.get("score", 1.0)
+                topic_ids[topic_id] += score
+
+    return [tid for tid, _ in topic_ids.most_common(5)]
+
+
+def find_journals_by_topics(topic_ids: List[str]) -> Dict[str, dict]:
+    """
+    Find top journals across all identified topics.
+
+    Uses group_by for server-side aggregation.
+
+    Args:
+        topic_ids: List of OpenAlex Topic IDs.
+
+    Returns:
+        Dict of source_id -> {count, reason}.
+    """
+    if not topic_ids:
+        return {}
+
+    client = get_client()
+    journals: Dict[str, dict] = {}
+
+    results = client.group_works_by_source(topic_ids)
+
+    for entry in results:
+        source_id = entry.get("key")
+        count = entry.get("count", 0)
+        if source_id and count > 0:
+            journals[source_id] = {
+                "count": count,
+                "reason": "High activity in relevant research topics",
+            }
+
+    return journals
+
+
+def search_journals_by_keywords(
+    keywords: List[str],
+    prefer_open_access: bool = False,
+    min_works_count: Optional[int] = None,
+    discipline: str = "general",
+    core_journals: Optional[Set[str]] = None,
+) -> List[Journal]:
+    """
+    Search for journals matching given keywords.
+
+    Uses hybrid approach: Works-based + Direct source search.
+
+    Args:
+        keywords: List of search terms.
+        prefer_open_access: Prioritize OA journals.
+        min_works_count: Minimum number of works.
+        discipline: Detected discipline for filtering.
+        core_journals: Set of core journal names for boosting.
+
+    Returns:
+        List of matching journals.
+    """
+    if not keywords:
+        return []
+
+    if core_journals is None:
+        core_journals = load_core_journals()
+
+    client = get_client()
+    min_works = min_works_count or get_min_journal_works()
+    all_journals: Dict[str, Journal] = {}
+
+    # 1. WORKS Search (papers that match the topic)
+    search_query = " ".join(keywords[:5])
+    journal_data = find_journals_from_works(search_query, prefer_open_access)
+
+    # 2. DIRECT SOURCES Search (journals with matching names)
+    direct_sources = client.search_sources(search_query)
+    for source in direct_sources:
+        source_id = source.get("id", "")
+        if source_id and source_id not in journal_data:
+            journal_data[source_id] = {
+                "source": source,
+                "count": 0,  # Will be boosted by Name Match score
+                "is_oa": source.get("is_oa", False),
+            }
+
+    # Sort by frequency and get details for top 50 candidates
+    sorted_sources = sorted(
+        journal_data.items(), key=lambda x: x[1]["count"], reverse=True
+    )[:50]
+
+    for source_id, data in sorted_sources:
+        full_source = data.get("source")
+        if not full_source or "works_count" not in full_source:
+            full_source = client.get_source_by_id(source_id)
+
+        if not full_source:
+            continue
+
+        works_count = full_source.get("works_count", 0)
+        if works_count < min_works:
+            continue
+
+        journal = convert_to_journal(full_source)
+        if not journal or journal.id in all_journals:
+            continue
+
+        # Calculate initial relevance score
+        score = calculate_relevance_score(
+            journal=journal,
+            discipline=discipline,
+            is_topic_match=False,
+            is_keyword_match=True,
+            search_terms=keywords,
+            core_journals=core_journals,
+        )
+
+        # Match reason
+        if data["count"] > 0:
+            journal.match_reason = f"Published {data['count']} papers on this topic"
+        else:
+            journal.match_reason = "Direct name match"
+
+        # Add small boost for paper count to break ties
+        journal.relevance_score = score + (data["count"] / 100.0)
+        all_journals[journal.id] = journal
+
+    # Sort by relevance_score and quality metrics
+    journals = sorted(
+        all_journals.values(),
+        key=lambda j: (
+            j.is_oa if prefer_open_access else False,
+            j.relevance_score,
+            1 if "papers on this topic" in (j.match_reason or "") else 0,
+            j.metrics.h_index or 0,
+        ),
+        reverse=True,
+    )
+
+    return journals[:15]  # Return more candidates for hybrid merge
+
+
+def search_journals_by_text(
+    title: str,
+    abstract: str,
+    keywords: List[str] = None,
+    prefer_open_access: bool = False,
+) -> Tuple[List[Journal], str]:
+    """
+    Search for journals based on article title and abstract.
+
+    Uses HYBRID approach: Keywords + Topics for best results.
+
+    Args:
+        title: Article title.
+        abstract: Article abstract.
+        keywords: Optional additional keywords.
+        prefer_open_access: Prioritize OA journals.
+
+    Returns:
+        Tuple of (journals list, detected discipline).
+    """
+    core_journals = load_core_journals()
+    combined_text = f"{title} {abstract}"
+    search_terms = extract_search_terms(combined_text, keywords or [])
+
+    # Detect discipline from text
+    discipline = detect_discipline(combined_text)
+
+    # === HYBRID APPROACH ===
+
+    # 1. KEYWORD-BASED SEARCH
+    keyword_journals_list = search_journals_by_keywords(
+        search_terms,
+        prefer_open_access=prefer_open_access,
+        discipline=discipline,
+        core_journals=core_journals,
+    )
+    keyword_journals: Dict[str, Journal] = {j.id: j for j in keyword_journals_list}
+
+    # 2. TOPIC-BASED SEARCH (ML-based approach)
+    topic_ids = get_topic_ids_from_similar_works(combined_text)
+    topic_journals = find_journals_by_topics(topic_ids)
+
+    # 3. MERGE RESULTS - journals in both lists get boosted
+    merged_journals = merge_journal_results(keyword_journals, topic_journals)
+
+    # If no results from hybrid, try broader search
+    if not merged_journals:
+        merged_journals = search_journals_by_keywords(
+            search_terms[:3],
+            prefer_open_access=prefer_open_access,
+            discipline="general",
+            core_journals=core_journals,
+        )
+
+    # Categorize journals
+    categorized = categorize_journals(merged_journals)
+
+    # Identify sources for score recalculation
+    keyword_ids = set(keyword_journals.keys())
+    topic_id_set = set(topic_journals.keys())
+
+    # Recalculate scores with Weighted Scoring
+    for journal in categorized:
+        is_keyword = journal.id in keyword_ids
+        is_topic = journal.id in topic_id_set
+
+        # Preserve existing merge bonus
+        merge_bonus = journal.relevance_score if journal.relevance_score else 0
+
+        journal.relevance_score = calculate_relevance_score(
+            journal=journal,
+            discipline=discipline,
+            is_topic_match=is_topic,
+            is_keyword_match=is_keyword,
+            search_terms=search_terms,
+            core_journals=core_journals,
+        ) + (merge_bonus * 10)  # Amplify merge bonus
+
+    # Final sort: prioritize by Weighted relevance_score
+    categorized.sort(
+        key=lambda j: (
+            j.is_oa if prefer_open_access else False,
+            j.relevance_score,
+            j.metrics.h_index or 0,
+        ),
+        reverse=True,
+    )
+
+    # Fallback: if too few results, do broader search
+    if len(categorized) < 5:
+        fallback_journals = search_journals_by_keywords(
+            search_terms[:2],
+            prefer_open_access=prefer_open_access,
+            discipline="general",
+            core_journals=core_journals,
+        )
+        existing_ids = {j.id for j in categorized}
+        for j in fallback_journals:
+            if j.id not in existing_ids and len(categorized) < 10:
+                j.match_reason = "Broader search result"
+                categorized.append(j)
+
+    return categorized[:15], discipline
