@@ -7,7 +7,7 @@ Strategy: Hybrid approach combining:
 2. Source-based search: Find specialized journals in the detected discipline
 3. Topic filtering: Ensure journals are relevant to the field
 """
-
+import logging
 import pyalex
 from typing import List, Optional, Dict, Set
 from collections import Counter
@@ -16,6 +16,8 @@ from pathlib import Path
 
 from app.core.config import get_settings
 from app.models.journal import Journal, JournalMetrics, JournalCategory
+
+logger = logging.getLogger(__name__)
 
 # Configure pyalex with email and API key for polite pool
 settings = get_settings()
@@ -163,9 +165,9 @@ class OpenAlexService:
                                 c.lower() for c in name if c.isalnum() or c.isspace()
                             )
                             self.core_journals.add(" ".join(normalized.split()))
-            print(f"Loaded {len(self.core_journals)} core journals for boosting.")
+            logger.info(f"Loaded {len(self.core_journals)} core journals for boosting.")
         except Exception as e:
-            print(f"Warning: Failed to load core journals: {e}")
+            logger.warning(f"Failed to load core journals: {e}")
 
     def _search_sources_directly(self, query: str) -> List[dict]:
         """
@@ -175,7 +177,7 @@ class OpenAlexService:
         try:
             return pyalex.Sources().search(query).get(per_page=25)
         except Exception as e:
-            print(f"Error searching sources directly: {e}")
+            logger.error(f"Error searching sources directly: {e}")
             return []
 
     def _find_journals_from_works(
@@ -248,10 +250,10 @@ class OpenAlexService:
                                 journal_counts[source_id]["count"] += 1
 
                 except Exception as e:
-                    print(f"OpenAlex works search page 2 error: {e}")
+                    logger.debug(f"OpenAlex works search page 2 error: {e}")
 
         except Exception as e:
-            print(f"OpenAlex works search error: {e}")
+            logger.error(f"OpenAlex works search error: {e}")
 
         return journal_counts
 
@@ -336,7 +338,7 @@ class OpenAlexService:
             source = pyalex.Sources()[source_id]
             return source
         except Exception as e:
-            print(f"Error fetching source {source_id}: {e}")
+            logger.debug(f"Error fetching source {source_id}: {e}")
             return None
 
     def _get_topic_ids_from_similar_works(self, search_query: str) -> List[str]:
@@ -370,7 +372,7 @@ class OpenAlexService:
                         topic_ids[topic_id] += score
 
         except Exception as e:
-            print(f"Topic extraction error: {e}")
+            logger.debug(f"Topic extraction error: {e}")
 
         # Return top 5 most frequent topics
         return [tid for tid, _ in topic_ids.most_common(5)]
@@ -417,7 +419,7 @@ class OpenAlexService:
             return journals
 
         except Exception as e:
-            print(f"Error searching by topics: {e}")
+            logger.debug(f"Error searching by topics: {e}")
             return {}
 
     def _merge_journal_results(
@@ -718,7 +720,7 @@ class OpenAlexService:
                 topics=topics,
             )
         except Exception as e:
-            print(f"Error converting source: {e}")
+            logger.debug(f"Error converting source: {e}")
             return None
 
     def _extract_search_terms(self, text: str, keywords: List[str]) -> List[str]:

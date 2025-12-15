@@ -2,8 +2,11 @@
 Database service for Supabase operations.
 Provides a singleton client for database access.
 """
+import logging
 from supabase import create_client, Client
 from app.core.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 class DBService:
@@ -50,7 +53,7 @@ class DBService:
             # If we get here without exception, connection works
             return True
         except Exception as e:
-            print(f"Database connection error: {e}")
+            logger.error(f"Database connection error: {e}")
             return False
 
     def get_profile_by_id(self, user_id: str) -> dict | None:
@@ -100,7 +103,7 @@ class DBService:
             }).execute()
             return True
         except Exception as e:
-            print(f"Error logging search: {e}")
+            logger.error(f"Error logging search: {e}")
             return False
 
 

@@ -1,13 +1,15 @@
 """
 Search endpoints for finding academic journals.
 """
-
+import logging
 from fastapi import APIRouter, Depends, HTTPException
 from typing import Optional
 import uuid
 import hashlib
 
 from app.core.security import check_search_limit, increment_search_count
+
+logger = logging.getLogger(__name__)
 from app.models.user import UserProfile
 from app.models.journal import SearchRequest, SearchResponse
 from app.services.openalex_service import openalex_service
@@ -50,9 +52,9 @@ async def search_journals(
     )
 
     # Debug logging
-    print(f"[DEBUG] Search returned {len(journals)} journals for discipline: {discipline}")
+    logger.debug(f"Search returned {len(journals)} journals for discipline: {discipline}")
     for j in journals[:5]:
-        print(f"  - {j.name} (category: {j.category})")
+        logger.debug(f"  - {j.name} (category: {j.category})")
 
     # Generate search ID for logging
     search_id = str(uuid.uuid4())
@@ -135,4 +137,4 @@ async def _handle_search_logging(
         )
     except Exception as e:
         # Don't fail the search if logging fails
-        print(f"Warning: Failed to log search: {e}")
+        logger.warning(f"Failed to log search: {e}")
