@@ -26,7 +26,7 @@ test.describe('Find My Journal E2E Tests', () => {
 
     // Should be redirected to login page
     await expect(page).toHaveURL(/.*login/)
-    await expect(page.getByRole('heading', { name: /sign in/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible()
   })
 
   test('should show login form elements', async ({ page }) => {
@@ -35,7 +35,7 @@ test.describe('Find My Journal E2E Tests', () => {
     await expect(page.getByLabel(/email/i)).toBeVisible()
     await expect(page.getByLabel(/password/i)).toBeVisible()
     await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /sign up/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /create one now/i })).toBeVisible()
   })
 
   test('should login successfully and show search page', async ({ page }) => {
@@ -77,7 +77,8 @@ test.describe('Find My Journal E2E Tests', () => {
     await expect(page.getByText(/title must be at least 5 characters/i)).toBeVisible()
   })
 
-  test('should perform search and show results', async ({ page }) => {
+  test('should perform search and show results', async ({ page }, testInfo) => {
+    testInfo.setTimeout(90000) // 90 second timeout for slow API calls
     // Login first
     await page.goto('/login')
     await page.getByLabel(/email/i).fill(TEST_USER.email)
@@ -98,8 +99,8 @@ test.describe('Find My Journal E2E Tests', () => {
     // Wait for loading to complete (button shows "Searching...")
     await expect(page.getByRole('button', { name: /searching/i })).toBeVisible()
 
-    // Wait for results (timeout 30s for API call)
-    await expect(page.getByRole('heading', { name: /found \d+ journals/i })).toBeVisible({ timeout: 30000 })
+    // Wait for results (timeout 60s for API call - OpenAlex can be slow)
+    await expect(page.getByRole('heading', { name: /\d+ journals found/i })).toBeVisible({ timeout: 60000 })
   })
 
   test('should show search limit indicator', async ({ page }) => {
@@ -112,10 +113,10 @@ test.describe('Find My Journal E2E Tests', () => {
     // Wait for search page
     await expect(page).toHaveURL(/.*search/, { timeout: 10000 })
 
-    // Should show search limit indicator in header (either "Searches today: X/Y" for free users or "Unlimited searches" for paid/admin)
+    // Should show search limit indicator in header (either "Searches today: X/Y" for free users or "Unlimited" for paid/admin)
     // Use .first() to avoid strict mode violation when multiple elements match
     const searchesToday = page.getByText(/searches today:/i).first()
-    const unlimitedSearches = page.getByText(/unlimited searches/i).first()
+    const unlimitedSearches = page.getByText(/unlimited/i).first()
 
     // Wait for either indicator to appear
     await expect(searchesToday.or(unlimitedSearches)).toBeVisible({ timeout: 5000 })

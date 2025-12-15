@@ -142,7 +142,7 @@ class OpenAlexService:
 
     def __init__(self):
         self.max_results = 25
-        self.min_journal_works = 1000  # Only recommend established journals
+        self.min_journal_works = 500  # Lowered to include niche journals
 
         # Load core journals for safety net boosting
         self.core_journals: Set[str] = set()
@@ -173,7 +173,7 @@ class OpenAlexService:
         Useful for retrieving journals that might not surface in works-based search.
         """
         try:
-            return pyalex.Sources().search(query).get(per_page=10)
+            return pyalex.Sources().search(query).get(per_page=25)
         except Exception as e:
             print(f"Error searching sources directly: {e}")
             return []
@@ -186,22 +186,24 @@ class OpenAlexService:
         """
         Find journals by searching for papers on the topic.
         Returns dict of source_id -> source data with frequency count.
+        Fetches up to 2 pages (400 works) for better coverage.
         """
         journal_counts: Dict[str, dict] = {}
 
         try:
-            # Search for recent works on this topic
-            works = (
+            # Search for recent works on this topic (page 1)
+            works_page1 = (
                 pyalex.Works()
                 .search(search_query)
                 .filter(
                     type="article",
-                    from_publication_date="2018-01-01",
+                    from_publication_date="2019-01-01",
                 )
                 .get(per_page=200)
             )
 
-            for work in works:
+            # Process first page
+            for work in works_page1:
                 primary_location = work.get("primary_location", {})
                 source = primary_location.get("source") if primary_location else None
 
@@ -215,6 +217,38 @@ class OpenAlexService:
                                 "is_oa": primary_location.get("is_oa", False),
                             }
                         journal_counts[source_id]["count"] += 1
+
+            # Fetch second page if first page returned full results
+            if len(works_page1) == 200:
+                try:
+                    works_page2 = (
+                        pyalex.Works()
+                        .search(search_query)
+                        .filter(
+                            type="article",
+                            from_publication_date="2019-01-01",
+                        )
+                        .get(per_page=200, page=2)
+                    )
+
+                    # Process second page
+                    for work in works_page2:
+                        primary_location = work.get("primary_location", {})
+                        source = primary_location.get("source") if primary_location else None
+
+                        if source and source.get("type") == "journal":
+                            source_id = source.get("id", "")
+                            if source_id:
+                                if source_id not in journal_counts:
+                                    journal_counts[source_id] = {
+                                        "source": source,
+                                        "count": 0,
+                                        "is_oa": primary_location.get("is_oa", False),
+                                    }
+                                journal_counts[source_id]["count"] += 1
+
+                except Exception as e:
+                    print(f"OpenAlex works search page 2 error: {e}")
 
         except Exception as e:
             print(f"OpenAlex works search error: {e}")
@@ -322,7 +356,7 @@ class OpenAlexService:
             works = (
                 pyalex.Works()
                 .search(search_query)
-                .filter(type="article", from_publication_date="2020-01-01")
+                .filter(type="article", from_publication_date="2019-01-01")
                 .get(per_page=50)
             )
 
@@ -363,7 +397,7 @@ class OpenAlexService:
                 .filter(
                     topics={"id": topic_ids},  # List = automatic OR
                     type="article",
-                    from_publication_date="2020-01-01",
+                    from_publication_date="2019-01-01",
                 )
                 .group_by("primary_location.source.id")
                 .get()
@@ -602,9 +636,13 @@ class OpenAlexService:
         topic_ids = set(topic_journals.keys())
 
         # Recalculate scores with Weighted Scoring
+        # Keep merge bonus from _merge_journal_results
         for journal in categorized:
             is_keyword = journal.id in keyword_ids
             is_topic = journal.id in topic_ids
+
+            # Preserve existing merge bonus (journals in both searches get boost)
+            merge_bonus = journal.relevance_score if journal.relevance_score else 0
 
             journal.relevance_score = self._calculate_relevance_score(
                 journal=journal,
@@ -612,7 +650,7 @@ class OpenAlexService:
                 is_topic_match=is_topic,
                 is_keyword_match=is_keyword,
                 search_terms=search_terms,
-            )
+            ) + (merge_bonus * 10)  # Amplify merge bonus
 
         # Final sort: prioritize by Weighted relevance_score
         categorized.sort(
@@ -623,6 +661,20 @@ class OpenAlexService:
             ),
             reverse=True,
         )
+
+        # Fallback: if too few results, do broader search
+        if len(categorized) < 5:
+            fallback_journals = self.search_journals_by_keywords(
+                search_terms[:2],  # Use only top 2 terms
+                prefer_open_access=prefer_open_access,
+                discipline="general",
+            )
+            # Add fallback journals that aren't already in results
+            existing_ids = {j.id for j in categorized}
+            for j in fallback_journals:
+                if j.id not in existing_ids and len(categorized) < 10:
+                    j.match_reason = "Broader search result"
+                    categorized.append(j)
 
         return categorized[:15], discipline
 

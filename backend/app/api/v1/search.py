@@ -49,6 +49,11 @@ async def search_journals(
         prefer_open_access=request.prefer_open_access,
     )
 
+    # Debug logging
+    print(f"[DEBUG] Search returned {len(journals)} journals for discipline: {discipline}")
+    for j in journals[:5]:
+        print(f"  - {j.name} (category: {j.category})")
+
     # Generate search ID for logging
     search_id = str(uuid.uuid4())
 

@@ -3,7 +3,7 @@
   "description": "Comprehensive reference of the top 20 core journals in each of 16 major scientific disciplines",
   "generated_date": "2025-12-15",
   "total_disciplines": 16,
-  "total_journals": 320,
+  "total_journals": 330,
   "disciplines": [
     {
       "name": "Multidisciplinary",
@@ -1286,6 +1286,56 @@
           "rank": 20,
           "title": "Eating Disorders",
           "impact_category": "Medium"
+        },
+        {
+          "rank": 21,
+          "title": "Developmental Psychology",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 22,
+          "title": "Infancy",
+          "impact_category": "High"
+        },
+        {
+          "rank": 23,
+          "title": "Early Childhood Research Quarterly",
+          "impact_category": "High"
+        },
+        {
+          "rank": 24,
+          "title": "Journal of Child Psychology and Psychiatry",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 25,
+          "title": "Developmental Science",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 26,
+          "title": "Social Development",
+          "impact_category": "High"
+        },
+        {
+          "rank": 27,
+          "title": "Infant Behavior and Development",
+          "impact_category": "High"
+        },
+        {
+          "rank": 28,
+          "title": "Journal of Experimental Child Psychology",
+          "impact_category": "High"
+        },
+        {
+          "rank": 29,
+          "title": "Emotion",
+          "impact_category": "Very High"
+        },
+        {
+          "rank": 30,
+          "title": "British Journal of Developmental Psychology",
+          "impact_category": "High"
         }
       ]
     },
