@@ -7,9 +7,13 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
+import logging
+
 from app.core.config import get_settings
-from app.models.user import UserProfile, UserTier, TokenPayload
+from app.models.user import UserProfile, UserTier
 from app.services.db_service import db_service
+
+logger = logging.getLogger(__name__)
 
 # HTTP Bearer token scheme
 security = HTTPBearer(auto_error=False)
@@ -109,17 +113,6 @@ async def get_current_user(
     )
 
 
-async def get_current_user_optional(
-    credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
-) -> Optional[UserProfile]:
-    """
-    Optional authentication - returns None if no token provided.
-    """
-    if credentials is None:
-        return None
-    return await get_current_user(credentials)
-
-
 async def check_search_limit(
     user: UserProfile = Depends(get_current_user)
 ) -> UserProfile:
@@ -184,7 +177,7 @@ async def increment_search_count(user_id: str) -> bool:
         return True
 
     except Exception as e:
-        print(f"Error incrementing search count: {e}")
+        logger.error(f"Error incrementing search count: {e}")
         return False
 
 

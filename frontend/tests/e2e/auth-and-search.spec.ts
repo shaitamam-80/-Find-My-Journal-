@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test'
 
-// Test credentials - User is set to 'paid' tier with unlimited searches
+// Test credentials loaded from environment variables
+// Set TEST_USER_EMAIL and TEST_USER_PASSWORD in your .env or CI environment
 const TEST_USER = {
-  email: 'find_test_user@gmail.com',
-  password: 'V$f92!B%jPpH@&G',
+  email: process.env.TEST_USER_EMAIL || 'test@example.com',
+  password: process.env.TEST_USER_PASSWORD || 'test-password',
 }
 
 // Sample research data for testing
