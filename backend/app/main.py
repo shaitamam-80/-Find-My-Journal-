@@ -1,6 +1,7 @@
 """
 Find My Journal - FastAPI Application Entry Point
 """
+import os
 import sys
 from pathlib import Path
 
@@ -24,9 +25,12 @@ app = FastAPI(
 )
 
 # CORS middleware for frontend access
+# Read allowed origins from environment variable, fallback to localhost for dev
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Will be restricted in production
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
