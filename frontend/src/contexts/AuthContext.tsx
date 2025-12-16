@@ -3,6 +3,10 @@ import type { User as SupabaseUser, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 import type { User, UserLimits } from '../types'
 
+const API_BASE = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL}/api/v1`
+  : '/api/v1'
+
 interface AuthContextType {
   user: SupabaseUser | null
   profile: User | null
@@ -26,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchProfile = async (accessToken: string) => {
     try {
-      const response = await fetch('/api/v1/auth/me', {
+      const response = await fetch(`${API_BASE}/auth/me`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -42,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const fetchLimits = async (accessToken: string) => {
     try {
-      const response = await fetch('/api/v1/auth/limits', {
+      const response = await fetch(`${API_BASE}/auth/limits`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
