@@ -14,6 +14,21 @@ from typing import Dict, List, Set
 # Topics that indicate relevance for filtering (lowercase)
 # Used for soft-boosting, not hard filtering
 RELEVANT_TOPIC_KEYWORDS: Dict[str, List[str]] = {
+    "developmental_psychology": [
+        "developmental",
+        "child",
+        "infant",
+        "toddler",
+        "adolescent",
+        "emotional development",
+        "social development",
+        "empathy",
+        "kindness",
+        "prosocial",
+        "emotion regulation",
+        "attachment",
+        "parenting",
+    ],
     "psychology": [
         "psychology",
         "child",
@@ -133,6 +148,33 @@ RELEVANT_TOPIC_KEYWORDS: Dict[str, List[str]] = {
 
 # Discipline detection keywords - more specific terms for accurate detection
 DISCIPLINE_KEYWORDS: Dict[str, List[str]] = {
+    "developmental_psychology": [
+        "child development",
+        "infant development",
+        "toddler",
+        "infancy",
+        "early childhood",
+        "developmental psychology",
+        "social-emotional development",
+        "emotional development",
+        "empathy",
+        "kindness",
+        "prosocial",
+        "emotion regulation",
+        "attachment theory",
+        "parenting",
+        "caregiver",
+        "temperament",
+        "conscience development",
+        "sert",
+        "developmental assessment",
+        "psychometric",
+        "validation study",
+        "cfa",
+        "confirmatory factor",
+        "sem",
+        "structural equation",
+    ],
     "psychology": [
         "cognitive",
         "mental health",
@@ -452,6 +494,50 @@ DISCIPLINE_KEYWORDS: Dict[str, List[str]] = {
 }
 
 
+# Discipline-specific key journals for proactive injection
+# These are journals that MUST appear for specific disciplines
+KEY_JOURNALS_BY_DISCIPLINE: Dict[str, List[str]] = {
+    "developmental_psychology": [
+        "Child Development",
+        "Developmental Psychology",
+        "Infant Behavior and Development",
+        "Social Development",
+        "Developmental Science",
+        "Journal of Child Psychology and Psychiatry",
+        "Journal of Experimental Child Psychology",
+        "British Journal of Developmental Psychology",
+        "Frontiers in Psychology",
+        "Journal of Personality Assessment",
+    ],
+    "psychology": [
+        "Psychological Review",
+        "Journal of Abnormal Psychology",
+        "Developmental Psychology",
+        "Journal of Consulting and Clinical Psychology",
+        "Child Development",
+        "Psychological Science",
+        "Frontiers in Psychology",
+        "PLOS ONE",
+        "Journal of Personality and Social Psychology",
+        "Cognition and Emotion",
+    ],
+    "medicine": [
+        "New England Journal of Medicine",
+        "The Lancet",
+        "JAMA",
+        "BMJ",
+        "Annals of Internal Medicine",
+    ],
+    "computer_science": [
+        "Nature Machine Intelligence",
+        "IEEE Transactions on Pattern Analysis and Machine Intelligence",
+        "Journal of Machine Learning Research",
+        "Artificial Intelligence",
+        "Neural Computation",
+    ],
+}
+
+
 def load_core_journals() -> Set[str]:
     """
     Load core journals list from JSON file.
@@ -479,3 +565,24 @@ def load_core_journals() -> Set[str]:
         print(f"Warning: Failed to load core journals: {e}")
 
     return core_journals
+
+
+def get_key_journals_for_discipline(discipline: str) -> List[str]:
+    """
+    Get key journals that should appear for a specific discipline.
+
+    Args:
+        discipline: Detected discipline name.
+
+    Returns:
+        List of journal names to proactively search for.
+    """
+    # Direct match
+    if discipline in KEY_JOURNALS_BY_DISCIPLINE:
+        return KEY_JOURNALS_BY_DISCIPLINE[discipline]
+
+    # Fallback to general psychology for sub-disciplines
+    if "psychology" in discipline:
+        return KEY_JOURNALS_BY_DISCIPLINE.get("psychology", [])
+
+    return []

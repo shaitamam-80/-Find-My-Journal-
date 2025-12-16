@@ -80,6 +80,7 @@ from .constants import (
     RELEVANT_TOPIC_KEYWORDS,
     DISCIPLINE_KEYWORDS,
     load_core_journals,
+    get_key_journals_for_discipline,
 )
 
 # Service class and global instance (backward compat)
@@ -117,6 +118,7 @@ __all__ = [
     "RELEVANT_TOPIC_KEYWORDS",
     "DISCIPLINE_KEYWORDS",
     "load_core_journals",
+    "get_key_journals_for_discipline",
     # Service (backward compat)
     "OpenAlexService",
     "openalex_service",

@@ -130,6 +130,8 @@ def extract_search_terms(
     """
     Extract important search terms from text.
 
+    Includes bigrams and trigrams for better phrase matching.
+
     Args:
         text: Combined title and abstract text.
         keywords: User-provided keywords to prioritize.
@@ -139,8 +141,39 @@ def extract_search_terms(
         List of search terms, keywords first.
     """
     terms = list(keywords)
-    words = text.lower().split()
+    text_lower = text.lower()
+    words = text_lower.split()
 
+    # Important academic phrases to look for (bigrams/trigrams)
+    important_phrases = [
+        "child development",
+        "infant development",
+        "social emotional",
+        "social-emotional",
+        "emotion regulation",
+        "emotional regulation",
+        "machine learning",
+        "deep learning",
+        "neural network",
+        "clinical trial",
+        "randomized controlled",
+        "systematic review",
+        "meta analysis",
+        "confirmatory factor",
+        "structural equation",
+        "factor analysis",
+        "psychometric properties",
+        "validation study",
+        "internal consistency",
+        "construct validity",
+    ]
+
+    # First, extract important phrases
+    for phrase in important_phrases:
+        if phrase in text_lower and phrase not in terms:
+            terms.append(phrase)
+
+    # Then add individual important words
     for word in words:
         clean = "".join(c for c in word if c.isalnum())
         if len(clean) > 3 and clean not in STOPWORDS and clean not in terms:

@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple, Set
 from app.models.journal import Journal
 from .client import get_client
 from .config import get_min_journal_works
-from .constants import load_core_journals
+from .constants import load_core_journals, get_key_journals_for_discipline
 from .utils import extract_search_terms, detect_discipline
 from .scoring import calculate_relevance_score
 from .journals import convert_to_journal, categorize_journals, merge_journal_results
@@ -226,6 +226,58 @@ def search_journals_by_keywords(
     return journals[:15]  # Return more candidates for hybrid merge
 
 
+def inject_key_journals(
+    discipline: str,
+    existing_journals: Dict[str, Journal],
+    core_journals: Set[str],
+    search_terms: List[str],
+) -> Dict[str, Journal]:
+    """
+    Proactively inject key journals for a discipline that may be missed by search.
+
+    This ensures important discipline-specific journals always appear.
+
+    Args:
+        discipline: Detected discipline.
+        existing_journals: Already found journals.
+        core_journals: Set of core journal names.
+        search_terms: Search terms for scoring.
+
+    Returns:
+        Updated journal dict with injected journals.
+    """
+    client = get_client()
+    key_journal_names = get_key_journals_for_discipline(discipline)
+
+    for journal_name in key_journal_names:
+        # Search for journal by name
+        sources = client.search_sources(journal_name, per_page=5)
+
+        for source in sources:
+            source_id = source.get("id", "")
+            display_name = source.get("display_name", "")
+
+            # Check if name matches closely
+            if journal_name.lower() in display_name.lower():
+                if source_id and source_id not in existing_journals:
+                    journal = convert_to_journal(source)
+                    if journal:
+                        journal.match_reason = f"Key journal for {discipline.replace('_', ' ')}"
+                        # Calculate score with discipline boost
+                        journal.relevance_score = calculate_relevance_score(
+                            journal=journal,
+                            discipline=discipline,
+                            is_topic_match=True,  # Treat as topic match
+                            is_keyword_match=True,
+                            search_terms=search_terms,
+                            core_journals=core_journals,
+                        )
+                        existing_journals[source_id] = journal
+                break  # Found the journal
+
+    return existing_journals
+
+
 def search_journals_by_text(
     title: str,
     abstract: str,
@@ -235,7 +287,7 @@ def search_journals_by_text(
     """
     Search for journals based on article title and abstract.
 
-    Uses HYBRID approach: Keywords + Topics for best results.
+    Uses HYBRID approach: Keywords + Topics + Key Journal Injection.
 
     Args:
         title: Article title.
@@ -270,6 +322,14 @@ def search_journals_by_text(
 
     # 3. MERGE RESULTS - journals in both lists get boosted
     merged_journals = merge_journal_results(keyword_journals, topic_journals)
+
+    # 4. INJECT KEY JOURNALS for the discipline (NEW!)
+    # This ensures important journals appear even if not found in search
+    all_journals: Dict[str, Journal] = {j.id: j for j in merged_journals}
+    all_journals = inject_key_journals(
+        discipline, all_journals, core_journals, search_terms
+    )
+    merged_journals = list(all_journals.values())
 
     # If no results from hybrid, try broader search
     if not merged_journals:
@@ -314,8 +374,9 @@ def search_journals_by_text(
         reverse=True,
     )
 
-    # Fallback: if too few results, do broader search
-    if len(categorized) < 5:
+    # Fallback: ONLY add more if <3 results (reduced from 5)
+    # This prevents irrelevant journals from appearing
+    if len(categorized) < 3:
         fallback_journals = search_journals_by_keywords(
             search_terms[:2],
             prefer_open_access=prefer_open_access,
@@ -324,7 +385,7 @@ def search_journals_by_text(
         )
         existing_ids = {j.id for j in categorized}
         for j in fallback_journals:
-            if j.id not in existing_ids and len(categorized) < 10:
+            if j.id not in existing_ids and len(categorized) < 7:
                 j.match_reason = "Broader search result"
                 categorized.append(j)
 
