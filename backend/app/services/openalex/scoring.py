@@ -84,10 +84,11 @@ def calculate_relevance_score(
     if is_discipline_relevant:
         score += 15.0
 
-    # 7. Core Journal Safety Net (+100)
-    # Massive boost for top journals in each field
-    journal_name_norm = normalize_journal_name(journal.name)
-    if journal_name_norm in core_journals:
-        score += 100.0
+    # 7. Core Journal Safety Net - DISABLED
+    # Was giving +100 to generic prestigious journals (NEJM, Lancet)
+    # causing them to rank above topic-relevant journals
+    # journal_name_norm = normalize_journal_name(journal.name)
+    # if journal_name_norm in core_journals:
+    #     score += 100.0
 
     return score

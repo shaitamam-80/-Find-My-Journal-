@@ -323,13 +323,14 @@ def search_journals_by_text(
     # 3. MERGE RESULTS - journals in both lists get boosted
     merged_journals = merge_journal_results(keyword_journals, topic_journals)
 
-    # 4. INJECT KEY JOURNALS for the discipline (NEW!)
-    # This ensures important journals appear even if not found in search
-    all_journals: Dict[str, Journal] = {j.id: j for j in merged_journals}
-    all_journals = inject_key_journals(
-        discipline, all_journals, core_journals, search_terms
-    )
-    merged_journals = list(all_journals.values())
+    # 4. INJECT KEY JOURNALS - DISABLED
+    # Was forcing generic "important" journals (NEJM, Lancet) into results
+    # even when not relevant to the specific research topic
+    # all_journals: Dict[str, Journal] = {j.id: j for j in merged_journals}
+    # all_journals = inject_key_journals(
+    #     discipline, all_journals, core_journals, search_terms
+    # )
+    # merged_journals = list(all_journals.values())
 
     # If no results from hybrid, try broader search
     if not merged_journals:
