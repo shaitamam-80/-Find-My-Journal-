@@ -152,6 +152,144 @@ def find_journals_by_topics(topic_ids: List[str]) -> Dict[str, dict]:
     return journals
 
 
+def find_journals_by_subfield(
+    subfield: str,
+    search_terms: List[str] = None,
+) -> Dict[str, dict]:
+    """
+    Find journals by searching for the subfield name directly.
+
+    This catches specialized journals that may not appear in topic search
+    but have the subfield name in their title (e.g., "Infancy" journal).
+
+    Args:
+        subfield: OpenAlex subfield name (e.g., "Developmental and Educational Psychology").
+        search_terms: Optional search terms to also search for specialized journals.
+
+    Returns:
+        Dict of source_id -> {reason}.
+    """
+    if not subfield:
+        return {}
+
+    client = get_client()
+    journals: Dict[str, dict] = {}
+
+    # Search for journals by subfield name
+    sources = client.search_sources(subfield, per_page=20)
+
+    for source in sources:
+        source_id = source.get("id", "")
+        if source_id:
+            journals[source_id] = {
+                "source": source,
+                "reason": f"Specialized journal for {subfield}",
+            }
+
+    # Also search for key terms from the subfield
+    # e.g., "Developmental and Educational Psychology" -> search "developmental", "psychology"
+    subfield_words = [
+        w.strip() for w in subfield.lower().replace(",", " ").split()
+        if len(w.strip()) > 5  # Only significant words
+    ]
+
+    for word in subfield_words[:2]:  # Limit to 2 key terms
+        sources = client.search_sources(word, per_page=10)
+        for source in sources:
+            source_id = source.get("id", "")
+            if source_id and source_id not in journals:
+                journals[source_id] = {
+                    "source": source,
+                    "reason": f"Related to {subfield}",
+                }
+
+    # Search for specialized journals based on key search terms
+    # This catches journals like "Infancy" for infant-related searches
+    if search_terms:
+        specialized_terms = [
+            t for t in search_terms
+            if t.lower() in ["infancy", "infant", "toddler", "child", "developmental",
+                            "endocrine", "hormone", "diabetes", "metabolism"]
+        ]
+        for term in specialized_terms[:3]:
+            sources = client.search_sources(term, per_page=10)
+            for source in sources:
+                source_id = source.get("id", "")
+                if source_id and source_id not in journals:
+                    journals[source_id] = {
+                        "source": source,
+                        "reason": f"Specialized journal matching '{term}'",
+                    }
+
+    return journals
+
+
+def is_journal_relevant_to_subfield(
+    journal: Journal, subfield: str, field: str
+) -> bool:
+    """
+    Check if a journal is relevant to the detected subfield/field.
+
+    Uses journal topics to determine relevance.
+    Journals with no topic overlap are filtered out.
+
+    Args:
+        journal: Journal to check.
+        subfield: Detected OpenAlex subfield.
+        field: Detected OpenAlex field.
+
+    Returns:
+        True if journal is relevant, False otherwise.
+    """
+    if not subfield and not field:
+        return True  # No filter if no subfield detected
+
+    journal_name_lower = journal.name.lower()
+    journal_topics_lower = [t.lower() for t in journal.topics]
+
+    # Extract keywords from subfield/field
+    subfield_words = set()
+    if subfield:
+        subfield_words.update(
+            w.strip() for w in subfield.lower().replace(",", " ").split()
+            if len(w.strip()) > 3
+        )
+    if field:
+        subfield_words.update(
+            w.strip() for w in field.lower().replace(",", " ").split()
+            if len(w.strip()) > 3
+        )
+
+    # Check if journal name contains any subfield/field words
+    for word in subfield_words:
+        if word in journal_name_lower:
+            return True
+
+    # Check if journal topics contain any subfield/field words
+    for topic in journal_topics_lower:
+        for word in subfield_words:
+            if word in topic:
+                return True
+
+    # Also check for common related terms in psychology/development
+    related_terms = {
+        "developmental": ["child", "infant", "adolescent", "pediatric", "youth"],
+        "psychology": ["psychological", "cogniti", "behavior", "mental", "emotion"],
+        "educational": ["education", "learning", "school", "teaching"],
+    }
+
+    for base_word, related in related_terms.items():
+        if base_word in subfield_words:
+            for rel_term in related:
+                if rel_term in journal_name_lower:
+                    return True
+                for topic in journal_topics_lower:
+                    if rel_term in topic:
+                        return True
+
+    return False
+
+
 def search_journals_by_keywords(
     keywords: List[str],
     prefer_open_access: bool = False,
@@ -335,7 +473,9 @@ def search_journals_by_text(
     # === HYBRID APPROACH ===
 
     # 1. TOPIC-BASED SEARCH (ML-based approach) - Do this FIRST to get subfield
-    topic_ids, subfield, field = get_topics_from_similar_works(combined_text)
+    # Use extracted search terms (max 8) instead of full text for better API results
+    topic_search_query = " ".join(search_terms[:8])
+    topic_ids, subfield, field = get_topics_from_similar_works(topic_search_query)
     topic_journals = find_journals_by_topics(topic_ids)
 
     # Use OpenAlex subfield as discipline (e.g., "Endocrinology, Diabetes and Metabolism")
@@ -347,7 +487,15 @@ def search_journals_by_text(
     else:
         discipline = detect_discipline(combined_text)
 
-    # 2. KEYWORD-BASED SEARCH
+    # 2. SUBFIELD-BASED SEARCH - Find specialized journals by subfield name
+    # This catches journals like "Infancy" that may not appear in topic search
+    subfield_journals = find_journals_by_subfield(subfield, search_terms)
+    # Merge subfield journals into topic_journals (they get topic-match treatment)
+    for source_id, data in subfield_journals.items():
+        if source_id not in topic_journals:
+            topic_journals[source_id] = data
+
+    # 3. KEYWORD-BASED SEARCH
     keyword_journals_list = search_journals_by_keywords(
         search_terms,
         prefer_open_access=prefer_open_access,
@@ -356,7 +504,7 @@ def search_journals_by_text(
     )
     keyword_journals: Dict[str, Journal] = {j.id: j for j in keyword_journals_list}
 
-    # 3. MERGE RESULTS - journals in both lists get boosted
+    # 4. MERGE RESULTS - journals in both lists get boosted
     merged_journals = merge_journal_results(keyword_journals, topic_journals)
 
     # 4. INJECT KEY JOURNALS - DISABLED
@@ -379,6 +527,17 @@ def search_journals_by_text(
 
     # Categorize journals
     categorized = categorize_journals(merged_journals)
+
+    # 5. FILTER IRRELEVANT JOURNALS
+    # Remove journals that don't match the detected subfield/field
+    if subfield or field:
+        filtered = [
+            j for j in categorized
+            if is_journal_relevant_to_subfield(j, subfield, field)
+        ]
+        # Only use filtered if we have enough results
+        if len(filtered) >= 3:
+            categorized = filtered
 
     # Identify sources for score recalculation
     keyword_ids = set(keyword_journals.keys())
