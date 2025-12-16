@@ -65,24 +65,49 @@ def calculate_relevance_score(
     h_index = journal.metrics.h_index or 0
     score += h_index * 0.05
 
-    # 6. Discipline Boost (+15)
-    # Check if journal topics match the discipline
-    relevant_keywords = RELEVANT_TOPIC_KEYWORDS.get(discipline, [])
+    # 6. Discipline/Subfield Boost (+15 to +25)
+    # Now discipline can be an OpenAlex subfield like "Endocrinology, Diabetes and Metabolism"
+    # We check if the journal name or topics contain words from the subfield
+    discipline_lower = discipline.lower() if discipline else ""
     is_discipline_relevant = False
 
-    # Check journal name
-    if any(k in journal_name_lower for k in relevant_keywords):
-        is_discipline_relevant = True
+    # Extract key words from the discipline/subfield (split on commas and spaces)
+    discipline_words = [
+        w.strip() for w in discipline_lower.replace(",", " ").split()
+        if len(w.strip()) > 3
+    ]
 
-    # Check topics
+    # Check if journal name contains discipline words
+    for word in discipline_words:
+        if word in journal_name_lower:
+            is_discipline_relevant = True
+            score += 25.0  # Higher boost for name match
+            break
+
+    # Also check journal topics against discipline words
     if not is_discipline_relevant:
         for topic in journal.topics:
-            if any(k in topic.lower() for k in relevant_keywords):
-                is_discipline_relevant = True
+            topic_lower = topic.lower()
+            for word in discipline_words:
+                if word in topic_lower:
+                    is_discipline_relevant = True
+                    score += 15.0  # Standard boost for topic match
+                    break
+            if is_discipline_relevant:
                 break
 
-    if is_discipline_relevant:
-        score += 15.0
+    # Fallback: use static keywords for legacy disciplines
+    if not is_discipline_relevant and discipline in RELEVANT_TOPIC_KEYWORDS:
+        relevant_keywords = RELEVANT_TOPIC_KEYWORDS.get(discipline, [])
+        if any(k in journal_name_lower for k in relevant_keywords):
+            is_discipline_relevant = True
+            score += 15.0
+        else:
+            for topic in journal.topics:
+                if any(k in topic.lower() for k in relevant_keywords):
+                    is_discipline_relevant = True
+                    score += 15.0
+                    break
 
     # 7. Core Journal Safety Net - DISABLED
     # Was giving +100 to generic prestigious journals (NEJM, Lancet)

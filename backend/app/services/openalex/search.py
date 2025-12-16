@@ -62,20 +62,26 @@ def find_journals_from_works(
     return journal_counts
 
 
-def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
+def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, str]:
     """
-    Extract Topic IDs from similar papers.
+    Extract Topic IDs and subfield/field from similar papers.
 
-    Uses the Topics API (not deprecated Concepts).
+    Uses the Topics API to get both topic IDs for journal search
+    AND the subfield/field hierarchy for discipline detection.
 
     Args:
         search_query: Combined title and abstract text.
 
     Returns:
-        Top 5 most frequent topic IDs.
+        Tuple of:
+        - Top 5 most frequent topic IDs
+        - Most common subfield (e.g., "Endocrinology, Diabetes and Metabolism")
+        - Most common field (e.g., "Medicine")
     """
     client = get_client()
     topic_ids: Counter = Counter()
+    subfields: Counter = Counter()
+    fields: Counter = Counter()
 
     works = client.search_works(search_query, per_page=50)
 
@@ -88,7 +94,30 @@ def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
                 score = topic.get("score", 1.0)
                 topic_ids[topic_id] += score
 
-    return [tid for tid, _ in topic_ids.most_common(5)]
+                # Extract subfield and field from OpenAlex hierarchy
+                subfield = topic.get("subfield", {})
+                field = topic.get("field", {})
+
+                if subfield and subfield.get("display_name"):
+                    subfields[subfield["display_name"]] += score
+                if field and field.get("display_name"):
+                    fields[field["display_name"]] += score
+
+    top_topic_ids = [tid for tid, _ in topic_ids.most_common(5)]
+    top_subfield = subfields.most_common(1)[0][0] if subfields else ""
+    top_field = fields.most_common(1)[0][0] if fields else ""
+
+    return top_topic_ids, top_subfield, top_field
+
+
+def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
+    """
+    Extract Topic IDs from similar papers (legacy wrapper).
+
+    Kept for backward compatibility.
+    """
+    topic_ids, _, _ = get_topics_from_similar_works(search_query)
+    return topic_ids
 
 
 def find_journals_by_topics(topic_ids: List[str]) -> Dict[str, dict]:
@@ -287,7 +316,8 @@ def search_journals_by_text(
     """
     Search for journals based on article title and abstract.
 
-    Uses HYBRID approach: Keywords + Topics + Key Journal Injection.
+    Uses HYBRID approach: Keywords + Topics.
+    Now uses OpenAlex subfield/field for discipline instead of static keywords.
 
     Args:
         title: Article title.
@@ -296,18 +326,28 @@ def search_journals_by_text(
         prefer_open_access: Prioritize OA journals.
 
     Returns:
-        Tuple of (journals list, detected discipline).
+        Tuple of (journals list, detected subfield from OpenAlex).
     """
     core_journals = load_core_journals()
     combined_text = f"{title} {abstract}"
     search_terms = extract_search_terms(combined_text, keywords or [])
 
-    # Detect discipline from text
-    discipline = detect_discipline(combined_text)
-
     # === HYBRID APPROACH ===
 
-    # 1. KEYWORD-BASED SEARCH
+    # 1. TOPIC-BASED SEARCH (ML-based approach) - Do this FIRST to get subfield
+    topic_ids, subfield, field = get_topics_from_similar_works(combined_text)
+    topic_journals = find_journals_by_topics(topic_ids)
+
+    # Use OpenAlex subfield as discipline (e.g., "Endocrinology, Diabetes and Metabolism")
+    # Fall back to field if no subfield, or static detection as last resort
+    if subfield:
+        discipline = subfield
+    elif field:
+        discipline = field
+    else:
+        discipline = detect_discipline(combined_text)
+
+    # 2. KEYWORD-BASED SEARCH
     keyword_journals_list = search_journals_by_keywords(
         search_terms,
         prefer_open_access=prefer_open_access,
@@ -315,10 +355,6 @@ def search_journals_by_text(
         core_journals=core_journals,
     )
     keyword_journals: Dict[str, Journal] = {j.id: j for j in keyword_journals_list}
-
-    # 2. TOPIC-BASED SEARCH (ML-based approach)
-    topic_ids = get_topic_ids_from_similar_works(combined_text)
-    topic_journals = find_journals_by_topics(topic_ids)
 
     # 3. MERGE RESULTS - journals in both lists get boosted
     merged_journals = merge_journal_results(keyword_journals, topic_journals)
