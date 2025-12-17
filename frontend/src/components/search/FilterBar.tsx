@@ -16,7 +16,7 @@ const filters: { key: FilterType; label: string }[] = [
 export function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
   return (
     <div className="flex items-center gap-4 mb-8 flex-wrap">
-      <div className="flex items-center gap-2 text-gray-600">
+      <div className="flex items-center gap-2 text-slate-600">
         <Filter className="w-5 h-5" />
         <span className="font-semibold">Filter:</span>
       </div>
@@ -27,8 +27,8 @@ export function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
             onClick={() => onFilterChange(filter.key)}
             className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
               activeFilter === filter.key
-                ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-200'
-                : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                ? 'bg-slate-900 text-white shadow-sm'
+                : 'bg-white text-slate-600 border border-slate-200 hover:border-slate-300 hover:bg-slate-50'
             }`}
           >
             {filter.label}

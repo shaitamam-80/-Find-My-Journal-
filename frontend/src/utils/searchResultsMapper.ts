@@ -139,10 +139,10 @@ export const categoryConfig = {
   niche: {
     title: 'Niche Specialists',
     subtitle: 'Field-specific, targeted audience',
-    gradient: 'from-blue-500 to-cyan-500',
-    bg: 'bg-blue-50',
-    border: 'border-blue-200',
-    text: 'text-blue-700',
+    gradient: 'from-teal-600 to-teal-700',
+    bg: 'bg-teal-50',
+    border: 'border-teal-200',
+    text: 'text-teal-700',
   },
   methodology: {
     title: 'Methodology-Focused',

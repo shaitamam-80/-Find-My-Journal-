@@ -153,18 +153,18 @@ export function Search() {
   const categoryOrder: JournalCategoryKey[] = ['topTier', 'niche', 'methodology', 'broad']
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50">
+    <div className="min-h-screen bg-slate-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-blue-100/50 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-md shadow-blue-200 group-hover:shadow-lg transition-shadow">
+              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center group-hover:bg-slate-800 transition-colors">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-gray-800 tracking-tight">
-                Find<span className="text-blue-500">My</span>Journal
+              <span className="text-lg font-bold text-slate-900 tracking-tight">
+                FindMyJournal
               </span>
             </Link>
 
@@ -174,8 +174,8 @@ export function Search() {
               {limits && (
                 <div className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full ${
                   limits.daily_limit !== null
-                    ? 'bg-amber-100/80 border border-amber-200/50'
-                    : 'bg-blue-100/80 border border-blue-200/50'
+                    ? 'bg-amber-50 border border-amber-200'
+                    : 'bg-teal-50 border border-teal-200'
                 }`}>
                   {limits.daily_limit !== null ? (
                     <>
@@ -186,8 +186,8 @@ export function Search() {
                     </>
                   ) : (
                     <>
-                      <InfinityIcon className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm font-medium text-blue-700">
+                      <InfinityIcon className="w-4 h-4 text-teal-600" />
+                      <span className="text-sm font-medium text-teal-700">
                         Unlimited
                       </span>
                     </>
@@ -226,7 +226,7 @@ export function Search() {
         </div>
 
         {/* Search Form */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-blue-100/50 p-8 mb-10">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 mb-10">
           <form onSubmit={handleSearch} className="space-y-6">
             {error && (
               <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
@@ -237,8 +237,8 @@ export function Search() {
 
             {/* Title Field */}
             <div className="space-y-2">
-              <label htmlFor="title" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <FileText className="w-4 h-4 text-gray-400" />
+              <label htmlFor="title" className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                <FileText className="w-4 h-4 text-slate-400" />
                 Article Title
                 <span className="text-red-500">*</span>
               </label>
@@ -248,15 +248,15 @@ export function Search() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter your article title"
-                className="w-full px-4 py-3.5 text-gray-800 bg-blue-50/50 border border-blue-100 rounded-xl transition-all duration-200 placeholder:text-gray-400 hover:border-blue-200 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+                className="w-full px-4 py-3.5 text-slate-900 bg-white border border-slate-200 rounded-xl transition-all duration-200 placeholder:text-slate-400 hover:border-slate-300 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
                 required
               />
             </div>
 
             {/* Abstract Field */}
             <div className="space-y-2">
-              <label htmlFor="abstract" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <Sparkles className="w-4 h-4 text-gray-400" />
+              <label htmlFor="abstract" className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                <Sparkles className="w-4 h-4 text-slate-400" />
                 Abstract
                 <span className="text-red-500">*</span>
               </label>
@@ -266,7 +266,7 @@ export function Search() {
                 onChange={(e) => setAbstract(e.target.value)}
                 placeholder="Paste your article abstract here... We'll analyze it to find matching journals."
                 rows={8}
-                className="w-full px-4 py-3.5 text-gray-800 bg-blue-50/50 border border-blue-100 rounded-xl transition-all duration-200 placeholder:text-gray-400 hover:border-blue-200 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 resize-y"
+                className="w-full px-4 py-3.5 text-slate-900 bg-white border border-slate-200 rounded-xl transition-all duration-200 placeholder:text-slate-400 hover:border-slate-300 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100 resize-y"
                 required
               />
               <div className="flex items-center justify-between">
@@ -281,10 +281,10 @@ export function Search() {
 
             {/* Keywords Field */}
             <div className="space-y-2">
-              <label htmlFor="keywords" className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                <Tag className="w-4 h-4 text-gray-400" />
+              <label htmlFor="keywords" className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                <Tag className="w-4 h-4 text-slate-400" />
                 Keywords
-                <span className="text-xs font-normal text-gray-400">(optional, comma-separated)</span>
+                <span className="text-xs font-normal text-slate-400">(optional, comma-separated)</span>
               </label>
               <input
                 id="keywords"
@@ -292,7 +292,7 @@ export function Search() {
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
                 placeholder="machine learning, neural networks, deep learning"
-                className="w-full px-4 py-3.5 text-gray-800 bg-blue-50/50 border border-blue-100 rounded-xl transition-all duration-200 placeholder:text-gray-400 hover:border-blue-200 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+                className="w-full px-4 py-3.5 text-slate-900 bg-white border border-slate-200 rounded-xl transition-all duration-200 placeholder:text-slate-400 hover:border-slate-300 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
               />
             </div>
 
@@ -306,7 +306,7 @@ export function Search() {
                     onChange={(e) => setPreferOA(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="w-5 h-5 rounded-md border-2 border-gray-300 transition-all peer-checked:border-cyan-500 peer-checked:bg-cyan-500">
+                  <div className="w-5 h-5 rounded-md border-2 border-slate-300 transition-all peer-checked:border-teal-600 peer-checked:bg-teal-600">
                     {preferOA && (
                       <svg className="w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
@@ -314,7 +314,7 @@ export function Search() {
                     )}
                   </div>
                 </div>
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-slate-600">
                   Prefer Open Access journals
                 </span>
               </label>
@@ -324,7 +324,7 @@ export function Search() {
                 <button
                   type="button"
                   onClick={handleClearForm}
-                  className="flex items-center gap-2 px-4 py-3 text-gray-600 bg-white border border-gray-200 rounded-xl font-medium transition-all hover:border-gray-300 hover:bg-gray-50"
+                  className="flex items-center gap-2 px-4 py-3 text-slate-600 bg-white border border-slate-200 rounded-xl font-medium transition-all hover:border-slate-300 hover:bg-slate-50"
                 >
                   <Trash2 className="w-4 h-4" />
                   Clear
@@ -332,7 +332,7 @@ export function Search() {
                 <button
                   type="submit"
                   disabled={loading || (limits?.can_search === false)}
-                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-200 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
+                  className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl transition-all duration-200 hover:bg-slate-800 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <>
@@ -408,23 +408,23 @@ export function Search() {
                 ))}
 
                 {/* Bottom CTA */}
-                <div className="mt-12 bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 rounded-3xl p-10 text-center shadow-xl shadow-blue-200/30">
+                <div className="mt-12 bg-slate-900 rounded-2xl p-10 text-center shadow-sm">
                   <h3 className="text-2xl font-bold text-white mb-3">
                     Need Different Recommendations?
                   </h3>
-                  <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+                  <p className="text-slate-300 mb-6 max-w-xl mx-auto">
                     Try adjusting your abstract, adding more keywords, or specifying different criteria for better matches
                   </p>
                   <div className="flex justify-center gap-4">
                     <button
                       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                      className="px-8 py-3.5 bg-white text-blue-600 font-bold rounded-xl hover:shadow-lg transition-all"
+                      className="px-8 py-3.5 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-100 transition-all"
                     >
                       Refine Search
                     </button>
                     <button
                       onClick={handleExportCSV}
-                      className="px-8 py-3.5 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30 transition-all border border-white/30"
+                      className="px-8 py-3.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-700 transition-all border border-slate-700"
                     >
                       Export Results
                     </button>
@@ -432,26 +432,26 @@ export function Search() {
                 </div>
               </>
             ) : results.journals.length > 0 ? (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100/50 p-8 text-center">
+              <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-amber-100">
                   <SearchIcon className="w-8 h-8 text-amber-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">
                   No journals match filters
                 </h3>
-                <p className="text-gray-500">
+                <p className="text-slate-500">
                   Try adjusting your filter settings to see more results.
                 </p>
               </div>
             ) : (
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100/50 p-8 text-center">
+              <div className="bg-white rounded-2xl border border-slate-200 p-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-amber-100">
                   <SearchIcon className="w-8 h-8 text-amber-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                <h3 className="text-lg font-semibold text-slate-800 mb-2">
                   No journals found
                 </h3>
-                <p className="text-gray-500">
+                <p className="text-slate-500">
                   Try adjusting your keywords or abstract for better matches.
                 </p>
               </div>

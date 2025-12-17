@@ -35,10 +35,10 @@ export function AccordionJournalCard({
 
   return (
     <div
-      className={`bg-white rounded-2xl border-2 ${
+      className={`bg-white rounded-2xl border ${
         isExpanded
-          ? 'border-blue-300 shadow-xl shadow-blue-100/50'
-          : 'border-gray-100 shadow-md'
+          ? 'border-teal-200 shadow-lg'
+          : 'border-slate-200 shadow-sm'
       } overflow-hidden transition-all duration-300`}
     >
       {/* Card Header - Always Visible */}
@@ -67,12 +67,12 @@ export function AccordionJournalCard({
             </div>
 
             {/* Quick Stats Row - REAL DATA ONLY */}
-            <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 mt-3">
+            <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 mt-3">
               {journal.metrics.h_index !== null && (
-                <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-lg">
-                  <TrendingUp className="w-4 h-4 text-blue-500" />
+                <div className="flex items-center gap-1.5 bg-teal-50 px-3 py-1.5 rounded-lg">
+                  <TrendingUp className="w-4 h-4 text-teal-600" />
                   <span>
-                    Journal H-Index: <strong className="text-blue-700">{journal.metrics.h_index}</strong>
+                    Journal H-Index: <strong className="text-teal-700">{journal.metrics.h_index}</strong>
                   </span>
                 </div>
               )}
@@ -110,13 +110,13 @@ export function AccordionJournalCard({
           {/* Expand Icon */}
           <div
             className={`p-2 rounded-full transition-colors ${
-              isExpanded ? 'bg-blue-100' : 'bg-gray-100'
+              isExpanded ? 'bg-teal-50' : 'bg-slate-100'
             }`}
           >
             {isExpanded ? (
-              <ChevronUp className={`w-5 h-5 ${isExpanded ? 'text-blue-600' : 'text-gray-400'}`} />
+              <ChevronUp className={`w-5 h-5 ${isExpanded ? 'text-teal-600' : 'text-slate-400'}`} />
             ) : (
-              <ChevronDown className="w-5 h-5 text-gray-400" />
+              <ChevronDown className="w-5 h-5 text-slate-400" />
             )}
           </div>
         </div>
@@ -171,7 +171,7 @@ export function AccordionJournalCard({
                 href={journal.homepage_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 py-3.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center justify-center gap-2"
+                className="flex-1 py-3.5 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
               >
                 <ExternalLink className="w-4 h-4" />
                 Visit Journal Website
