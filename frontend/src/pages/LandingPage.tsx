@@ -159,16 +159,16 @@ export function LandingPage() {
 
             <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-gray-500">
               <div className="flex items-center gap-2">
-                <Users className="w-5 h-5" />
-                <span className="font-medium">20,000+ Researchers</span>
+                <BookOpen className="w-5 h-5" />
+                <span className="font-medium">Powered by OpenAlex</span>
               </div>
               <div className="flex items-center gap-2">
                 <Globe className="w-5 h-5" />
-                <span className="font-medium">150+ Countries</span>
+                <span className="font-medium">40+ Languages Supported</span>
               </div>
               <div className="flex items-center gap-2">
-                <Award className="w-5 h-5" />
-                <span className="font-medium">98% Accuracy</span>
+                <Zap className="w-5 h-5" />
+                <span className="font-medium">Instant Results</span>
               </div>
             </div>
           </div>
@@ -280,11 +280,11 @@ export function LandingPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               { icon: <Search className="w-6 h-6" />, title: "Deep Context Analysis", desc: "In-depth understanding of research field, methodology, and unique contribution." },
-              { icon: <BarChart2 className="w-6 h-6" />, title: "Real-Time Metrics", desc: "Impact Factor, h-index, acceptance rates, and up-to-date publication trends." },
+              { icon: <BarChart2 className="w-6 h-6" />, title: "Journal Metrics", desc: "H-index, citation counts, and publication volume for informed decisions." },
               { icon: <Shield className="w-6 h-6" />, title: "Predatory Journal Filtering", desc: "Automatic protection from unreliable journals." },
-              { icon: <Clock className="w-6 h-6" />, title: "Estimated Publication Times", desc: "Time estimates from submission to publication for each journal." },
+              { icon: <Zap className="w-6 h-6" />, title: "AI-Powered Matching", desc: "Smart algorithm matches your research to the most relevant journals." },
               { icon: <Globe className="w-6 h-6" />, title: "Support for 40+ Languages", desc: "Find journals in different languages and regions." },
-              { icon: <FileText className="w-6 h-6" />, title: "Reference Manager Export", desc: "Integration with Zotero, Mendeley, and EndNote." }
+              { icon: <FileText className="w-6 h-6" />, title: "Open Access Detection", desc: "Easily identify open access journals and their publication fees." }
             ].map((feature, i) => (
               <div key={i} className="relative group overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/90 to-cyan-500/90 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -301,23 +301,16 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Data Source Section */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl p-12 relative overflow-hidden">
+          <div className="bg-gradient-to-r from-slate-700 to-slate-800 rounded-3xl p-12 relative overflow-hidden">
             <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
-            <div className="relative grid grid-cols-2 md:grid-cols-4 gap-8">
-              {[
-                { value: "50,000+", label: "Indexed Journals" },
-                { value: "2M+", label: "Papers Analyzed" },
-                { value: "98%", label: "Match Accuracy" },
-                { value: "150+", label: "Countries" }
-              ].map((stat, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
-                  <div className="text-blue-100 font-medium">{stat.label}</div>
-                </div>
-              ))}
+            <div className="relative text-center">
+              <h3 className="text-2xl font-bold text-white mb-4">Powered by OpenAlex</h3>
+              <p className="text-slate-200 max-w-2xl mx-auto">
+                Access comprehensive academic journal data from OpenAlex, an open catalog of the global research system with data on publications, authors, institutions, and more.
+              </p>
             </div>
           </div>
         </div>
@@ -330,7 +323,7 @@ export function LandingPage() {
             Ready to Find Your Perfect Journal?
           </h2>
           <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto">
-            Join 20,000+ researchers who have already found the right home for their research.
+            Start finding the perfect journal for your research today.
           </p>
           <Link to="/signup" className="inline-block px-10 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold text-lg rounded-2xl hover:shadow-xl hover:shadow-blue-200 transition-all hover:-translate-y-1">
             Start Free - No Credit Card Required

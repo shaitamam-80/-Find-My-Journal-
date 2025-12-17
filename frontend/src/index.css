@@ -1,19 +1,19 @@
 @import "tailwindcss";
 
-/* ===== DESIGN SYSTEM: Modern Sky Blue ===== */
+/* ===== DESIGN SYSTEM: Academic Navy/Slate ===== */
 :root {
-  /* Primary: Sky Blue */
-  --color-primary-50: #f0f9ff;
-  --color-primary-100: #e0f2fe;
-  --color-primary-200: #bae6fd;
-  --color-primary-300: #7dd3fc;
-  --color-primary-400: #38bdf8;
-  --color-primary-500: #0ea5e9;
-  --color-primary-600: #0284c7;
-  --color-primary-700: #0369a1;
-  --color-primary-800: #075985;
-  --color-primary-900: #0c4a6e;
-  --color-primary-950: #082f49;
+  /* Primary: Navy/Slate (Academic) */
+  --color-primary-50: #f8fafc;
+  --color-primary-100: #f1f5f9;
+  --color-primary-200: #e2e8f0;
+  --color-primary-300: #cbd5e1;
+  --color-primary-400: #94a3b8;
+  --color-primary-500: #4a6fa5;
+  --color-primary-600: #1e3a5f;
+  --color-primary-700: #1a324f;
+  --color-primary-800: #152840;
+  --color-primary-900: #0f1e30;
+  --color-primary-950: #0a1420;
 
   /* Accent: Warm Gold (kept for highlights) */
   --color-accent-50: #fffbeb;
@@ -49,7 +49,7 @@
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
-  --color-info: #0ea5e9;
+  --color-info: #0d9488;
 
   /* Typography */
   --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
@@ -60,9 +60,9 @@
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 40px -10px var(--color-primary-500);
+  --shadow-glow: 0 0 40px -10px var(--color-primary-600);
   --shadow-gold: 0 0 30px -10px var(--color-accent-400);
-  --shadow-sky: 0 4px 20px -5px rgba(14, 165, 233, 0.4);
+  --shadow-navy: 0 4px 20px -5px rgba(30, 58, 95, 0.4);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);

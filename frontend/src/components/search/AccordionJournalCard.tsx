@@ -72,7 +72,7 @@ export function AccordionJournalCard({
                 <div className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-lg">
                   <TrendingUp className="w-4 h-4 text-blue-500" />
                   <span>
-                    H-Index: <strong className="text-blue-700">{journal.metrics.h_index}</strong>
+                    Journal H-Index: <strong className="text-blue-700">{journal.metrics.h_index}</strong>
                   </span>
                 </div>
               )}

@@ -570,6 +570,13 @@ def search_journals_by_text(
         reverse=True,
     )
 
+    # Normalize relevance_score to 0-1 range for frontend display
+    if categorized:
+        max_score = max(j.relevance_score for j in categorized)
+        if max_score > 0:
+            for journal in categorized:
+                journal.relevance_score = journal.relevance_score / max_score
+
     # Fallback: ONLY add more if <3 results (reduced from 5)
     # This prevents irrelevant journals from appearing
     if len(categorized) < 3:
