@@ -139,11 +139,20 @@ Located at `frontend/src/styles/design-tokens.css` - supports light/dark modes.
 --status-broad: amber             /* Amber - Broad scope */
 ```
 
+### MedAI Hub Visual Principles
+- **ALL pages**: White (#FFFFFF) or Slate-50 (#F8FAFC) backgrounds only
+- **ALL cards**: White with border (#E2E8F0), NO colored backgrounds
+- **ONE accent color**: Teal-600 (#0D9488) for links and highlights
+- **Primary buttons**: Slate-900 (#0F172A), solid color, NO gradients
+- **NO cyan/blue gradients anywhere**
+
 ### Key UI Classes
-- Buttons: `bg-gradient-to-r from-slate-700 to-slate-800`
+- Page backgrounds: `bg-white` or `bg-slate-50`
+- Buttons: `bg-slate-900 hover:bg-slate-800` (solid, no gradients)
 - Links: `text-teal-600 hover:text-teal-700`
-- Inputs: `bg-slate-50 border-slate-200 focus:border-teal-500`
-- Cards: `bg-white border-slate-200 shadow-slate-300`
+- Inputs: `bg-white border-slate-200 focus:border-teal-600 focus:ring-teal-100`
+- Cards: `bg-white border border-slate-200 shadow-sm`
+- Nav: `bg-white border-b border-slate-200`
 
 ### Typography
 - **English:** Inter (400-700)
@@ -208,3 +217,10 @@ Uses Tailwind logical properties for RTL compatibility:
 - Changed "H-Index" label to "Journal H-Index" for clarity
 - Updated color palette from bright cyan/blue to academic navy/slate
 - Removed non-existent features from landing page (Impact Factor, Publication Times, Reference Manager)
+
+### MedAI Hub Visual Consistency (Phase 3)
+- Login/SignUp pages: Changed from dark slate gradients to light Slate-50 backgrounds
+- Landing page: Removed ALL cyan/blue gradients, white cards with borders
+- Goals section: Changed from dark blue gradient to Slate-50 background
+- Standardized accent color to Teal-600 across all components
+- Standardized primary buttons to Slate-900 (solid, no gradients)
