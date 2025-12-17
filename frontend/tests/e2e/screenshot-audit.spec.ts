@@ -29,9 +29,9 @@ test.describe('UI Audit Screenshots', () => {
     await page.goto('/login')
     await page.waitForLoadState('networkidle')
 
-    // Fill login form
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    // Fill login form (using placeholders since labels lack htmlFor)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
 
     await page.screenshot({ path: 'screenshots/03-login-filled.png', fullPage: true })
 
@@ -53,8 +53,8 @@ test.describe('UI Audit Screenshots', () => {
   test('capture search with results', async ({ page }) => {
     // Login first
     await page.goto('/login')
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
     await page.getByRole('button', { name: /sign in/i }).click()
 
     try {
@@ -79,9 +79,9 @@ test.describe('UI Audit Screenshots', () => {
     // Capture loading state
     await page.screenshot({ path: 'screenshots/06-search-loading.png', fullPage: true })
 
-    // Wait for results
+    // Wait for results (new design uses "AI Analysis Complete" header)
     try {
-      await expect(page.getByText(/journals found/i)).toBeVisible({ timeout: 45000 })
+      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible({ timeout: 60000 })
       await page.waitForTimeout(1000) // Let animations complete
       await page.screenshot({ path: 'screenshots/07-search-results.png', fullPage: true })
     } catch (e) {
@@ -116,8 +116,8 @@ test.describe('UI Audit Screenshots', () => {
     await page.setViewportSize({ width: 375, height: 812 })
     await page.goto('/login')
 
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
     await page.getByRole('button', { name: /sign in/i }).click()
 
     try {

@@ -52,8 +52,8 @@
   --color-info: #0ea5e9;
 
   /* Typography */
-  --font-display: 'Lato', system-ui, sans-serif;
-  --font-body: 'Lato', system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
 
   /* Shadows */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -540,4 +540,37 @@ h1, h2, h3, h4, h5, h6 {
     padding-bottom: 0.5rem;
     border-bottom: 2px solid var(--color-primary-600);
   }
+}
+
+/* ===== ANIMATED GRADIENT BACKGROUNDS ===== */
+@keyframes slide-right {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slide-left {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+@keyframes slide-right-slow {
+  0% { transform: translateX(-50%); }
+  100% { transform: translateX(50%); }
+}
+
+.animate-slide-right {
+  animation: slide-right 8s ease-in-out infinite;
+}
+
+.animate-slide-left {
+  animation: slide-left 12s ease-in-out infinite;
+}
+
+.animate-slide-right-slow {
+  animation: slide-right-slow 18s ease-in-out infinite alternate;
+}
+
+/* Dot pattern for auth backgrounds */
+.dot-pattern {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }

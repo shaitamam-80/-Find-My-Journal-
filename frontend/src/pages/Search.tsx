@@ -1,8 +1,22 @@
 import { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
 import type { SearchResponse } from '../types'
-import { JournalCard } from '../components/JournalCard'
+import { AIAnalysisHeader } from '../components/search/AIAnalysisHeader'
+import { FilterBar } from '../components/search/FilterBar'
+import { CategorySection } from '../components/search/CategorySection'
+import {
+  type FilterType,
+  type JournalCategoryKey,
+  buildAIAnalysis,
+  groupJournalsByCategory,
+  filterJournals,
+} from '../utils/searchResultsMapper'
+import {
+  BookOpen, Search as SearchIcon, Trash2, FileText, Sparkles, Tag,
+  AlertCircle, Download, Printer, LogOut, Infinity as InfinityIcon, Zap
+} from 'lucide-react'
 
 export function Search() {
   const { user, session, limits, signOut, refreshLimits } = useAuth()
@@ -14,28 +28,46 @@ export function Search() {
   const [error, setError] = useState('')
   const [results, setResults] = useState<SearchResponse | null>(null)
 
-  // Filter state
-  const [filterOAOnly, setFilterOAOnly] = useState(false)
-  const [minCategory, setMinCategory] = useState<'all' | 'top_tier' | 'top_tier_broad'>('all')
-  const [showFilters, setShowFilters] = useState(false)
+  // New results view state
+  const [expandedCardIds, setExpandedCardIds] = useState<Set<string>>(new Set())
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all')
 
-  // Filtered results based on client-side filters
+  // Parse keywords for AI analysis
+  const keywordList = useMemo(() => {
+    return keywords
+      .split(',')
+      .map((k) => k.trim())
+      .filter((k) => k.length > 0)
+  }, [keywords])
+
+  // Build AI analysis from search results
+  const aiAnalysis = useMemo(() => {
+    if (!results) return null
+    return buildAIAnalysis({ title, keywords: keywordList }, results)
+  }, [results, title, keywordList])
+
+  // Filter and group journals
   const filteredJournals = useMemo(() => {
     if (!results?.journals) return []
+    return filterJournals(results.journals, activeFilter)
+  }, [results?.journals, activeFilter])
 
-    return results.journals.filter((journal) => {
-      // Open Access filter
-      if (filterOAOnly && !journal.is_oa) return false
+  const groupedJournals = useMemo(() => {
+    return groupJournalsByCategory(filteredJournals)
+  }, [filteredJournals])
 
-      // Category filter (using category as proxy for quartile)
-      if (minCategory === 'top_tier' && journal.category !== 'top_tier') return false
-      if (minCategory === 'top_tier_broad' &&
-          journal.category !== 'top_tier' &&
-          journal.category !== 'broad_audience') return false
-
-      return true
+  // Toggle card expansion
+  const handleToggleCard = (id: string) => {
+    setExpandedCardIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
+      return next
     })
-  }, [results?.journals, filterOAOnly, minCategory])
+  }
 
   const handleClearForm = () => {
     setTitle('')
@@ -43,12 +75,15 @@ export function Search() {
     setKeywords('')
     setPreferOA(false)
     setError('')
+    setResults(null)
+    setExpandedCardIds(new Set())
+    setActiveFilter('all')
   }
 
   const handleExportCSV = () => {
     if (!filteredJournals.length) return
 
-    const headers = ['Name', 'Publisher', 'ISSN', 'H-Index', 'Category', 'Open Access']
+    const headers = ['Name', 'Publisher', 'ISSN', 'H-Index', 'Category', 'Open Access', 'Match Score']
     const rows = filteredJournals.map((journal) => [
       `"${journal.name.replace(/"/g, '""')}"`,
       `"${(journal.publisher || '').replace(/"/g, '""')}"`,
@@ -56,6 +91,7 @@ export function Search() {
       journal.metrics.h_index?.toString() || '',
       journal.category || '',
       journal.is_oa ? 'Yes' : 'No',
+      `${Math.round(journal.relevance_score * 100)}%`,
     ])
 
     const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n')
@@ -76,6 +112,8 @@ export function Search() {
     e.preventDefault()
     setError('')
     setResults(null)
+    setExpandedCardIds(new Set())
+    setActiveFilter('all')
 
     if (title.length < 5) {
       setError('Title must be at least 5 characters')
@@ -95,11 +133,6 @@ export function Search() {
     setLoading(true)
 
     try {
-      const keywordList = keywords
-        .split(',')
-        .map((k) => k.trim())
-        .filter((k) => k.length > 0)
-
       const response = await api.searchJournals(session.access_token, {
         title,
         abstract,
@@ -116,38 +149,45 @@ export function Search() {
     }
   }
 
+  // Category order for display
+  const categoryOrder: JournalCategoryKey[] = ['topTier', 'niche', 'methodology', 'broad']
+
   return (
-    <div className="min-h-screen bg-neutral-50">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-blue-50">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-neutral-200">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-blue-100/50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: '#0ea5e9' }}>
-                <span className="material-symbols-outlined text-white" style={{ fontSize: '20px' }}>menu_book</span>
+            <Link to="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center shadow-md shadow-blue-200 group-hover:shadow-lg transition-shadow">
+                <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-neutral-800 tracking-tight">
-                Find My Journal
+              <span className="text-lg font-bold text-gray-800 tracking-tight">
+                Find<span className="text-blue-500">My</span>Journal
               </span>
-            </div>
+            </Link>
 
             {/* Right side */}
             <div className="flex items-center gap-6">
               {/* Search limits */}
               {limits && (
-                <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: limits.daily_limit !== null ? '#fef3c7' : '#e0f2fe' }}>
+                <div className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full ${
+                  limits.daily_limit !== null
+                    ? 'bg-amber-100/80 border border-amber-200/50'
+                    : 'bg-blue-100/80 border border-blue-200/50'
+                }`}>
                   {limits.daily_limit !== null ? (
                     <>
-                      <span className="material-symbols-outlined" style={{ color: '#b45309', fontSize: '18px' }}>bolt</span>
-                      <span className="text-sm font-medium" style={{ color: '#92400e' }}>
+                      <Zap className="w-4 h-4 text-amber-600" />
+                      <span className="text-sm font-medium text-amber-700">
                         Searches today: {limits.used_today}/{limits.daily_limit}
                       </span>
                     </>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined" style={{ color: '#0284c7', fontSize: '18px' }}>all_inclusive</span>
-                      <span className="text-sm font-medium" style={{ color: '#0369a1' }}>
+                      <InfinityIcon className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-blue-700">
                         Unlimited
                       </span>
                     </>
@@ -157,15 +197,15 @@ export function Search() {
 
               {/* User menu */}
               <div className="flex items-center gap-3">
-                <span className="hidden md:block text-sm text-neutral-500">
+                <span className="hidden md:block text-sm text-gray-500">
                   {user?.email}
                 </span>
                 <button
                   onClick={signOut}
-                  className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all text-neutral-600 hover:bg-neutral-100 hover:text-neutral-800"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all text-gray-600 hover:bg-gray-100 hover:text-gray-800"
                   title="Sign out"
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>logout</span>
+                  <LogOut className="w-5 h-5" />
                   <span className="hidden sm:inline text-sm font-medium">Sign out</span>
                 </button>
               </div>
@@ -177,28 +217,28 @@ export function Search() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Hero Section */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-bold text-neutral-800 mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
             Find the Right Journal
           </h1>
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Paste your abstract below and we'll analyze it to find the most relevant academic journals for your research.
           </p>
         </div>
 
         {/* Search Form */}
-        <div className="bg-white rounded-2xl shadow-xl border border-neutral-100 p-8 mb-10">
+        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl border border-blue-100/50 p-8 mb-10">
           <form onSubmit={handleSearch} className="space-y-6">
             {error && (
               <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
-                <span className="material-symbols-outlined text-red-500 shrink-0" style={{ fontSize: '20px' }}>error</span>
+                <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
             {/* Title Field */}
             <div className="space-y-2">
-              <label htmlFor="title" className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                <span className="material-symbols-outlined text-neutral-400" style={{ fontSize: '18px' }}>description</span>
+              <label htmlFor="title" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <FileText className="w-4 h-4 text-gray-400" />
                 Article Title
                 <span className="text-red-500">*</span>
               </label>
@@ -208,15 +248,15 @@ export function Search() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter your article title"
-                className="w-full px-4 py-3.5 text-neutral-800 bg-white border-2 border-neutral-200 rounded-xl transition-all duration-200 placeholder:text-neutral-400 hover:border-neutral-300 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10"
+                className="w-full px-4 py-3.5 text-gray-800 bg-blue-50/50 border border-blue-100 rounded-xl transition-all duration-200 placeholder:text-gray-400 hover:border-blue-200 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
                 required
               />
             </div>
 
             {/* Abstract Field */}
             <div className="space-y-2">
-              <label htmlFor="abstract" className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                <span className="material-symbols-outlined text-neutral-400" style={{ fontSize: '18px' }}>auto_awesome</span>
+              <label htmlFor="abstract" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Sparkles className="w-4 h-4 text-gray-400" />
                 Abstract
                 <span className="text-red-500">*</span>
               </label>
@@ -226,14 +266,14 @@ export function Search() {
                 onChange={(e) => setAbstract(e.target.value)}
                 placeholder="Paste your article abstract here... We'll analyze it to find matching journals."
                 rows={8}
-                className="w-full px-4 py-3.5 text-neutral-800 bg-white border-2 border-neutral-200 rounded-xl transition-all duration-200 placeholder:text-neutral-400 hover:border-neutral-300 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10 resize-y"
+                className="w-full px-4 py-3.5 text-gray-800 bg-blue-50/50 border border-blue-100 rounded-xl transition-all duration-200 placeholder:text-gray-400 hover:border-blue-200 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 resize-y"
                 required
               />
               <div className="flex items-center justify-between">
-                <p className="text-xs text-neutral-400">
+                <p className="text-xs text-gray-400">
                   Minimum 50 characters required
                 </p>
-                <p className="text-xs font-medium" style={{ color: abstract.length >= 50 ? '#22c55e' : '#a3a3a3' }}>
+                <p className={`text-xs font-medium ${abstract.length >= 50 ? 'text-green-500' : 'text-gray-400'}`}>
                   {abstract.length} characters
                 </p>
               </div>
@@ -241,10 +281,10 @@ export function Search() {
 
             {/* Keywords Field */}
             <div className="space-y-2">
-              <label htmlFor="keywords" className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                <span className="material-symbols-outlined text-neutral-400" style={{ fontSize: '18px' }}>sell</span>
+              <label htmlFor="keywords" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <Tag className="w-4 h-4 text-gray-400" />
                 Keywords
-                <span className="text-xs font-normal text-neutral-400">(optional, comma-separated)</span>
+                <span className="text-xs font-normal text-gray-400">(optional, comma-separated)</span>
               </label>
               <input
                 id="keywords"
@@ -252,7 +292,7 @@ export function Search() {
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
                 placeholder="machine learning, neural networks, deep learning"
-                className="w-full px-4 py-3.5 text-neutral-800 bg-white border-2 border-neutral-200 rounded-xl transition-all duration-200 placeholder:text-neutral-400 hover:border-neutral-300 focus:outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-500/10"
+                className="w-full px-4 py-3.5 text-gray-800 bg-blue-50/50 border border-blue-100 rounded-xl transition-all duration-200 placeholder:text-gray-400 hover:border-blue-200 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
               />
             </div>
 
@@ -266,7 +306,7 @@ export function Search() {
                     onChange={(e) => setPreferOA(e.target.checked)}
                     className="peer sr-only"
                   />
-                  <div className="w-5 h-5 rounded-md border-2 border-neutral-300 transition-all peer-checked:border-sky-500 peer-checked:bg-sky-500">
+                  <div className="w-5 h-5 rounded-md border-2 border-gray-300 transition-all peer-checked:border-cyan-500 peer-checked:bg-cyan-500">
                     {preferOA && (
                       <svg className="w-full h-full text-white p-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
@@ -274,7 +314,7 @@ export function Search() {
                     )}
                   </div>
                 </div>
-                <span className="text-sm text-neutral-600">
+                <span className="text-sm text-gray-600">
                   Prefer Open Access journals
                 </span>
               </label>
@@ -284,21 +324,15 @@ export function Search() {
                 <button
                   type="button"
                   onClick={handleClearForm}
-                  className="flex items-center gap-2 px-4 py-3 text-neutral-600 bg-white border-2 border-neutral-200 rounded-xl font-medium transition-all hover:border-neutral-300 hover:bg-neutral-50"
+                  className="flex items-center gap-2 px-4 py-3 text-gray-600 bg-white border border-gray-200 rounded-xl font-medium transition-all hover:border-gray-300 hover:bg-gray-50"
                 >
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span>
+                  <Trash2 className="w-4 h-4" />
                   Clear
                 </button>
                 <button
                   type="submit"
                   disabled={loading || (limits?.can_search === false)}
-                  className="flex items-center gap-2 px-6 py-3 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-                  style={{
-                    background: loading ? '#94a3b8' : '#0ea5e9',
-                    boxShadow: loading ? 'none' : '0 4px 14px -3px rgba(14, 165, 233, 0.4)'
-                  }}
-                  onMouseEnter={(e) => !loading && (e.currentTarget.style.background = '#0284c7')}
-                  onMouseLeave={(e) => !loading && (e.currentTarget.style.background = '#0ea5e9')}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-blue-200 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none"
                 >
                   {loading ? (
                     <>
@@ -310,7 +344,7 @@ export function Search() {
                     </>
                   ) : (
                     <>
-                      <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>search</span>
+                      <SearchIcon className="w-5 h-5" />
                       Find Journals
                     </>
                   )}
@@ -329,131 +363,95 @@ export function Search() {
         </div>
 
         {/* Results */}
-        {results && (
-          <div>
-            {/* Results Header */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-              <div>
-                <h2 className="text-2xl font-bold text-neutral-800">
-                  {results.total_found} Journals Found
-                  {filteredJournals.length !== results.journals.length && (
-                    <span className="text-base font-normal ml-2 text-neutral-500">
-                      ({filteredJournals.length} shown)
-                    </span>
-                  )}
-                </h2>
-                {results.discipline && (
-                  <p className="text-sm mt-1 text-neutral-500">
-                    Detected field:{' '}
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold capitalize" style={{ background: '#e0f2fe', color: '#0369a1' }}>
-                      {results.discipline.replace('_', ' ')}
-                    </span>
-                  </p>
-                )}
-              </div>
-            </div>
+        {results && aiAnalysis && (
+          <div className="max-w-5xl mx-auto">
+            {/* AI Analysis Header */}
+            <AIAnalysisHeader analysis={aiAnalysis} />
 
-            {/* Actions Bar */}
+            {/* Filter Bar */}
+            <FilterBar
+              activeFilter={activeFilter}
+              onFilterChange={setActiveFilter}
+            />
+
+            {/* Export Actions */}
             {results.journals.length > 0 && (
-              <div className="bg-white rounded-xl border border-neutral-200 p-4 mb-6 no-print">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                  {/* Filters Toggle */}
-                  <button
-                    type="button"
-                    onClick={() => setShowFilters(!showFilters)}
-                    className="flex items-center gap-2 text-sm font-medium text-neutral-600 hover:text-neutral-800 transition-colors"
-                  >
-                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>filter_list</span>
-                    Filters
-                    <span className={`material-symbols-outlined transition-transform ${showFilters ? 'rotate-180' : ''}`} style={{ fontSize: '18px' }}>expand_more</span>
-                  </button>
-
-                  {/* Export Actions */}
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={handleExportCSV}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-neutral-600 bg-white border border-neutral-200 rounded-lg font-medium transition-all hover:border-neutral-300 hover:bg-neutral-50"
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>download</span>
-                      Export CSV
-                    </button>
-                    <button
-                      onClick={handlePrint}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-neutral-600 bg-white border border-neutral-200 rounded-lg font-medium transition-all hover:border-neutral-300 hover:bg-neutral-50"
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>print</span>
-                      Print
-                    </button>
-                  </div>
-                </div>
-
-                {/* Expanded Filters */}
-                {showFilters && (
-                  <div className="mt-4 pt-4 border-t border-neutral-200 flex flex-wrap items-center gap-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={filterOAOnly}
-                        onChange={(e) => setFilterOAOnly(e.target.checked)}
-                        className="w-4 h-4 rounded border-2 border-neutral-300 text-sky-500 focus:ring-sky-500"
-                      />
-                      <span className="text-sm text-neutral-600">Open Access Only</span>
-                    </label>
-
-                    <div className="flex items-center gap-2">
-                      <label htmlFor="minCategory" className="text-sm text-neutral-600">
-                        Category:
-                      </label>
-                      <select
-                        id="minCategory"
-                        value={minCategory}
-                        onChange={(e) => setMinCategory(e.target.value as 'all' | 'top_tier' | 'top_tier_broad')}
-                        className="text-sm rounded-lg px-3 py-2 border-2 border-neutral-200 text-neutral-700 focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                      >
-                        <option value="all">All Categories</option>
-                        <option value="top_tier">Top Tier Only</option>
-                        <option value="top_tier_broad">Top Tier + Broad Audience</option>
-                      </select>
-                    </div>
-                  </div>
-                )}
+              <div className="flex items-center justify-end gap-2 mb-6 no-print">
+                <button
+                  onClick={handleExportCSV}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl font-medium transition-all hover:border-gray-300 hover:bg-gray-50"
+                >
+                  <Download className="w-4 h-4" />
+                  Export CSV
+                </button>
+                <button
+                  onClick={handlePrint}
+                  className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl font-medium transition-all hover:border-gray-300 hover:bg-gray-50"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print
+                </button>
               </div>
             )}
 
-            {/* Journal Cards */}
+            {/* Category Sections */}
             {filteredJournals.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-2 print:grid-cols-1">
-                {filteredJournals.map((journal, index) => (
-                  <div
-                    key={journal.id}
-                    className="animate-fade-in-up"
-                    style={{ animationDelay: `${0.05 * Math.min(index, 10)}s` }}
-                  >
-                    <JournalCard journal={journal} />
-                  </div>
+              <>
+                {categoryOrder.map((categoryKey) => (
+                  <CategorySection
+                    key={categoryKey}
+                    categoryKey={categoryKey}
+                    journals={groupedJournals[categoryKey]}
+                    expandedIds={expandedCardIds}
+                    onToggle={handleToggleCard}
+                  />
                 ))}
-              </div>
-            ) : results.journals.length > 0 ? (
-              <div className="bg-white rounded-xl border border-neutral-200 p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-amber-100">
-                  <span className="material-symbols-outlined" style={{ color: '#b45309', fontSize: '32px' }}>filter_list</span>
+
+                {/* Bottom CTA */}
+                <div className="mt-12 bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-500 rounded-3xl p-10 text-center shadow-xl shadow-blue-200/30">
+                  <h3 className="text-2xl font-bold text-white mb-3">
+                    Need Different Recommendations?
+                  </h3>
+                  <p className="text-blue-100 mb-6 max-w-xl mx-auto">
+                    Try adjusting your abstract, adding more keywords, or specifying different criteria for better matches
+                  </p>
+                  <div className="flex justify-center gap-4">
+                    <button
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                      className="px-8 py-3.5 bg-white text-blue-600 font-bold rounded-xl hover:shadow-lg transition-all"
+                    >
+                      Refine Search
+                    </button>
+                    <button
+                      onClick={handleExportCSV}
+                      className="px-8 py-3.5 bg-white/20 text-white font-bold rounded-xl hover:bg-white/30 transition-all border border-white/30"
+                    >
+                      Export Results
+                    </button>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+              </>
+            ) : results.journals.length > 0 ? (
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100/50 p-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-amber-100">
+                  <SearchIcon className="w-8 h-8 text-amber-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   No journals match filters
                 </h3>
-                <p className="text-neutral-500">
+                <p className="text-gray-500">
                   Try adjusting your filter settings to see more results.
                 </p>
               </div>
             ) : (
-              <div className="bg-white rounded-xl border border-neutral-200 p-8 text-center">
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-blue-100/50 p-8 text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-amber-100">
-                  <span className="material-symbols-outlined" style={{ color: '#b45309', fontSize: '32px' }}>search</span>
+                  <SearchIcon className="w-8 h-8 text-amber-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">
                   No journals found
                 </h3>
-                <p className="text-neutral-500">
+                <p className="text-gray-500">
                   Try adjusting your keywords or abstract for better matches.
                 </p>
               </div>

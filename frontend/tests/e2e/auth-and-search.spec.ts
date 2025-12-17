@@ -32,18 +32,18 @@ test.describe('Find My Journal E2E Tests', () => {
   test('should show login form elements', async ({ page }) => {
     await page.goto('/login')
 
-    await expect(page.getByLabel(/email/i)).toBeVisible()
-    await expect(page.getByLabel(/password/i)).toBeVisible()
+    await expect(page.getByPlaceholder('you@example.com')).toBeVisible()
+    await expect(page.getByPlaceholder('Enter your password')).toBeVisible()
     await expect(page.getByRole('button', { name: /sign in/i })).toBeVisible()
-    await expect(page.getByRole('link', { name: /create one now/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /sign up now/i })).toBeVisible()
   })
 
   test('should login successfully and show search page', async ({ page }) => {
     await page.goto('/login')
 
     // Fill login form
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
 
     // Click sign in
     await page.getByRole('button', { name: /sign in/i }).click()
@@ -52,7 +52,7 @@ test.describe('Find My Journal E2E Tests', () => {
     await expect(page).toHaveURL(/.*search/, { timeout: 10000 })
 
     // Verify search page elements
-    await expect(page.getByText('Find My Journal')).toBeVisible()
+    await expect(page.getByText('FindMyJournal')).toBeVisible()
     await expect(page.getByLabel(/article title/i)).toBeVisible()
     await expect(page.getByLabel(/abstract/i)).toBeVisible()
     await expect(page.getByText(TEST_USER.email)).toBeVisible()
@@ -61,8 +61,8 @@ test.describe('Find My Journal E2E Tests', () => {
   test('should show validation errors for empty form', async ({ page }) => {
     // Login first
     await page.goto('/login')
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
     await page.getByRole('button', { name: /sign in/i }).click()
 
     // Wait for search page
@@ -81,8 +81,8 @@ test.describe('Find My Journal E2E Tests', () => {
     testInfo.setTimeout(90000) // 90 second timeout for slow API calls
     // Login first
     await page.goto('/login')
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
     await page.getByRole('button', { name: /sign in/i }).click()
 
     // Wait for search page
@@ -97,17 +97,17 @@ test.describe('Find My Journal E2E Tests', () => {
     await page.getByRole('button', { name: /find journals/i }).click()
 
     // Wait for loading to complete (button shows "Searching...")
-    await expect(page.getByRole('button', { name: /searching/i })).toBeVisible()
+    await expect(page.getByText(/Searching\.\.\./i)).toBeVisible()
 
-    // Wait for results (timeout 60s for API call - OpenAlex can be slow)
-    await expect(page.getByRole('heading', { name: /\d+ journals found/i })).toBeVisible({ timeout: 60000 })
+    // Wait for results (new design uses "AI Analysis Complete" header)
+    await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible({ timeout: 60000 })
   })
 
   test('should show search limit indicator', async ({ page }) => {
     // Login
     await page.goto('/login')
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
     await page.getByRole('button', { name: /sign in/i }).click()
 
     // Wait for search page
@@ -125,8 +125,8 @@ test.describe('Find My Journal E2E Tests', () => {
   test('should sign out successfully', async ({ page }) => {
     // Login
     await page.goto('/login')
-    await page.getByLabel(/email/i).fill(TEST_USER.email)
-    await page.getByLabel(/password/i).fill(TEST_USER.password)
+    await page.getByPlaceholder('you@example.com').fill(TEST_USER.email)
+    await page.getByPlaceholder('Enter your password').fill(TEST_USER.password)
     await page.getByRole('button', { name: /sign in/i }).click()
 
     // Wait for search page

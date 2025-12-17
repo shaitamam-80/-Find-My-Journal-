@@ -1,0 +1,40 @@
+import { Filter } from 'lucide-react'
+import type { FilterType } from '../../utils/searchResultsMapper'
+
+interface FilterBarProps {
+  activeFilter: FilterType
+  onFilterChange: (filter: FilterType) => void
+}
+
+const filters: { key: FilterType; label: string }[] = [
+  { key: 'all', label: 'All Results' },
+  { key: 'openAccess', label: 'Open Access' },
+  { key: 'highHIndex', label: 'High H-Index' },
+  // TODO: [FUTURE_DATA] fastReview - requires timeToDecision data
+]
+
+export function FilterBar({ activeFilter, onFilterChange }: FilterBarProps) {
+  return (
+    <div className="flex items-center gap-4 mb-8 flex-wrap">
+      <div className="flex items-center gap-2 text-gray-600">
+        <Filter className="w-5 h-5" />
+        <span className="font-semibold">Filter:</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {filters.map((filter) => (
+          <button
+            key={filter.key}
+            onClick={() => onFilterChange(filter.key)}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+              activeFilter === filter.key
+                ? 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-md shadow-blue-200'
+                : 'bg-white text-gray-600 border border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+            }`}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
