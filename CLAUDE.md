@@ -118,6 +118,9 @@ When `incognito_mode=True`, query text is NOT logged to the database.
 
 ## Design System
 
+### Design Tokens (HSL-based)
+Located at `frontend/src/styles/design-tokens.css` - supports light/dark modes.
+
 ### Academic Color Palette (Navy/Slate)
 ```css
 /* Primary: Navy/Slate (Academic) */
@@ -129,9 +132,11 @@ When `incognito_mode=True`, query text is NOT logged to the database.
 /* Accent: Teal */
 --color-info: #0d9488;            /* Teal - Links, highlights */
 
-/* Shadows */
---shadow-glow: 0 0 40px -10px var(--color-primary-600);
---shadow-navy: 0 4px 20px -5px rgba(30, 58, 95, 0.4);
+/* Journal Category Status Colors */
+--status-top-tier: emerald        /* Green - Top journals */
+--status-niche: blue              /* Blue - Niche specialists */
+--status-methodology: purple      /* Purple - Methods focused */
+--status-broad: amber             /* Amber - Broad scope */
 ```
 
 ### Key UI Classes
@@ -139,6 +144,24 @@ When `incognito_mode=True`, query text is NOT logged to the database.
 - Links: `text-teal-600 hover:text-teal-700`
 - Inputs: `bg-slate-50 border-slate-200 focus:border-teal-500`
 - Cards: `bg-white border-slate-200 shadow-slate-300`
+
+### Typography
+- **English:** Inter (400-700)
+- **Hebrew:** Assistant (400-700)
+- **Code:** JetBrains Mono (400-500)
+
+### RTL Support
+Uses Tailwind logical properties for RTL compatibility:
+- `ms-*` / `me-*` instead of `ml-*` / `mr-*`
+- `ps-*` / `pe-*` instead of `pl-*` / `pr-*`
+- `start-*` / `end-*` instead of `left-*` / `right-*`
+- `text-start` / `text-end` instead of `text-left` / `text-right`
+
+### Reusable Components
+- `StatusBadge` - Journal category badges (top-tier, niche, methodology, broad)
+- `MatchScoreBadge` - Color-coded match score display (high/medium/low)
+- `ThemeToggle` - Dark/light mode toggle button
+- `useDarkMode` hook - Dark mode state management
 
 ## Coding Conventions
 

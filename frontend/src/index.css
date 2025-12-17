@@ -1,7 +1,13 @@
 @import "tailwindcss";
+@import "./styles/design-tokens.css";
 
 /* ===== DESIGN SYSTEM: Academic Navy/Slate ===== */
 :root {
+  /* Font Variables */
+  --font-sans: 'Inter', sans-serif;
+  --font-hebrew: 'Assistant', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
   /* Primary: Navy/Slate (Academic) */
   --color-primary-50: #f8fafc;
   --color-primary-100: #f1f5f9;
@@ -83,13 +89,18 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: var(--font-body);
+  font-family: var(--font-sans), var(--font-hebrew), ui-sans-serif, system-ui;
   font-weight: 400;
   line-height: 1.6;
   color: var(--color-neutral-800);
   background: var(--color-neutral-50);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Monospace for queries and code */
+.font-mono, code, pre, .query-display {
+  font-family: var(--font-mono), ui-monospace, monospace;
 }
 
 #root {

@@ -43,7 +43,7 @@ export function CategorySection({
           <h2 className="text-xl font-bold text-gray-800">{config.title}</h2>
           <p className="text-sm text-gray-500">{config.subtitle}</p>
         </div>
-        <span className="ml-auto px-4 py-1.5 bg-white text-gray-600 text-sm font-semibold rounded-full shadow-sm border border-gray-100">
+        <span className="ms-auto px-4 py-1.5 bg-white text-gray-600 text-sm font-semibold rounded-full shadow-sm border border-gray-100">
           {journals.length} {journals.length === 1 ? 'journal' : 'journals'}
         </span>
       </div>

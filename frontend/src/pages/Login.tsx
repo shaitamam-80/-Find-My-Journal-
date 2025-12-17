@@ -71,12 +71,12 @@ export function Login() {
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Mail className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-gray-400"
+                    className="w-full ps-12 pe-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-gray-400"
                     placeholder="you@example.com"
                     required
                     autoComplete="email"
@@ -90,12 +90,12 @@ export function Login() {
                   <a href="#" className="text-sm text-teal-600 hover:text-teal-700 font-medium">Forgot password?</a>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Lock className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-gray-400"
+                    className="w-full ps-12 pe-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-gray-800 focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-gray-400"
                     placeholder="Enter your password"
                     required
                     autoComplete="current-password"

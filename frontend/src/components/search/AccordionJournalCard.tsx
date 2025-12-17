@@ -44,7 +44,7 @@ export function AccordionJournalCard({
       {/* Card Header - Always Visible */}
       <button
         onClick={onToggle}
-        className="w-full p-6 text-left hover:bg-gray-50/50 transition-colors"
+        className="w-full p-6 text-start hover:bg-gray-50/50 transition-colors"
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">

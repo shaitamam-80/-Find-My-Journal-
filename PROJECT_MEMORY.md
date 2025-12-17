@@ -142,6 +142,39 @@ Use the format below:
 -->
 
 ---
+## 2024-12-17 (Phase 2) - Design System Upgrade
+
+### ✅ Tasks Completed:
+- [x] Created design-tokens.css with HSL-based CSS variables for light/dark modes
+- [x] Added professional fonts (Inter, Assistant for Hebrew, JetBrains Mono)
+- [x] Created reusable UI components (StatusBadge, MatchScoreBadge, ThemeToggle)
+- [x] Added useDarkMode hook for dark mode support
+- [x] Converted physical margins to logical properties for RTL support (ml→ms, pl→ps, left→start)
+- [x] Installed clsx and tailwind-merge for className utilities
+
+### 📁 Files Created:
+- `frontend/src/styles/design-tokens.css` - HSL-based CSS variables with dark mode
+- `frontend/src/lib/utils.ts` - cn() utility for className merging
+- `frontend/src/hooks/useDarkMode.ts` - Dark mode state management hook
+- `frontend/src/components/ui/StatusBadge.tsx` - Journal category badges
+- `frontend/src/components/ui/MatchScoreBadge.tsx` - Semantic match score display
+- `frontend/src/components/ui/ThemeToggle.tsx` - Dark/light mode toggle button
+
+### 📁 Files Modified:
+- `frontend/index.html` - Added Inter, Assistant, JetBrains Mono fonts
+- `frontend/src/index.css` - Imported design-tokens, added font variables
+- `frontend/src/pages/Login.tsx` - RTL: left→start, pl→ps, pr→pe
+- `frontend/src/pages/SignUp.tsx` - RTL: left→start, pl→ps, pr→pe
+- `frontend/src/components/search/CategorySection.tsx` - RTL: ml-auto→ms-auto
+- `frontend/src/components/search/AccordionJournalCard.tsx` - RTL: text-left→text-start
+
+### 📢 Notes:
+- Dark mode ready but toggle not yet added to navigation
+- RTL support added via logical properties (works with dir="rtl")
+- New components available for future use in search results
+
+### Status: ✅ Complete
+---
 ## 2024-12-17 - Claude Code Sprint Execution
 
 ### ✅ Tasks Completed:
