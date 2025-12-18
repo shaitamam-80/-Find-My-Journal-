@@ -35,6 +35,7 @@ def convert_to_journal(source: dict) -> Optional[Journal]:
             works_count=source.get("works_count"),
             h_index=summary_stats.get("h_index"),
             i10_index=summary_stats.get("i10_index"),
+            two_yr_mean_citedness=summary_stats.get("2yr_mean_citedness"),
         )
 
         return Journal(
@@ -46,6 +47,7 @@ def convert_to_journal(source: dict) -> Optional[Journal]:
             homepage_url=source.get("homepage_url"),
             type=source.get("type"),
             is_oa=source.get("is_oa", False),
+            is_in_doaj=source.get("is_in_doaj", False),  # DOAJ verification from OpenAlex
             apc_usd=source.get("apc_usd"),
             metrics=metrics,
             topics=topics,

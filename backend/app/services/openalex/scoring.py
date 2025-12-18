@@ -27,8 +27,9 @@ def calculate_relevance_score(
     3. Keyword Match: +10
     4. Exact Title Match: +50 (if journal name matches search terms)
     5. Quality Boost: H-index * 0.05
-    6. Discipline Boost: +15
-    7. Core Journal Safety Net: +100
+    5b. Citation Rate Boost: 2yr_mean_citedness * 1.5
+    6. Discipline Boost: +15 to +25
+    7. Core Journal Safety Net: +100 (DISABLED)
 
     Args:
         journal: Journal to score.
@@ -64,6 +65,12 @@ def calculate_relevance_score(
     # Example: Nature (H~1300) -> +65 points
     h_index = journal.metrics.h_index or 0
     score += h_index * 0.05
+
+    # 5b. Citation Rate Boost (2yr_mean_citedness * 1.5)
+    # Similar to Impact Factor - higher means more citations per paper
+    # Example: Nature (citedness ~45) -> +67.5 points
+    citation_rate = journal.metrics.two_yr_mean_citedness or 0
+    score += citation_rate * 1.5
 
     # 6. Discipline/Subfield Boost (+15 to +25)
     # Now discipline can be an OpenAlex subfield like "Endocrinology, Diabetes and Metabolism"

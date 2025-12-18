@@ -62,7 +62,7 @@ def find_journals_from_works(
     return journal_counts
 
 
-def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, str]:
+def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, str, Optional[int]]:
     """
     Extract Topic IDs and subfield/field from similar papers.
 
@@ -75,12 +75,14 @@ def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, st
     Returns:
         Tuple of:
         - Top 5 most frequent topic IDs
-        - Most common subfield (e.g., "Endocrinology, Diabetes and Metabolism")
-        - Most common field (e.g., "Medicine")
+        - Most common subfield name (e.g., "Endocrinology, Diabetes and Metabolism")
+        - Most common field name (e.g., "Medicine")
+        - Most common subfield ID for accurate filtering (e.g., 2713)
     """
     client = get_client()
     topic_ids: Counter = Counter()
-    subfields: Counter = Counter()
+    subfield_scores: Counter = Counter()  # Track by ID for accuracy
+    subfield_names: Dict[int, str] = {}   # Map ID -> display name
     fields: Counter = Counter()
 
     works = client.search_works(search_query, per_page=50)
@@ -98,16 +100,29 @@ def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, st
                 subfield = topic.get("subfield", {})
                 field = topic.get("field", {})
 
-                if subfield and subfield.get("display_name"):
-                    subfields[subfield["display_name"]] += score
+                # Track subfield by ID (more accurate than name)
+                if subfield:
+                    sf_id = subfield.get("id")
+                    sf_name = subfield.get("display_name")
+                    if sf_id and sf_name:
+                        subfield_scores[sf_id] += score
+                        subfield_names[sf_id] = sf_name
+
                 if field and field.get("display_name"):
                     fields[field["display_name"]] += score
 
     top_topic_ids = [tid for tid, _ in topic_ids.most_common(5)]
-    top_subfield = subfields.most_common(1)[0][0] if subfields else ""
+
+    # Get top subfield by ID, then lookup name
+    top_subfield_id: Optional[int] = None
+    top_subfield = ""
+    if subfield_scores:
+        top_subfield_id, _ = subfield_scores.most_common(1)[0]
+        top_subfield = subfield_names.get(top_subfield_id, "")
+
     top_field = fields.most_common(1)[0][0] if fields else ""
 
-    return top_topic_ids, top_subfield, top_field
+    return top_topic_ids, top_subfield, top_field, top_subfield_id
 
 
 def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
@@ -116,7 +131,7 @@ def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
 
     Kept for backward compatibility.
     """
-    topic_ids, _, _ = get_topics_from_similar_works(search_query)
+    topic_ids, _, _, _ = get_topics_from_similar_works(search_query)
     return topic_ids
 
 
@@ -220,6 +235,40 @@ def find_journals_by_subfield(
                         "source": source,
                         "reason": f"Specialized journal matching '{term}'",
                     }
+
+    return journals
+
+
+def find_journals_by_subfield_id(subfield_id: Optional[int]) -> Dict[str, dict]:
+    """
+    Find journals by subfield ID using OpenAlex structured filtering.
+
+    This is more accurate than text-based search because it uses
+    the OpenAlex topic hierarchy directly.
+
+    Args:
+        subfield_id: OpenAlex subfield ID (e.g., 2713 for Epidemiology).
+
+    Returns:
+        Dict of source_id -> {count, reason}.
+    """
+    if not subfield_id:
+        return {}
+
+    client = get_client()
+    journals: Dict[str, dict] = {}
+
+    # Use ID-based filter for accurate results
+    results = client.find_sources_by_subfield_id(subfield_id)
+
+    for entry in results:
+        source_id = entry.get("key")
+        count = entry.get("count", 0)
+        if source_id and count > 0:
+            journals[source_id] = {
+                "count": count,
+                "reason": "Active in this research subfield",
+            }
 
     return journals
 
@@ -475,7 +524,7 @@ def search_journals_by_text(
     # 1. TOPIC-BASED SEARCH (ML-based approach) - Do this FIRST to get subfield
     # Use extracted search terms (max 8) instead of full text for better API results
     topic_search_query = " ".join(search_terms[:8])
-    topic_ids, subfield, field = get_topics_from_similar_works(topic_search_query)
+    topic_ids, subfield, field, subfield_id = get_topics_from_similar_works(topic_search_query)
     topic_journals = find_journals_by_topics(topic_ids)
 
     # Use OpenAlex subfield as discipline (e.g., "Endocrinology, Diabetes and Metabolism")
@@ -487,9 +536,13 @@ def search_journals_by_text(
     else:
         discipline = detect_discipline(combined_text)
 
-    # 2. SUBFIELD-BASED SEARCH - Find specialized journals by subfield name
-    # This catches journals like "Infancy" that may not appear in topic search
-    subfield_journals = find_journals_by_subfield(subfield, search_terms)
+    # 2. SUBFIELD-BASED SEARCH - Find specialized journals
+    # Prefer ID-based search (accurate) over text-based (fuzzy)
+    if subfield_id:
+        subfield_journals = find_journals_by_subfield_id(subfield_id)
+    else:
+        # Fallback to text-based search if no subfield ID detected
+        subfield_journals = find_journals_by_subfield(subfield, search_terms)
     # Merge subfield journals into topic_journals (they get topic-match treatment)
     for source_id, data in subfield_journals.items():
         if source_id not in topic_journals:

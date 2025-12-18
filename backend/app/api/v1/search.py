@@ -8,10 +8,12 @@ import uuid
 import hashlib
 
 from app.core.security import check_search_limit, increment_search_count
+from app.core.config import get_settings
 from app.models.user import UserProfile
 from app.models.journal import SearchRequest, SearchResponse
 from app.services.openalex_service import openalex_service
 from app.services.db_service import db_service
+from app.services.trust_safety import verify_journals_batch
 
 router = APIRouter(prefix="/search", tags=["Search"])
 
@@ -53,6 +55,16 @@ async def search_journals(
     print(f"[DEBUG] Search returned {len(journals)} journals for discipline: {discipline}")
     for j in journals[:5]:
         print(f"  - {j.name} (category: {j.category})")
+
+    # Trust & Safety verification (async, concurrent)
+    settings = get_settings()
+    if settings.trust_safety_enabled and journals:
+        try:
+            journals = await verify_journals_batch(journals)
+            print(f"[DEBUG] Verification completed for {len(journals)} journals")
+        except Exception as e:
+            # Don't fail search if verification fails
+            print(f"Warning: Verification failed, continuing without: {e}")
 
     # Generate search ID for logging
     search_id = str(uuid.uuid4())

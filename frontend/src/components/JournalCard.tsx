@@ -1,5 +1,6 @@
 import type { Journal } from '../types'
 import { Award, Users, Leaf, Lightbulb, Unlock, TrendingUp, FileText, DollarSign, ExternalLink } from 'lucide-react'
+import { VerificationBadge } from './ui/VerificationBadge'
 
 interface JournalCardProps {
   journal: Journal
@@ -65,14 +66,21 @@ export function JournalCard({ journal }: JournalCardProps) {
           <h3 className="text-lg font-semibold leading-tight text-gray-800 hover:text-blue-600 transition-colors">
             {journal.name}
           </h3>
-          {journal.is_oa && (
-            <div className="shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100">
-              <Unlock className="w-3.5 h-3.5 text-green-600" />
-              <span className="text-xs font-semibold text-green-700">
-                Open Access
-              </span>
-            </div>
-          )}
+          <div className="shrink-0 flex items-center gap-2">
+            {/* Verification Badge */}
+            {journal.verification && (
+              <VerificationBadge verification={journal.verification} />
+            )}
+            {/* Open Access Badge */}
+            {journal.is_oa && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-100">
+                <Unlock className="w-3.5 h-3.5 text-green-600" />
+                <span className="text-xs font-semibold text-green-700">
+                  Open Access
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Match Reason */}

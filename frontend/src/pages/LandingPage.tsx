@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Search, BarChart2, Shield, Zap, BookOpen,
+  Search, BarChart2, Zap, BookOpen,
   FileText, Globe, Award, Clock, Users, CheckCircle, ArrowRight,
   Menu, X, Target, Layers
 } from 'lucide-react'
@@ -188,7 +188,7 @@ export function LandingPage() {
             {[
               { icon: <Target className="w-8 h-8" />, title: "Precise Matching", desc: "Our algorithm analyzes your abstract, methodology, and field to find the perfect journal fit." },
               { icon: <Clock className="w-8 h-8" />, title: "Save Time", desc: "Instead of spending weeks searching manually, get personalized recommendations in seconds." },
-              { icon: <Shield className="w-8 h-8" />, title: "Predator Protection", desc: "Automatic filtering of predatory and unreliable journals from your recommendations." }
+              { icon: <BarChart2 className="w-8 h-8" />, title: "Quality Indicators", desc: "View journal metrics including H-index, citation counts, and Open Access status to make informed decisions." }
             ].map((item, i) => (
               <div key={i} className="bg-white rounded-2xl p-8 border border-slate-200 hover:border-teal-200 hover:shadow-lg transition-all group">
                 <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center text-teal-600 mb-6 group-hover:bg-teal-50 transition-colors">
@@ -245,7 +245,7 @@ export function LandingPage() {
             {[
               { step: "01", title: "Upload Your Abstract", desc: "Simply copy and paste your paper's abstract or enter the title and keywords.", icon: <FileText className="w-8 h-8" /> },
               { step: "02", title: "AI Analysis", desc: "Our system analyzes your content and identifies the field, methodology, and unique contribution.", icon: <Layers className="w-8 h-8" /> },
-              { step: "03", title: "Get Recommendations", desc: "Receive a ranked list of suitable journals with impact factors, acceptance rates, and publication times.", icon: <CheckCircle className="w-8 h-8" /> }
+              { step: "03", title: "Get Recommendations", desc: "Receive a ranked list of suitable journals with H-index, citation metrics, and Open Access information.", icon: <CheckCircle className="w-8 h-8" /> }
             ].map((item, i) => (
               <div key={i} className="relative text-center group">
                 <div className="w-20 h-20 mx-auto bg-slate-900 rounded-3xl flex items-center justify-center text-white mb-6 group-hover:bg-teal-600 transition-colors relative z-10">
@@ -272,7 +272,7 @@ export function LandingPage() {
             {[
               { icon: <Search className="w-6 h-6" />, title: "Deep Context Analysis", desc: "In-depth understanding of research field, methodology, and unique contribution." },
               { icon: <BarChart2 className="w-6 h-6" />, title: "Journal Metrics", desc: "H-index, citation counts, and publication volume for informed decisions." },
-              { icon: <Shield className="w-6 h-6" />, title: "Predatory Journal Filtering", desc: "Automatic protection from unreliable journals." },
+              { icon: <BarChart2 className="w-6 h-6" />, title: "Comprehensive Metrics", desc: "Works count, citation data, and publisher information for each journal." },
               { icon: <Zap className="w-6 h-6" />, title: "AI-Powered Matching", desc: "Smart algorithm matches your research to the most relevant journals." },
               { icon: <Globe className="w-6 h-6" />, title: "Support for 40+ Languages", desc: "Find journals in different languages and regions." },
               { icon: <FileText className="w-6 h-6" />, title: "Open Access Detection", desc: "Easily identify open access journals and their publication fees." }

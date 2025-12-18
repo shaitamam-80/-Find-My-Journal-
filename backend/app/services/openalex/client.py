@@ -122,6 +122,43 @@ class OpenAlexClient:
             logger.error(f"Error grouping works by source: {e}")
             return []
 
+    def find_sources_by_subfield_id(
+        self,
+        subfield_id: int,
+        from_date: str = "2019-01-01",
+        per_page: int = 25,
+    ) -> List[dict]:
+        """
+        Find top journals that publish in a specific subfield.
+
+        Uses ID-based filtering for accurate results (not text search).
+
+        Args:
+            subfield_id: OpenAlex subfield ID (e.g., 2713 for Epidemiology).
+            from_date: Filter works from this date.
+            per_page: Number of sources to return.
+
+        Returns:
+            List of aggregation results with source IDs and counts.
+        """
+        if not subfield_id:
+            return []
+
+        try:
+            return (
+                pyalex.Works()
+                .filter(
+                    topics={"subfield": {"id": subfield_id}},
+                    type="article",
+                    from_publication_date=from_date,
+                )
+                .group_by("primary_location.source.id")
+                .get(per_page=per_page)
+            )
+        except Exception as e:
+            logger.error(f"Error finding sources by subfield {subfield_id}: {e}")
+            return []
+
 
 # Global client instance
 _client: Optional[OpenAlexClient] = None
