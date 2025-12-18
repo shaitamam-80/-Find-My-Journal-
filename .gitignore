@@ -68,3 +68,9 @@ test-results/
 # Data files (large CSVs)
 *.csv
 !backend/app/data/.gitkeep
+
+# Archive folder (backup files, drafts)
+docs/archive/
+
+# Screenshots (except test screenshots)
+frontend/screenshots/
