@@ -16,6 +16,10 @@ interface CategorySectionProps {
   journals: Journal[]
   expandedIds: Set<string>
   onToggle: (id: string) => void
+  /** User's abstract for AI explanations */
+  abstract?: string
+  /** Auth token for API calls */
+  sessionToken?: string | null
 }
 
 export function CategorySection({
@@ -23,6 +27,8 @@ export function CategorySection({
   journals,
   expandedIds,
   onToggle,
+  abstract,
+  sessionToken,
 }: CategorySectionProps) {
   // Don't render if no journals in this category
   if (!journals || journals.length === 0) return null
@@ -57,6 +63,8 @@ export function CategorySection({
             categoryKey={categoryKey}
             isExpanded={expandedIds.has(journal.id)}
             onToggle={() => onToggle(journal.id)}
+            abstract={abstract}
+            sessionToken={sessionToken}
           />
         ))}
       </div>

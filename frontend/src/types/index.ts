@@ -20,6 +20,52 @@ export interface JournalMetrics {
   works_count: number | null
   h_index: number | null
   i10_index: number | null
+  two_yr_mean_citedness: number | null
+}
+
+// =============================================================================
+// Trust & Safety Verification Types
+// =============================================================================
+
+/** Visual badge color for verification status */
+export type BadgeColor = 'verified' | 'caution' | 'high_risk' | 'unverified'
+
+/** Source of verification data */
+export type VerificationSource =
+  | 'medline'
+  | 'doaj'
+  | 'cope'
+  | 'oaspa'
+  | 'pmc'
+  | 'blacklist'
+  | 'heuristic'
+
+/** A specific warning or verification flag */
+export interface VerificationFlag {
+  source: VerificationSource
+  reason: string
+  severity: 'low' | 'medium' | 'high' | 'critical'
+}
+
+/**
+ * Journal verification status from Trust & Safety Engine.
+ *
+ * Uses factual, non-defamatory language:
+ * - verified: "Verified Source" (not "Safe")
+ * - caution: "Exercise Caution" or "Limited Indexing"
+ * - high_risk: "Publication Risk Detected" (not "Predatory")
+ * - unverified: "Unverified Source"
+ */
+export interface VerificationStatus {
+  badge_color: BadgeColor
+  status_text: string
+  subtitle?: string
+  reasons: string[]
+  flags?: VerificationFlag[]
+  sources_checked?: VerificationSource[]
+  verified_by?: VerificationSource
+  checked_at?: string
+  cache_valid_until?: string
 }
 
 export interface Journal {
@@ -31,12 +77,15 @@ export interface Journal {
   homepage_url: string | null
   type: string | null
   is_oa: boolean
+  is_in_doaj?: boolean
   apc_usd: number | null
   metrics: JournalMetrics
   topics: string[]
   relevance_score: number
   category: 'top_tier' | 'broad_audience' | 'niche' | 'emerging' | null
   match_reason: string | null
+  /** Trust & Safety verification status */
+  verification?: VerificationStatus
 }
 
 export interface SearchRequest {
@@ -53,4 +102,24 @@ export interface SearchResponse {
   total_found: number
   journals: Journal[]
   search_id: string | null
+}
+
+// =============================================================================
+// AI Explanation Types
+// =============================================================================
+
+/** Request for AI-generated journal explanation */
+export interface ExplanationRequest {
+  abstract: string
+  journal_id: string
+  journal_title: string
+  journal_topics: string[]
+  journal_metrics: Record<string, number | null>
+}
+
+/** Response from AI explanation endpoint */
+export interface ExplanationResponse {
+  explanation: string
+  is_ai_generated: boolean
+  remaining_today: number | null
 }

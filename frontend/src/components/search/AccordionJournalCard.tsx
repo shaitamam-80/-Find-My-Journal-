@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import {
   ChevronDown,
   ChevronUp,
@@ -7,20 +8,28 @@ import {
   FileText,
   DollarSign,
   Unlock,
+  Sparkles,
+  Loader2,
 } from 'lucide-react'
 import type { Journal } from '../../types'
+import { api } from '../../services/api'
 import {
   type JournalCategoryKey,
   categoryConfig,
   generateAcronym,
   toMatchPercentage,
 } from '../../utils/searchResultsMapper'
+import { VerificationBadge } from '../ui/VerificationBadge'
 
 interface AccordionJournalCardProps {
   journal: Journal
   categoryKey: JournalCategoryKey
   isExpanded: boolean
   onToggle: () => void
+  /** User's abstract for generating AI explanations */
+  abstract?: string
+  /** Auth token for API calls */
+  sessionToken?: string | null
 }
 
 export function AccordionJournalCard({
@@ -28,10 +37,35 @@ export function AccordionJournalCard({
   categoryKey,
   isExpanded,
   onToggle,
+  abstract,
+  sessionToken,
 }: AccordionJournalCardProps) {
   const catConfig = categoryConfig[categoryKey]
   const matchScore = toMatchPercentage(journal.relevance_score)
   const acronym = generateAcronym(journal.name)
+
+  // AI Explanation state
+  const [explanation, setExplanation] = useState<string | null>(null)
+  const [explanationLoading, setExplanationLoading] = useState(false)
+  const [explanationError, setExplanationError] = useState<string | null>(null)
+  const [isAiGenerated, setIsAiGenerated] = useState(false)
+
+  const handleGetExplanation = async () => {
+    if (!sessionToken || !abstract || explanation) return
+
+    setExplanationLoading(true)
+    setExplanationError(null)
+
+    try {
+      const result = await api.getJournalExplanation(sessionToken, abstract, journal)
+      setExplanation(result.explanation)
+      setIsAiGenerated(result.is_ai_generated)
+    } catch (err) {
+      setExplanationError(err instanceof Error ? err.message : 'Failed to generate explanation')
+    } finally {
+      setExplanationLoading(false)
+    }
+  }
 
   return (
     <div
@@ -64,6 +98,10 @@ export function AccordionJournalCard({
                   Open Access
                 </span>
               )}
+              {/* Verification Badge */}
+              {journal.verification && (
+                <VerificationBadge verification={journal.verification} />
+              )}
             </div>
 
             {/* Quick Stats Row - REAL DATA ONLY */}
@@ -73,6 +111,17 @@ export function AccordionJournalCard({
                   <TrendingUp className="w-4 h-4 text-teal-600" />
                   <span>
                     Journal H-Index: <strong className="text-teal-700">{journal.metrics.h_index}</strong>
+                  </span>
+                </div>
+              )}
+              {journal.metrics.two_yr_mean_citedness !== null && (
+                <div
+                  className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-lg"
+                  title="Average citations per paper in the last 2 years (similar to Impact Factor)"
+                >
+                  <TrendingUp className="w-4 h-4 text-blue-600" />
+                  <span>
+                    2yr Citations: <strong className="text-blue-700">{journal.metrics.two_yr_mean_citedness.toFixed(1)}</strong>
                   </span>
                 </div>
               )}
@@ -125,20 +174,63 @@ export function AccordionJournalCard({
       {/* Expanded Content */}
       {isExpanded && (
         <div className="px-6 pb-6 border-t border-gray-100">
-          {/* Why It's a Good Fit - uses match_reason */}
-          {journal.match_reason && (
-            <div className={`mt-5 p-5 ${catConfig.bg} rounded-2xl border ${catConfig.border}`}>
-              <div className="flex items-center gap-2 mb-3">
-                <div className={`p-1.5 rounded-lg bg-gradient-to-br ${catConfig.gradient}`}>
-                  <Lightbulb className="w-4 h-4 text-white" />
-                </div>
-                <h4 className={`font-bold ${catConfig.text}`}>Why It's a Good Fit</h4>
+          {/* Why It's a Good Fit - AI Explanation Section */}
+          <div className={`mt-5 p-5 ${catConfig.bg} rounded-2xl border ${catConfig.border}`}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className={`p-1.5 rounded-lg bg-gradient-to-br ${catConfig.gradient}`}>
+                <Lightbulb className="w-4 h-4 text-white" />
               </div>
-              <p className="text-gray-700 leading-relaxed">{journal.match_reason}</p>
-
-              {/* TODO: [FUTURE_DATA] considerations - AI-generated strategic advice */}
+              <h4 className={`font-bold ${catConfig.text}`}>Why It's a Good Fit</h4>
+              {isAiGenerated && (
+                <span className="px-2 py-0.5 bg-teal-100 text-teal-700 text-xs font-medium rounded-full flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" />
+                  AI Generated
+                </span>
+              )}
             </div>
-          )}
+
+            {/* AI Explanation Content */}
+            {explanation ? (
+              <div className="text-gray-700 leading-relaxed prose prose-sm max-w-none">
+                {explanation.split('\n').map((line, i) => (
+                  <p key={i} className={line.trim() ? 'mb-2' : ''}>{line}</p>
+                ))}
+              </div>
+            ) : explanationLoading ? (
+              <div className="flex items-center gap-2 text-gray-500 py-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Generating AI explanation...</span>
+              </div>
+            ) : explanationError ? (
+              <div className="space-y-2">
+                <p className="text-red-600 text-sm">{explanationError}</p>
+                <button
+                  onClick={handleGetExplanation}
+                  className="text-sm text-teal-600 hover:text-teal-700 underline"
+                >
+                  Try again
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {/* Show basic match_reason first */}
+                {journal.match_reason && (
+                  <p className="text-gray-600 text-sm italic">{journal.match_reason}</p>
+                )}
+
+                {/* AI Explanation Button */}
+                {abstract && sessionToken && (
+                  <button
+                    onClick={handleGetExplanation}
+                    className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Why this journal?
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* TODO: [FUTURE_DATA] indexed - Scopus/DOAJ/PubMed APIs */}
 

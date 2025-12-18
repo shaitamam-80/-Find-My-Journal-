@@ -32,6 +32,18 @@ class Settings(BaseSettings):
     openalex_email: str = ""
     openalex_api_key: str = ""
 
+    # NLM/PubMed API (for MEDLINE verification)
+    # Get free API key at: https://www.ncbi.nlm.nih.gov/account/settings/
+    nlm_api_key: str = ""
+
+    # Trust & Safety settings
+    trust_safety_enabled: bool = True
+    trust_safety_cache_ttl: int = 86400  # 24 hours in seconds
+
+    # Gemini LLM settings
+    gemini_api_key: str = ""
+    gemini_explanation_enabled: bool = True
+
     # App settings
     app_name: str = "Find My Journal API"
     app_version: str = "1.0.0"

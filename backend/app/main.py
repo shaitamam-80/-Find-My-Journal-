@@ -15,6 +15,7 @@ from app.core.config import get_settings
 from app.services.db_service import db_service
 from app.api.v1.auth import router as auth_router
 from app.api.v1.search import router as search_router
+from app.api.v1.explain import router as explain_router
 
 settings = get_settings()
 
@@ -64,3 +65,4 @@ async def health_check():
 # Include API routers
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(search_router, prefix="/api/v1")
+app.include_router(explain_router, prefix="/api/v1")

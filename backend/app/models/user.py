@@ -21,6 +21,9 @@ class UserProfile(BaseModel):
     tier: UserTier = UserTier.FREE
     credits_used_today: int = 0
     last_search_date: Optional[date] = None
+    # AI explanation tracking
+    explanations_used_today: int = 0
+    last_explanation_date: Optional[date] = None
 
     @property
     def is_admin(self) -> bool:

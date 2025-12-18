@@ -17,6 +17,9 @@ security = HTTPBearer(auto_error=False)
 # Daily search limit for free users
 FREE_USER_DAILY_LIMIT = 2
 
+# Daily explanation limit for free users
+FREE_USER_EXPLANATION_LIMIT = 15
+
 
 async def get_current_user(
     credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)
@@ -106,6 +109,8 @@ async def get_current_user(
         tier=UserTier(profile_data.get("tier", "free")),
         credits_used_today=profile_data.get("credits_used_today", 0),
         last_search_date=profile_data.get("last_search_date"),
+        explanations_used_today=profile_data.get("explanations_used_today", 0),
+        last_explanation_date=profile_data.get("last_explanation_date"),
     )
 
 
@@ -209,3 +214,77 @@ async def require_admin(
             detail="Admin privileges required",
         )
     return user
+
+
+async def check_explanation_limit(
+    user: UserProfile = Depends(get_current_user)
+) -> UserProfile:
+    """
+    Dependency to check if user can request an AI explanation.
+
+    Args:
+        user: Current authenticated user.
+
+    Returns:
+        UserProfile if user can get explanations.
+
+    Raises:
+        HTTPException 429: If daily limit reached.
+    """
+    if user.has_unlimited_searches:
+        return user
+
+    # Reset counter if it's a new day
+    today = date.today()
+    if user.last_explanation_date != today:
+        return user
+
+    if user.explanations_used_today >= FREE_USER_EXPLANATION_LIMIT:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail={
+                "error": "Daily explanation limit reached",
+                "limit": FREE_USER_EXPLANATION_LIMIT,
+                "used": user.explanations_used_today,
+                "message": "Upgrade to premium for unlimited AI explanations",
+            }
+        )
+    return user
+
+
+async def increment_explanation_count(user_id: str) -> bool:
+    """
+    Increment the explanation count for a user.
+
+    Args:
+        user_id: User's UUID.
+
+    Returns:
+        True if successful.
+    """
+    today = date.today()
+
+    try:
+        profile = db_service.get_profile_by_id(user_id)
+        if not profile:
+            return False
+
+        last_explanation = profile.get("last_explanation_date")
+        current_count = profile.get("explanations_used_today", 0)
+
+        # Reset counter if new day
+        if last_explanation != str(today):
+            new_count = 1
+        else:
+            new_count = current_count + 1
+
+        db_service.client.table("profiles").update({
+            "explanations_used_today": new_count,
+            "last_explanation_date": str(today)
+        }).eq("id", user_id).execute()
+
+        return True
+
+    except Exception as e:
+        print(f"Error incrementing explanation count: {e}")
+        return False

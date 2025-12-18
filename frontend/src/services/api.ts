@@ -1,4 +1,4 @@
-import type { SearchRequest, SearchResponse } from '../types'
+import type { SearchRequest, SearchResponse, ExplanationResponse, Journal } from '../types'
 
 const API_BASE = import.meta.env.VITE_API_URL
   ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api/v1`
@@ -43,6 +43,41 @@ class ApiService {
 
     if (!response.ok) {
       throw new Error('Failed to fetch search history')
+    }
+
+    return response.json()
+  }
+
+  /**
+   * Get AI-generated explanation for why a journal matches the user's abstract.
+   * Uses Google Gemini to generate personalized explanations.
+   */
+  async getJournalExplanation(
+    token: string,
+    abstract: string,
+    journal: Journal
+  ): Promise<ExplanationResponse> {
+    const response = await fetch(`${API_BASE}/explain`, {
+      method: 'POST',
+      headers: this.getAuthHeader(token),
+      body: JSON.stringify({
+        abstract,
+        journal_id: journal.id,
+        journal_title: journal.name,
+        journal_topics: journal.topics,
+        journal_metrics: journal.metrics,
+      }),
+    })
+
+    if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('Daily explanation limit reached. Upgrade for unlimited AI insights.')
+      }
+      if (response.status === 401) {
+        throw new Error('Please log in to get AI explanations.')
+      }
+      const error = await response.json()
+      throw new Error(error.detail?.message || error.detail || 'Failed to generate explanation')
     }
 
     return response.json()

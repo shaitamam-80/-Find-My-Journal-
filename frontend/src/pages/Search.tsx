@@ -404,6 +404,8 @@ export function Search() {
                     journals={groupedJournals[categoryKey]}
                     expandedIds={expandedCardIds}
                     onToggle={handleToggleCard}
+                    abstract={abstract}
+                    sessionToken={session?.access_token || null}
                   />
                 ))}
 
