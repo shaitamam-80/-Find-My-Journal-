@@ -164,7 +164,7 @@ class TestSearchBenchmark:
         try:
             # Measure execution time
             start_time = time.time()
-            journals, discipline = openalex_service.search_journals_by_text(
+            journals, discipline, _, _ = openalex_service.search_journals_by_text(
                 title=case["title"],
                 abstract=case["abstract"],
                 keywords=case["keywords"],
@@ -426,7 +426,7 @@ def test_benchmark_quality_metrics(case_index: int, openalex_service: OpenAlexSe
     """
     case = BENCHMARK_CASES[case_index]
 
-    journals, discipline = openalex_service.search_journals_by_text(
+    journals, discipline, _, _ = openalex_service.search_journals_by_text(
         title=case["title"],
         abstract=case["abstract"],
         keywords=case["keywords"],
@@ -476,7 +476,7 @@ def test_benchmark_execution_time(openalex_service: OpenAlexService):
     case = BENCHMARK_CASES[0]
 
     start_time = time.time()
-    journals, discipline = openalex_service.search_journals_by_text(
+    journals, discipline, _, _ = openalex_service.search_journals_by_text(
         title=case["title"],
         abstract=case["abstract"],
         keywords=case["keywords"],

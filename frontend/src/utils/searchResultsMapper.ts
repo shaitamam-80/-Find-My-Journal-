@@ -11,6 +11,8 @@ export interface AIAnalysis {
   greeting: string
   title: string
   primaryDiscipline: string | null
+  parentField: string | null // Story 2.1: Parent field (e.g., "Medicine")
+  disciplineConfidence: number // Story 2.1: Confidence score 0-1
   // TODO: [FUTURE_DATA] secondaryDiscipline - Enhanced discipline detection
   keyThemes: string[]
   // TODO: [FUTURE_DATA] strategicSummary - AI-generated summary
@@ -98,10 +100,17 @@ export function buildAIAnalysis(
         )
       : 0
 
+  // Story 2.1: Extract discipline detection with confidence
+  const disciplineDetection = response.discipline_detection
+  const parentField = disciplineDetection?.field ?? null
+  const disciplineConfidence = disciplineDetection?.confidence ?? 0
+
   return {
     greeting: 'Hello! I have analyzed your manuscript,',
     title: request.title,
     primaryDiscipline: formatDiscipline(response.discipline),
+    parentField, // Story 2.1
+    disciplineConfidence, // Story 2.1
     keyThemes: request.keywords,
     totalJournals: response.total_found,
     topTierCount,

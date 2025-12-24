@@ -40,17 +40,35 @@ export function AIAnalysisHeader({ analysis }: AIAnalysisHeaderProps) {
           </p>
 
           <div className="space-y-4 bg-slate-50 rounded-2xl p-6 border border-slate-200">
-            {/* Primary Discipline */}
+            {/* Primary Discipline with Confidence (Story 2.1) */}
             {analysis.primaryDiscipline && (
               <div className="flex items-start gap-4">
                 <div className="p-2 bg-teal-50 rounded-xl shrink-0">
                   <Target className="w-5 h-5 text-teal-600" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <span className="text-slate-500 font-medium">Primary Discipline:</span>
-                  <p className="text-slate-800 font-semibold text-lg">
-                    {analysis.primaryDiscipline}
-                  </p>
+                  <div className="flex items-center gap-3 mt-1">
+                    <p className="text-slate-800 font-semibold text-lg">
+                      {analysis.primaryDiscipline}
+                    </p>
+                    {analysis.disciplineConfidence !== undefined && analysis.disciplineConfidence > 0 && (
+                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                        analysis.disciplineConfidence >= 0.7
+                          ? 'bg-green-100 text-green-700'
+                          : analysis.disciplineConfidence >= 0.4
+                          ? 'bg-amber-100 text-amber-700'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        {Math.round(analysis.disciplineConfidence * 100)}% confidence
+                      </span>
+                    )}
+                  </div>
+                  {analysis.parentField && analysis.parentField !== analysis.primaryDiscipline && (
+                    <p className="text-slate-500 text-sm mt-1">
+                      Field: {analysis.parentField}
+                    </p>
+                  )}
                 </div>
               </div>
             )}

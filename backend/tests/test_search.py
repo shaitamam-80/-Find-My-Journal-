@@ -298,7 +298,7 @@ class TestOpenAlexService:
         ]
         mock_pyalex.Works.return_value = mock_works
 
-        journals, discipline = self.service.search_journals_by_text(
+        journals, discipline, _, _ = self.service.search_journals_by_text(
             title="Deep Learning for Image Classification",
             abstract="We present a neural network algorithm for machine learning based image classification.",
         )
@@ -521,7 +521,7 @@ class TestTopicBasedSearch:
         mock_sources.__getitem__.return_value = mock_source
         mock_pyalex.Sources.return_value = mock_sources
 
-        journals, discipline = self.service.search_journals_by_text(
+        journals, discipline, _, _ = self.service.search_journals_by_text(
             title="Deep Learning for Medical Imaging",
             abstract="We apply neural networks for medical image classification.",
         )

@@ -86,6 +86,10 @@ export interface Journal {
   match_reason: string | null
   /** Trust & Safety verification status */
   verification?: VerificationStatus
+  /** Detailed reasons why this journal matches (Story 1.1) */
+  match_details?: string[]
+  /** Topics that matched between paper and journal (Story 1.2) */
+  matched_topics?: string[]
 }
 
 export interface SearchRequest {
@@ -96,9 +100,18 @@ export interface SearchRequest {
   min_works_count?: number
 }
 
+/** Auto-detected discipline with confidence (Story 2.1) */
+export interface DisciplineDetection {
+  name: string
+  field: string | null
+  confidence: number  // 0-1
+  source: string
+}
+
 export interface SearchResponse {
   query: string
   discipline: string | null
+  discipline_detection: DisciplineDetection | null  // Story 2.1
   total_found: number
   journals: Journal[]
   search_id: string | null

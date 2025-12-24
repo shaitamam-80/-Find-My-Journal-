@@ -10,6 +10,8 @@ import {
   Unlock,
   Sparkles,
   Loader2,
+  ThumbsUp,
+  ThumbsDown,
 } from 'lucide-react'
 import type { Journal } from '../../types'
 import { api } from '../../services/api'
@@ -50,6 +52,10 @@ export function AccordionJournalCard({
   const [explanationError, setExplanationError] = useState<string | null>(null)
   const [isAiGenerated, setIsAiGenerated] = useState(false)
 
+  // Feedback state (Story 5.1)
+  const [feedback, setFeedback] = useState<'up' | 'down' | null>(null)
+  const [feedbackLoading, setFeedbackLoading] = useState(false)
+
   const handleGetExplanation = async () => {
     if (!sessionToken || !abstract || explanation) return
 
@@ -64,6 +70,27 @@ export function AccordionJournalCard({
       setExplanationError(err instanceof Error ? err.message : 'Failed to generate explanation')
     } finally {
       setExplanationLoading(false)
+    }
+  }
+
+  // Handle feedback submission (Story 5.1)
+  const handleFeedback = async (rating: 'up' | 'down') => {
+    if (!sessionToken || feedbackLoading) return
+
+    // Toggle off if clicking same rating
+    if (feedback === rating) {
+      setFeedback(null)
+      return
+    }
+
+    setFeedbackLoading(true)
+    try {
+      await api.submitFeedback(sessionToken, journal.id, rating)
+      setFeedback(rating)
+    } catch (err) {
+      console.error('Failed to submit feedback:', err)
+    } finally {
+      setFeedbackLoading(false)
     }
   }
 
@@ -213,9 +240,35 @@ export function AccordionJournalCard({
               </div>
             ) : (
               <div className="space-y-3">
-                {/* Show basic match_reason first */}
-                {journal.match_reason && (
+                {/* Show detailed match_details (Story 1.1) */}
+                {journal.match_details && journal.match_details.length > 0 ? (
+                  <ul className="space-y-1.5">
+                    {journal.match_details.slice(0, 4).map((detail, i) => (
+                      <li key={i} className="text-gray-700 text-sm flex items-start gap-2">
+                        <span className="text-teal-500 mt-0.5">•</span>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : journal.match_reason ? (
                   <p className="text-gray-600 text-sm italic">{journal.match_reason}</p>
+                ) : null}
+
+                {/* Matched Topics (Story 1.2) */}
+                {journal.matched_topics && journal.matched_topics.length > 0 && (
+                  <div className="pt-2 border-t border-gray-100">
+                    <p className="text-xs font-semibold text-gray-500 mb-2">Matching Research Topics</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {journal.matched_topics.slice(0, 5).map((topic, i) => (
+                        <span
+                          key={i}
+                          className="px-2.5 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full border border-green-200"
+                        >
+                          ✓ {topic}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* AI Explanation Button */}
@@ -225,7 +278,7 @@ export function AccordionJournalCard({
                     className="flex items-center gap-2 px-4 py-2.5 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors"
                   >
                     <Sparkles className="w-4 h-4" />
-                    Why this journal?
+                    Get AI explanation
                   </button>
                 )}
               </div>
@@ -269,7 +322,36 @@ export function AccordionJournalCard({
                 Visit Journal Website
               </a>
             )}
-            {/* TODO: [FUTURE_DATA] Save button - requires backend support */}
+
+            {/* Feedback Buttons (Story 5.1) */}
+            {sessionToken && (
+              <div className="flex gap-2">
+                <button
+                  onClick={() => handleFeedback('up')}
+                  disabled={feedbackLoading}
+                  className={`p-3.5 rounded-xl border transition-all ${
+                    feedback === 'up'
+                      ? 'bg-green-100 border-green-300 text-green-700'
+                      : 'bg-white border-gray-200 text-gray-500 hover:border-green-300 hover:text-green-600'
+                  }`}
+                  title="Good recommendation"
+                >
+                  <ThumbsUp className={`w-5 h-5 ${feedback === 'up' ? 'fill-current' : ''}`} />
+                </button>
+                <button
+                  onClick={() => handleFeedback('down')}
+                  disabled={feedbackLoading}
+                  className={`p-3.5 rounded-xl border transition-all ${
+                    feedback === 'down'
+                      ? 'bg-red-100 border-red-300 text-red-700'
+                      : 'bg-white border-gray-200 text-gray-500 hover:border-red-300 hover:text-red-600'
+                  }`}
+                  title="Poor recommendation"
+                >
+                  <ThumbsDown className={`w-5 h-5 ${feedback === 'down' ? 'fill-current' : ''}`} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

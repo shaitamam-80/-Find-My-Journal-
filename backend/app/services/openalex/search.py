@@ -11,7 +11,7 @@ from .client import get_client
 from .config import get_min_journal_works
 from .constants import load_core_journals, get_key_journals_for_discipline
 from .utils import extract_search_terms, detect_discipline
-from .scoring import calculate_relevance_score
+from .scoring import calculate_relevance_score, generate_match_details
 from .journals import convert_to_journal, categorize_journals, merge_journal_results
 
 
@@ -62,7 +62,7 @@ def find_journals_from_works(
     return journal_counts
 
 
-def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, str, Optional[int]]:
+def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, str, Optional[int], float]:
     """
     Extract Topic IDs and subfield/field from similar papers.
 
@@ -78,14 +78,17 @@ def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, st
         - Most common subfield name (e.g., "Endocrinology, Diabetes and Metabolism")
         - Most common field name (e.g., "Medicine")
         - Most common subfield ID for accurate filtering (e.g., 2713)
+        - Confidence score (0-1) based on consensus among works
     """
     client = get_client()
     topic_ids: Counter = Counter()
     subfield_scores: Counter = Counter()  # Track by ID for accuracy
     subfield_names: Dict[int, str] = {}   # Map ID -> display name
     fields: Counter = Counter()
+    total_topic_score = 0.0
 
     works = client.search_works(search_query, per_page=50)
+    works_count = len(works)
 
     for work in works:
         topics = work.get("topics") or []
@@ -95,6 +98,7 @@ def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, st
                 # Weight by score if available
                 score = topic.get("score", 1.0)
                 topic_ids[topic_id] += score
+                total_topic_score += score
 
                 # Extract subfield and field from OpenAlex hierarchy
                 subfield = topic.get("subfield", {})
@@ -116,13 +120,26 @@ def get_topics_from_similar_works(search_query: str) -> Tuple[List[str], str, st
     # Get top subfield by ID, then lookup name
     top_subfield_id: Optional[int] = None
     top_subfield = ""
+    top_subfield_score = 0.0
     if subfield_scores:
-        top_subfield_id, _ = subfield_scores.most_common(1)[0]
+        top_subfield_id, top_subfield_score = subfield_scores.most_common(1)[0]
         top_subfield = subfield_names.get(top_subfield_id, "")
 
     top_field = fields.most_common(1)[0][0] if fields else ""
 
-    return top_topic_ids, top_subfield, top_field, top_subfield_id
+    # Calculate confidence score (Story 2.1)
+    # Based on: (1) how dominant the top subfield is, (2) number of works found
+    confidence = 0.0
+    if works_count > 0 and total_topic_score > 0:
+        # Dominance: what fraction of total score goes to top subfield
+        dominance = top_subfield_score / total_topic_score if total_topic_score > 0 else 0
+        # Coverage: did we find enough works? (50 is max)
+        coverage = min(works_count / 30, 1.0)  # 30+ works = full coverage
+        # Combine: dominance weighted more heavily
+        confidence = (dominance * 0.7) + (coverage * 0.3)
+        confidence = min(max(confidence, 0.0), 1.0)  # Clamp to 0-1
+
+    return top_topic_ids, top_subfield, top_field, top_subfield_id, confidence
 
 
 def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
@@ -131,7 +148,7 @@ def get_topic_ids_from_similar_works(search_query: str) -> List[str]:
 
     Kept for backward compatibility.
     """
-    topic_ids, _, _, _ = get_topics_from_similar_works(search_query)
+    topic_ids, _, _, _, _ = get_topics_from_similar_works(search_query)
     return topic_ids
 
 
@@ -499,7 +516,7 @@ def search_journals_by_text(
     abstract: str,
     keywords: List[str] = None,
     prefer_open_access: bool = False,
-) -> Tuple[List[Journal], str]:
+) -> Tuple[List[Journal], str, str, float]:
     """
     Search for journals based on article title and abstract.
 
@@ -513,7 +530,11 @@ def search_journals_by_text(
         prefer_open_access: Prioritize OA journals.
 
     Returns:
-        Tuple of (journals list, detected subfield from OpenAlex).
+        Tuple of:
+        - journals list
+        - detected subfield from OpenAlex
+        - parent field name
+        - confidence score (0-1) for discipline detection (Story 2.1)
     """
     core_journals = load_core_journals()
     combined_text = f"{title} {abstract}"
@@ -524,7 +545,7 @@ def search_journals_by_text(
     # 1. TOPIC-BASED SEARCH (ML-based approach) - Do this FIRST to get subfield
     # Use extracted search terms (max 8) instead of full text for better API results
     topic_search_query = " ".join(search_terms[:8])
-    topic_ids, subfield, field, subfield_id = get_topics_from_similar_works(topic_search_query)
+    topic_ids, subfield, field, subfield_id, confidence = get_topics_from_similar_works(topic_search_query)
     topic_journals = find_journals_by_topics(topic_ids)
 
     # Use OpenAlex subfield as discipline (e.g., "Endocrinology, Diabetes and Metabolism")
@@ -613,6 +634,17 @@ def search_journals_by_text(
             core_journals=core_journals,
         ) + (merge_bonus * 10)  # Amplify merge bonus
 
+        # Generate match details (Story 1.1 - Why it's a good fit)
+        details, matched = generate_match_details(
+            journal=journal,
+            discipline=discipline,
+            is_topic_match=is_topic,
+            is_keyword_match=is_keyword,
+            search_terms=search_terms,
+        )
+        journal.match_details = details
+        journal.matched_topics = matched
+
     # Final sort: prioritize by Weighted relevance_score
     categorized.sort(
         key=lambda j: (
@@ -645,4 +677,4 @@ def search_journals_by_text(
                 j.match_reason = "Broader search result"
                 categorized.append(j)
 
-    return categorized[:15], discipline
+    return categorized[:15], discipline, field, confidence

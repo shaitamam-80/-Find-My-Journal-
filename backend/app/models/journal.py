@@ -108,6 +108,16 @@ class Journal(BaseModel):
     category: Optional[JournalCategory] = None
     match_reason: Optional[str] = None
 
+    # Match Details (Story 1.1 - Why it's a good fit)
+    match_details: List[str] = Field(
+        default_factory=list,
+        description="Detailed reasons why this journal matches the search"
+    )
+    matched_topics: List[str] = Field(
+        default_factory=list,
+        description="Topics that matched between the paper and journal"
+    )
+
 
 class SearchRequest(BaseModel):
     """User's search request for finding journals."""
@@ -142,11 +152,82 @@ class SearchRequest(BaseModel):
     )
 
 
+class DisciplineDetection(BaseModel):
+    """Auto-detected discipline with confidence (Story 2.1)."""
+    name: str = Field(..., description="Detected discipline/subfield name")
+    field: Optional[str] = Field(None, description="Parent field (e.g., Medicine)")
+    confidence: float = Field(..., ge=0, le=1, description="Confidence score 0-1")
+    source: str = Field(default="openalex", description="Detection source")
+
+
 class SearchResponse(BaseModel):
     """Response from journal search."""
 
     query: str
     discipline: Optional[str] = None
+    discipline_detection: Optional[DisciplineDetection] = None  # Story 2.1
     total_found: int
     journals: List[Journal]
     search_id: Optional[str] = None  # For logging
+
+
+# =============================================================================
+# Saved Searches (Story 4.1)
+# =============================================================================
+
+class SavedSearch(BaseModel):
+    """A saved search for quick access (Story 4.1)."""
+    id: str = Field(..., description="UUID of the saved search")
+    user_id: str = Field(..., description="Owner user ID")
+    name: str = Field(..., description="User-given name for this search")
+    title: str = Field(..., description="Original article title")
+    abstract: str = Field(..., description="Original abstract")
+    keywords: List[str] = Field(default_factory=list)
+    discipline: Optional[str] = None
+    results_count: int = 0
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class SaveSearchRequest(BaseModel):
+    """Request to save a search (Story 4.1)."""
+    name: str = Field(..., min_length=1, max_length=100, description="Name for this search")
+    title: str = Field(..., description="Article title from the search")
+    abstract: str = Field(..., description="Abstract from the search")
+    keywords: List[str] = Field(default_factory=list)
+    discipline: Optional[str] = None
+    results_count: int = 0
+
+
+class SavedSearchResponse(BaseModel):
+    """Response with saved search data (Story 4.1)."""
+    id: str
+    name: str
+    title: str
+    discipline: Optional[str]
+    results_count: int
+    created_at: str
+
+
+# =============================================================================
+# Feedback Rating (Story 5.1)
+# =============================================================================
+
+class FeedbackRating(str, Enum):
+    """Thumbs up/down feedback rating."""
+    UP = "up"
+    DOWN = "down"
+
+
+class FeedbackRequest(BaseModel):
+    """Request to submit feedback on a journal recommendation (Story 5.1)."""
+    journal_id: str = Field(..., description="OpenAlex journal ID")
+    rating: FeedbackRating = Field(..., description="Thumbs up or down")
+    search_id: Optional[str] = Field(None, description="Search ID for context")
+
+
+class FeedbackResponse(BaseModel):
+    """Response after submitting feedback (Story 5.1)."""
+    id: str
+    journal_id: str
+    rating: str
+    created_at: str

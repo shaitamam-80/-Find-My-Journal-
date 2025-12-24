@@ -15,7 +15,8 @@ import {
 } from '../utils/searchResultsMapper'
 import {
   BookOpen, Search as SearchIcon, Trash2, FileText, Sparkles, Tag,
-  AlertCircle, Download, Printer, LogOut, Infinity as InfinityIcon, Zap
+  AlertCircle, Download, Printer, LogOut, Infinity as InfinityIcon, Zap,
+  Share2, Check, Copy, Bookmark
 } from 'lucide-react'
 
 export function Search() {
@@ -31,6 +32,17 @@ export function Search() {
   // New results view state
   const [expandedCardIds, setExpandedCardIds] = useState<Set<string>>(new Set())
   const [activeFilter, setActiveFilter] = useState<FilterType>('all')
+
+  // Share state (Story 3.1)
+  const [shareLoading, setShareLoading] = useState(false)
+  const [shareUrl, setShareUrl] = useState<string | null>(null)
+  const [shareCopied, setShareCopied] = useState(false)
+
+  // Save search state (Story 4.1)
+  const [saveLoading, setSaveLoading] = useState(false)
+  const [saveSuccess, setSaveSuccess] = useState(false)
+  const [saveDialogOpen, setSaveDialogOpen] = useState(false)
+  const [saveName, setSaveName] = useState('')
 
   // Parse keywords for AI analysis
   const keywordList = useMemo(() => {
@@ -106,6 +118,64 @@ export function Search() {
 
   const handlePrint = () => {
     window.print()
+  }
+
+  // Share Results (Story 3.1)
+  const handleShare = async () => {
+    if (!results || !session?.access_token) return
+
+    setShareLoading(true)
+    try {
+      const response = await api.createShareLink(
+        session.access_token,
+        results.query,
+        results.discipline,
+        results.journals
+      )
+      const fullUrl = `${window.location.origin}${response.share_url}`
+      setShareUrl(fullUrl)
+
+      // Copy to clipboard
+      await navigator.clipboard.writeText(fullUrl)
+      setShareCopied(true)
+      setTimeout(() => setShareCopied(false), 3000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create share link')
+    } finally {
+      setShareLoading(false)
+    }
+  }
+
+  const handleCopyShareUrl = async () => {
+    if (!shareUrl) return
+    await navigator.clipboard.writeText(shareUrl)
+    setShareCopied(true)
+    setTimeout(() => setShareCopied(false), 3000)
+  }
+
+  // Save Search (Story 4.1)
+  const handleSaveSearch = async () => {
+    if (!results || !session?.access_token || !saveName.trim()) return
+
+    setSaveLoading(true)
+    try {
+      await api.saveSearch(session.access_token, {
+        name: saveName.trim(),
+        title,
+        abstract,
+        keywords: keywordList,
+        discipline: results.discipline,
+        results_count: results.total_found,
+      })
+      setSaveSuccess(true)
+      setSaveDialogOpen(false)
+      setSaveName('')
+      setTimeout(() => setSaveSuccess(false), 3000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save search')
+    } finally {
+      setSaveLoading(false)
+    }
   }
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -377,6 +447,58 @@ export function Search() {
             {/* Export Actions */}
             {results.journals.length > 0 && (
               <div className="flex items-center justify-end gap-2 mb-6 no-print">
+                {/* Save Search Button (Story 4.1) */}
+                {saveSuccess ? (
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm bg-green-50 border border-green-200 rounded-xl">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span className="text-green-700 font-medium">Saved!</span>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setSaveDialogOpen(true)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl font-medium transition-all hover:border-amber-300 hover:bg-amber-100"
+                  >
+                    <Bookmark className="w-4 h-4" />
+                    Save Search
+                  </button>
+                )}
+
+                {/* Share Button (Story 3.1) */}
+                {shareUrl ? (
+                  <div className="flex items-center gap-2 px-3 py-2 text-sm bg-green-50 border border-green-200 rounded-xl">
+                    <Check className="w-4 h-4 text-green-600" />
+                    <span className="text-green-700 font-medium max-w-50 truncate">
+                      {shareUrl}
+                    </span>
+                    <button
+                      onClick={handleCopyShareUrl}
+                      className="p-1 hover:bg-green-100 rounded transition-colors"
+                      title="Copy link"
+                    >
+                      {shareCopied ? (
+                        <Check className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-green-600" />
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleShare}
+                    disabled={shareLoading}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-teal-700 bg-teal-50 border border-teal-200 rounded-xl font-medium transition-all hover:border-teal-300 hover:bg-teal-100 disabled:opacity-50"
+                  >
+                    {shareLoading ? (
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                    ) : (
+                      <Share2 className="w-4 h-4" />
+                    )}
+                    Share Results
+                  </button>
+                )}
                 <button
                   onClick={handleExportCSV}
                   className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 bg-white border border-gray-200 rounded-xl font-medium transition-all hover:border-gray-300 hover:bg-gray-50"
@@ -461,6 +583,54 @@ export function Search() {
           </div>
         )}
       </main>
+
+      {/* Save Search Dialog (Story 4.1) */}
+      {saveDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-slate-800 mb-4">
+              Save This Search
+            </h3>
+            <p className="text-sm text-slate-500 mb-4">
+              Give this search a name so you can quickly find it later.
+            </p>
+            <input
+              type="text"
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              placeholder="e.g., Machine Learning Paper v2"
+              className="w-full px-4 py-3 text-slate-900 bg-white border border-slate-200 rounded-xl mb-4 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+              autoFocus
+            />
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setSaveDialogOpen(false)
+                  setSaveName('')
+                }}
+                className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveSearch}
+                disabled={!saveName.trim() || saveLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white font-medium rounded-xl hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {saveLoading ? (
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                ) : (
+                  <Bookmark className="w-4 h-4" />
+                )}
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

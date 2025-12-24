@@ -10,7 +10,7 @@ import hashlib
 from app.core.security import check_search_limit, increment_search_count
 from app.core.config import get_settings
 from app.models.user import UserProfile
-from app.models.journal import SearchRequest, SearchResponse
+from app.models.journal import SearchRequest, SearchResponse, DisciplineDetection
 from app.services.openalex_service import openalex_service
 from app.services.db_service import db_service
 from app.services.trust_safety import verify_journals_batch
@@ -44,15 +44,25 @@ async def search_journals(
         HTTPException 401: If not authenticated
     """
     # Search for journals
-    journals, discipline = openalex_service.search_journals_by_text(
+    journals, discipline, field, confidence = openalex_service.search_journals_by_text(
         title=request.title,
         abstract=request.abstract,
         keywords=request.keywords,
         prefer_open_access=request.prefer_open_access,
     )
 
+    # Build discipline detection object (Story 2.1)
+    discipline_detection = None
+    if discipline:
+        discipline_detection = DisciplineDetection(
+            name=discipline,
+            field=field if field else None,
+            confidence=round(confidence, 2),
+            source="openalex",
+        )
+
     # Debug logging
-    print(f"[DEBUG] Search returned {len(journals)} journals for discipline: {discipline}")
+    print(f"[DEBUG] Search returned {len(journals)} journals for discipline: {discipline} (confidence: {confidence:.2f})")
     for j in journals[:5]:
         print(f"  - {j.name} (category: {j.category})")
 
@@ -87,6 +97,7 @@ async def search_journals(
     return SearchResponse(
         query=query_summary,
         discipline=discipline,
+        discipline_detection=discipline_detection,  # Story 2.1
         total_found=len(journals),
         journals=journals,
         search_id=search_id,

@@ -40,7 +40,7 @@ class TestOpenAlexLiveAPI:
         pulmonary conditions.
         """
 
-        journals, discipline = self.service.search_journals_by_text(
+        journals, discipline, _, _ = self.service.search_journals_by_text(
             title=title,
             abstract=abstract,
             prefer_open_access=True,
@@ -70,7 +70,7 @@ class TestOpenAlexLiveAPI:
         new insights into the regulation of gene expression.
         """
 
-        journals, discipline = self.service.search_journals_by_text(
+        journals, discipline, _, _ = self.service.search_journals_by_text(
             title=title,
             abstract=abstract,
         )

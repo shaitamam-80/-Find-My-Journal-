@@ -83,8 +83,8 @@ export function JournalCard({ journal }: JournalCardProps) {
           </div>
         </div>
 
-        {/* Match Reason */}
-        {journal.match_reason && (
+        {/* Match Details (Story 1.1 - Why it's a good fit) */}
+        {(journal.match_details?.length || journal.match_reason) && (
           <div
             className="mb-4 p-3.5 rounded-xl"
             style={{ background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)', border: '1px solid #bae6fd' }}
@@ -93,14 +93,42 @@ export function JournalCard({ journal }: JournalCardProps) {
               <div className="shrink-0 w-6 h-6 rounded-lg flex items-center justify-center mt-0.5 bg-blue-200">
                 <Lightbulb className="w-3.5 h-3.5 text-blue-600" />
               </div>
-              <div>
-                <p className="text-xs font-semibold mb-0.5 text-blue-800">
-                  Why this match?
+              <div className="flex-1">
+                <p className="text-xs font-semibold mb-1.5 text-blue-800">
+                  Why it's a good fit
                 </p>
-                <p className="text-sm leading-relaxed text-blue-700">
-                  {journal.match_reason}
-                </p>
+                {journal.match_details?.length ? (
+                  <ul className="space-y-1">
+                    {journal.match_details.slice(0, 3).map((detail, i) => (
+                      <li key={i} className="text-sm leading-relaxed text-blue-700 flex items-start gap-1.5">
+                        <span className="text-blue-400 mt-0.5">•</span>
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : journal.match_reason ? (
+                  <p className="text-sm leading-relaxed text-blue-700">
+                    {journal.match_reason}
+                  </p>
+                ) : null}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* Matched Topics (Story 1.2 - Topic Badges) */}
+        {journal.matched_topics && journal.matched_topics.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs font-medium mb-2 text-gray-500">Matching Topics</p>
+            <div className="flex flex-wrap gap-1.5">
+              {journal.matched_topics.slice(0, 5).map((topic, i) => (
+                <span
+                  key={i}
+                  className="px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200"
+                >
+                  ✓ {topic}
+                </span>
+              ))}
             </div>
           </div>
         )}

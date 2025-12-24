@@ -6,6 +6,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Find My Journal is a SaaS application that helps researchers discover academic journals for their papers. It uses a hybrid search algorithm combining keywords and topic matching via the OpenAlex API.
 
+## Available Skills
+
+Before starting work, read the relevant skill for best practices:
+
+- **product-manager**: PRD templates, personas, competitive analysis → `.claude/skills/product-manager/SKILL.md`
+- **frontend-dev**: React/TypeScript patterns, Tailwind, components → `.claude/skills/frontend-dev/SKILL.md`
+- **backend-dev**: FastAPI, Python patterns, API design → `.claude/skills/backend-dev/SKILL.md`
+- **database**: PostgreSQL, Supabase, data modeling → `.claude/skills/database/SKILL.md`
+- **security-specialist**: Security best practices, vulnerability detection → `.claude/skills/security-specialist/SKILL.md`
+
+### How to Use Skills
+
+1. Read the SKILL.md file for the relevant task
+2. Follow the patterns and best practices described
+3. Check the `references/` folder for detailed examples
+
 ## Development Commands
 
 ### Backend (FastAPI + Python)
@@ -183,6 +199,50 @@ Uses Tailwind logical properties for RTL compatibility:
 - Functional components with hooks
 - Tailwind CSS for styling
 - React Router for navigation
+
+## Security Rules - NEVER BYPASS
+
+### Database Security (Supabase)
+- RLS is enabled on all tables - NEVER disable it
+- Always add RLS policies when creating new tables
+- Use `auth.uid()` for user-scoped queries
+- NEVER expose `service_role` key in frontend code
+- NEVER use `service_role` key for client-side operations
+
+### API Keys & Secrets
+- All secrets must be in environment variables
+- Frontend: Use `VITE_` prefix (e.g., `VITE_SUPABASE_ANON_KEY`)
+- Backend: Use `os.getenv()` or config module
+- NEVER hardcode API keys in source code
+- NEVER commit `.env` files to Git
+
+### Safe Keys (OK to expose in frontend):
+- `VITE_SUPABASE_URL` - Public project URL
+- `VITE_SUPABASE_ANON_KEY` - Public anonymous key (RLS protects data)
+
+### Secret Keys (Backend ONLY):
+- `SUPABASE_SERVICE_ROLE_KEY` - Full database access
+- `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` / `GEMINI_API_KEY` - AI service keys
+- Any key starting with `sk-` or containing `secret`
+
+### Input Validation
+- Always validate user input with Pydantic (backend)
+- Sanitize text inputs before database operations
+- Use parameterized queries (Supabase client handles this)
+- NEVER trust user input directly
+
+### Before Every Commit
+```bash
+# Check for exposed secrets
+grep -rn "eyJ\|sk-\|service_role" --include="*.ts" --include="*.tsx" --include="*.py" .
+```
+
+### Current Security Status
+- [x] .gitignore excludes .env files
+- [x] Frontend uses VITE_SUPABASE_ANON_KEY only
+- [x] Backend keeps service_role in env vars
+- [x] RLS policies implemented on user tables
+- [x] Privacy-enhanced logging (query_hash instead of raw text)
 ## 🧠 Memory
 - **Knowledge Base:** `PROJECT_MEMORY.md` (Read this first!)
 
