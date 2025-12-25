@@ -130,7 +130,12 @@
       "Bash(npm run test:run:*)",
       "Bash(npm test:*)",
       "Bash(../venv/Scripts/python.exe -m pytest tests/ -v)",
-      "Bash(../venv/Scripts/python.exe -m uvicorn:*)"
+      "Bash(../venv/Scripts/python.exe -m uvicorn:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Dashboard, refactored search components, testing infrastructure\n\n- Add Dashboard page with stats overview and recent activity\n- Refactor Search page - split into SearchForm, SearchHeader, SearchResults\n- Rename JournalCardNew to JournalCard, remove old component\n- Add ErrorBoundary component with tests\n- Add Vitest config and unit test setup\n- Add dashboard API endpoint\n- Add logging module and test infrastructure for backend\n- Update E2E tests for new component structure\n- Add vercel.json for frontend deployment\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(railway link:*)",
+      "Bash(railway login:*)",
+      "Bash(railway status:*)",
+      "Bash(railway service:*)"
     ]
   }
 }
