@@ -5,9 +5,12 @@ Convert, categorize, and merge journal results.
 """
 from typing import Dict, List, Optional, Set
 
+from app.core.logging import get_logger
 from app.models.journal import Journal, JournalMetrics, JournalCategory
 from .client import get_client
 from .config import get_min_journal_works
+
+logger = get_logger(__name__)
 
 
 def convert_to_journal(source: dict) -> Optional[Journal]:
@@ -53,7 +56,7 @@ def convert_to_journal(source: dict) -> Optional[Journal]:
             topics=topics,
         )
     except Exception as e:
-        print(f"Error converting source: {e}")
+        logger.error(f"Error converting source: {e}")
         return None
 
 

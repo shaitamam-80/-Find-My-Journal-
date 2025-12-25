@@ -10,6 +10,10 @@ import json
 from pathlib import Path
 from typing import Dict, List, Set
 
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
+
 
 # Topics that indicate relevance for filtering (lowercase)
 # Used for soft-boosting, not hard filtering
@@ -560,9 +564,9 @@ def load_core_journals() -> Set[str]:
                             c.lower() for c in name if c.isalnum() or c.isspace()
                         )
                         core_journals.add(" ".join(normalized.split()))
-            print(f"Loaded {len(core_journals)} core journals for boosting.")
+            logger.info(f"Loaded {len(core_journals)} core journals for boosting.")
     except Exception as e:
-        print(f"Warning: Failed to load core journals: {e}")
+        logger.warning(f"Failed to load core journals: {e}")
 
     return core_journals
 

@@ -21,12 +21,13 @@ healthcare systems are substantial, potentially reducing diagnostic costs while 
 test.describe('Find My Journal E2E Tests', () => {
   // Note: Test user (find_test_user@gmail.com) is set to 'paid' tier with unlimited searches
   // No need to reset credits before tests
-  test('should redirect to login when not authenticated', async ({ page }) => {
+  test('should show landing page when not authenticated', async ({ page }) => {
     await page.goto('/')
 
-    // Should be redirected to login page
-    await expect(page).toHaveURL(/.*login/)
-    await expect(page.getByRole('heading', { name: /welcome back/i })).toBeVisible()
+    // Landing page should be visible (not redirected to login)
+    // The landing page has "FindMyJournal" logo and Sign Up/Log In links
+    await expect(page.getByText('FindMyJournal').first()).toBeVisible()
+    await expect(page.getByRole('link', { name: /sign up/i }).first()).toBeVisible()
   })
 
   test('should show login form elements', async ({ page }) => {
@@ -99,8 +100,8 @@ test.describe('Find My Journal E2E Tests', () => {
     // Wait for loading to complete (button shows "Searching...")
     await expect(page.getByText(/Searching\.\.\./i)).toBeVisible()
 
-    // Wait for results (new design uses "AI Analysis Complete" header)
-    await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible({ timeout: 60000 })
+    // Wait for results - look for "Top-Tier Journals" heading which indicates results loaded
+    await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible({ timeout: 60000 })
   })
 
   test('should show search limit indicator', async ({ page }) => {
@@ -113,13 +114,16 @@ test.describe('Find My Journal E2E Tests', () => {
     // Wait for search page
     await expect(page).toHaveURL(/.*search/, { timeout: 10000 })
 
+    // Wait for page to fully load (limits are fetched asynchronously)
+    await page.waitForLoadState('networkidle')
+
     // Should show search limit indicator in header (either "Searches today: X/Y" for free users or "Unlimited" for paid/admin)
     // Use .first() to avoid strict mode violation when multiple elements match
     const searchesToday = page.getByText(/searches today:/i).first()
     const unlimitedSearches = page.getByText(/unlimited/i).first()
 
-    // Wait for either indicator to appear
-    await expect(searchesToday.or(unlimitedSearches)).toBeVisible({ timeout: 5000 })
+    // Wait for either indicator to appear (increased timeout for async limit fetch)
+    await expect(searchesToday.or(unlimitedSearches)).toBeVisible({ timeout: 10000 })
   })
 
   test('should sign out successfully', async ({ page }) => {

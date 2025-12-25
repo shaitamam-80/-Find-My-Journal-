@@ -1,3 +1,7 @@
+# Test credentials - NEVER commit
+.env.test
+.env.test.local
+
 # Logs
 logs
 *.log

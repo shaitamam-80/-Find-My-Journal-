@@ -4,6 +4,9 @@ Provides a singleton client for database access.
 """
 from supabase import create_client, Client
 from app.core.config import get_settings
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 class DBService:
@@ -50,7 +53,7 @@ class DBService:
             # If we get here without exception, connection works
             return True
         except Exception as e:
-            print(f"Database connection error: {e}")
+            logger.error(f"Database connection error: {e}")
             return False
 
     def get_profile_by_id(self, user_id: str) -> dict | None:
@@ -100,7 +103,7 @@ class DBService:
             }).execute()
             return True
         except Exception as e:
-            print(f"Error logging search: {e}")
+            logger.error(f"Error logging search: {e}")
             return False
 
 
@@ -144,7 +147,7 @@ class DBService:
             }).execute()
             return share_id
         except Exception as e:
-            print(f"Error creating shared result: {e}")
+            logger.error(f"Error creating shared result: {e}")
             return None
 
     async def get_shared_result(self, share_id: str) -> dict | None:
@@ -225,7 +228,7 @@ class DBService:
             }).execute()
             return search_id
         except Exception as e:
-            print(f"Error saving search: {e}")
+            logger.error(f"Error saving search: {e}")
             return None
 
     async def get_saved_searches(self, user_id: str, limit: int = 20) -> list[dict]:
@@ -248,7 +251,7 @@ class DBService:
                 .execute()
             return response.data or []
         except Exception as e:
-            print(f"Error fetching saved searches: {e}")
+            logger.error(f"Error fetching saved searches: {e}")
             return []
 
     async def get_saved_search(self, user_id: str, search_id: str) -> dict | None:
@@ -292,7 +295,7 @@ class DBService:
                 .execute()
             return True
         except Exception as e:
-            print(f"Error deleting saved search: {e}")
+            logger.error(f"Error deleting saved search: {e}")
             return False
 
     # ==========================================================================
@@ -333,7 +336,7 @@ class DBService:
             }, on_conflict="user_id,journal_id").execute()
             return feedback_id
         except Exception as e:
-            print(f"Error submitting feedback: {e}")
+            logger.error(f"Error submitting feedback: {e}")
             return None
 
     async def get_user_feedback(self, user_id: str, journal_ids: list[str]) -> dict[str, str]:
@@ -359,7 +362,7 @@ class DBService:
 
             return {row["journal_id"]: row["rating"] for row in (response.data or [])}
         except Exception as e:
-            print(f"Error fetching feedback: {e}")
+            logger.error(f"Error fetching feedback: {e}")
             return {}
 
 

@@ -49,6 +49,13 @@ class Settings(BaseSettings):
     app_version: str = "1.0.0"
     debug: bool = False
 
+    # Logging
+    log_level: str = "INFO"
+
+    # Rate limiting
+    free_user_daily_limit: int = 2
+    free_user_explanation_limit: int = 15
+
     model_config = SettingsConfigDict(
         env_file=str(find_env_file()),
         env_file_encoding="utf-8",

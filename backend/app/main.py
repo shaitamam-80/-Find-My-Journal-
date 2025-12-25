@@ -12,13 +12,19 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
+from app.core.logging import setup_logging, get_logger
 from app.services.db_service import db_service
+
+# Initialize logging before anything else
+setup_logging()
+logger = get_logger(__name__)
 from app.api.v1.auth import router as auth_router
 from app.api.v1.search import router as search_router
 from app.api.v1.explain import router as explain_router
 from app.api.v1.share import router as share_router
 from app.api.v1.saved_searches import router as saved_searches_router
 from app.api.v1.feedback import router as feedback_router
+from app.api.v1.dashboard import router as dashboard_router
 
 settings = get_settings()
 
@@ -72,3 +78,4 @@ app.include_router(explain_router, prefix="/api/v1")
 app.include_router(share_router, prefix="/api/v1")
 app.include_router(saved_searches_router, prefix="/api/v1")
 app.include_router(feedback_router, prefix="/api/v1")
+app.include_router(dashboard_router, prefix="/api/v1")

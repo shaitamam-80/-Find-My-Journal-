@@ -41,9 +41,9 @@ async function performSearch(page: Page) {
   // Wait for loading state (button text changes to "Searching...")
   await expect(page.getByText(/Searching\.\.\./i)).toBeVisible({ timeout: 5000 })
 
-  // Wait for AI Analysis Header to appear (indicates results loaded)
+  // Wait for "Top-Tier Journals" heading to appear (indicates results loaded)
   // OpenAlex API can be slow - allow up to 3 minutes
-  await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible({ timeout: 180000 })
+  await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible({ timeout: 180000 })
 }
 
 test.describe('Search Results Page - New Design', () => {
@@ -55,7 +55,7 @@ test.describe('Search Results Page - New Design', () => {
       await performSearch(page)
 
       // Verify results appear
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible()
+      await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible()
       await expect(page.getByText(/matching journals/i)).toBeVisible()
     })
   })
@@ -81,10 +81,10 @@ test.describe('Search Results Page - New Design', () => {
     })
 
     test('should display key themes from keywords', async ({ page }) => {
-      // Keywords should appear as theme pills
-      await expect(page.getByText('machine learning')).toBeVisible()
-      await expect(page.getByText('medical imaging')).toBeVisible()
-      await expect(page.getByText('cancer detection')).toBeVisible()
+      // Keywords should appear as theme pills (exact match to avoid title match)
+      await expect(page.getByText('machine learning', { exact: true })).toBeVisible()
+      await expect(page.getByText('medical imaging', { exact: true })).toBeVisible()
+      await expect(page.getByText('cancer detection', { exact: true })).toBeVisible()
     })
 
     test('should display summary stats', async ({ page }) => {
@@ -105,14 +105,14 @@ test.describe('Search Results Page - New Design', () => {
 
     test('should display Top-Tier Journals category header', async ({ page }) => {
       // May or may not have results, but header logic should work
-      const topTierHeader = page.getByText('Top-Tier Journals')
+      const topTierHeader = page.getByRole('heading', { name: /top-tier journals/i })
       // This might not always appear if no top-tier journals found
       // Just check that the page loaded properly
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible()
+      await expect(topTierHeader).toBeVisible()
     })
 
     test('should display Niche Specialists category if journals exist', async ({ page }) => {
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible()
+      await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible()
       // Category sections only render if they have journals
     })
 
@@ -183,7 +183,7 @@ test.describe('Search Results Page - New Design', () => {
       // Look for OA badge - may or may not exist depending on results
       const oaBadge = page.getByText(/Open Access/i).first()
       // Just verify page loaded, OA badge depends on journal data
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible()
+      await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible()
     })
 
     test('should display match percentage in card', async ({ page }) => {
@@ -256,7 +256,7 @@ test.describe('Search Results Page - New Design', () => {
       await performSearch(page)
 
       // Verify key elements are visible
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible()
+      await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible()
       await expect(page.getByRole('button', { name: /All Results/i })).toBeVisible()
 
       // Take screenshot
@@ -271,7 +271,7 @@ test.describe('Search Results Page - New Design', () => {
       await performSearch(page)
 
       // Verify key elements are visible
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible()
+      await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible()
       await expect(page.getByRole('button', { name: /All Results/i })).toBeVisible()
 
       // Take screenshot
@@ -286,7 +286,7 @@ test.describe('Search Results Page - New Design', () => {
       await performSearch(page)
 
       // Verify key elements are visible
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible()
+      await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible()
       await expect(page.getByRole('button', { name: /All Results/i })).toBeVisible()
 
       // Take screenshot

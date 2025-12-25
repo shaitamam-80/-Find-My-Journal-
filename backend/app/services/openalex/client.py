@@ -2,6 +2,13 @@
 OpenAlex API Client
 
 Wraps pyalex library with error handling and logging.
+
+NOTE: This client uses synchronous pyalex library. FastAPI automatically
+runs sync functions in a threadpool, so no explicit async conversion needed.
+For future optimization, consider using httpx.AsyncClient directly with
+the OpenAlex REST API instead of pyalex.
+
+TODO: [ASYNC] Convert to async using httpx for better performance under load.
 """
 import pyalex
 from typing import List, Dict, Optional, Any

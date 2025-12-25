@@ -9,11 +9,14 @@ import hashlib
 
 from app.core.security import check_search_limit, increment_search_count
 from app.core.config import get_settings
+from app.core.logging import get_logger
 from app.models.user import UserProfile
 from app.models.journal import SearchRequest, SearchResponse, DisciplineDetection
 from app.services.openalex_service import openalex_service
 from app.services.db_service import db_service
 from app.services.trust_safety import verify_journals_batch
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/search", tags=["Search"])
 
@@ -62,19 +65,19 @@ async def search_journals(
         )
 
     # Debug logging
-    print(f"[DEBUG] Search returned {len(journals)} journals for discipline: {discipline} (confidence: {confidence:.2f})")
+    logger.debug(f"Search returned {len(journals)} journals for discipline: {discipline} (confidence: {confidence:.2f})")
     for j in journals[:5]:
-        print(f"  - {j.name} (category: {j.category})")
+        logger.debug(f"  - {j.name} (category: {j.category})")
 
     # Trust & Safety verification (async, concurrent)
     settings = get_settings()
     if settings.trust_safety_enabled and journals:
         try:
             journals = await verify_journals_batch(journals)
-            print(f"[DEBUG] Verification completed for {len(journals)} journals")
+            logger.debug(f"Verification completed for {len(journals)} journals")
         except Exception as e:
             # Don't fail search if verification fails
-            print(f"Warning: Verification failed, continuing without: {e}")
+            logger.warning(f"Verification failed, continuing without: {e}")
 
     # Generate search ID for logging
     search_id = str(uuid.uuid4())
@@ -158,4 +161,4 @@ async def _handle_search_logging(
         )
     except Exception as e:
         # Don't fail the search if logging fails
-        print(f"Warning: Failed to log search: {e}")
+        logger.warning(f"Failed to log search: {e}")

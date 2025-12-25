@@ -302,6 +302,58 @@ class ApiService {
     const data = await response.json()
     return data.feedback
   }
+
+  // ==========================================================================
+  // Dashboard (User Stats & Activity)
+  // ==========================================================================
+
+  /**
+   * Get user dashboard statistics.
+   */
+  async getDashboardStats(token: string): Promise<{
+    searches_today: number
+    searches_total: number
+    saved_searches_count: number
+    daily_limit: number | null
+    tier: string
+  }> {
+    const response = await fetch(`${API_BASE}/dashboard/stats`, {
+      headers: this.getAuthHeader(token),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch dashboard stats')
+    }
+
+    return response.json()
+  }
+
+  /**
+   * Get user's recent activity.
+   */
+  async getRecentActivity(
+    token: string,
+    limit: number = 10
+  ): Promise<{
+    activities: {
+      id: string
+      type: 'search' | 'save' | 'feedback'
+      description: string
+      created_at: string
+      metadata?: Record<string, unknown>
+    }[]
+    total: number
+  }> {
+    const response = await fetch(`${API_BASE}/dashboard/recent-activity?limit=${limit}`, {
+      headers: this.getAuthHeader(token),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch recent activity')
+    }
+
+    return response.json()
+  }
 }
 
 export const api = new ApiService()

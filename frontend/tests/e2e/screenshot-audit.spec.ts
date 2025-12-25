@@ -79,9 +79,9 @@ test.describe('UI Audit Screenshots', () => {
     // Capture loading state
     await page.screenshot({ path: 'screenshots/06-search-loading.png', fullPage: true })
 
-    // Wait for results (new design uses "AI Analysis Complete" header)
+    // Wait for results - look for "Top-Tier Journals" heading which indicates results loaded
     try {
-      await expect(page.getByText(/AI Analysis Complete/i)).toBeVisible({ timeout: 60000 })
+      await expect(page.getByRole('heading', { name: /top-tier journals/i })).toBeVisible({ timeout: 60000 })
       await page.waitForTimeout(1000) // Let animations complete
       await page.screenshot({ path: 'screenshots/07-search-results.png', fullPage: true })
     } catch (e) {

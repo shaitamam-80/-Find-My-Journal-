@@ -8,17 +8,19 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from app.core.config import get_settings
+from app.core.logging import get_logger
 from app.models.user import UserProfile, UserTier, TokenPayload
 from app.services.db_service import db_service
+
+logger = get_logger(__name__)
 
 # HTTP Bearer token scheme
 security = HTTPBearer(auto_error=False)
 
-# Daily search limit for free users
-FREE_USER_DAILY_LIMIT = 2
-
-# Daily explanation limit for free users
-FREE_USER_EXPLANATION_LIMIT = 15
+# Get limits from settings
+settings = get_settings()
+FREE_USER_DAILY_LIMIT = settings.free_user_daily_limit
+FREE_USER_EXPLANATION_LIMIT = settings.free_user_explanation_limit
 
 
 async def get_current_user(
@@ -189,7 +191,7 @@ async def increment_search_count(user_id: str) -> bool:
         return True
 
     except Exception as e:
-        print(f"Error incrementing search count: {e}")
+        logger.error(f"Error incrementing search count: {e}")
         return False
 
 
@@ -286,5 +288,5 @@ async def increment_explanation_count(user_id: str) -> bool:
         return True
 
     except Exception as e:
-        print(f"Error incrementing explanation count: {e}")
+        logger.error(f"Error incrementing explanation count: {e}")
         return False
