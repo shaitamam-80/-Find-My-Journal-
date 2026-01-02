@@ -75,7 +75,7 @@ class GeminiService:
             Cached explanation or None
         """
         try:
-            result = (
+            result = await (
                 db_service.client.table("explanation_cache")
                 .select("explanation, expires_at")
                 .eq("cache_key", cache_key)
@@ -96,7 +96,7 @@ class GeminiService:
                     return result.data["explanation"]
 
                 # Expired - delete and return None
-                db_service.client.table("explanation_cache").delete().eq(
+                await db_service.client.table("explanation_cache").delete().eq(
                     "cache_key", cache_key
                 ).execute()
                 logger.info(f"Expired cache entry deleted: {cache_key[:8]}...")
@@ -119,7 +119,7 @@ class GeminiService:
             now = datetime.now(timezone.utc)
             expires_at = now + timedelta(days=CACHE_TTL_DAYS)
 
-            db_service.client.table("explanation_cache").upsert(
+            await db_service.client.table("explanation_cache").upsert(
                 {
                     "cache_key": cache_key,
                     "explanation": explanation,

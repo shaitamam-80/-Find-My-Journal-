@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import type { Journal } from '../../types'
 import { api } from '../../services/api'
+import { logger } from '../../lib/logger'
 import {
   type JournalCategoryKey,
   categoryConfig,
@@ -73,22 +74,29 @@ export function AccordionJournalCard({
     }
   }
 
-  // Handle feedback submission (Story 5.1)
+  // Handle feedback submission with optimistic update (Story 5.1)
   const handleFeedback = async (rating: 'up' | 'down') => {
     if (!sessionToken || feedbackLoading) return
 
+    // Store previous state for rollback
+    const previousFeedback = feedback
+
     // Toggle off if clicking same rating
-    if (feedback === rating) {
-      setFeedback(null)
-      return
-    }
+    const newFeedback = feedback === rating ? null : rating
+
+    // Optimistic update - update UI immediately
+    setFeedback(newFeedback)
+
+    // Skip API call if just toggling off
+    if (newFeedback === null) return
 
     setFeedbackLoading(true)
     try {
       await api.submitFeedback(sessionToken, journal.id, rating)
-      setFeedback(rating)
     } catch (err) {
-      console.error('Failed to submit feedback:', err)
+      // Rollback on error
+      setFeedback(previousFeedback)
+      logger.error('Failed to submit feedback', err, { journalId: journal.id, rating })
     } finally {
       setFeedbackLoading(false)
     }

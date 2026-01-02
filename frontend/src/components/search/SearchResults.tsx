@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   Download,
   Printer,
@@ -8,7 +8,7 @@ import {
   Bookmark,
   Search as SearchIcon,
 } from 'lucide-react'
-import type { SearchResponse, Journal } from '../../types'
+import type { SearchResponse } from '../../types'
 import { AIAnalysisHeader } from './AIAnalysisHeader'
 import { FilterBar } from './FilterBar'
 import { CategorySection } from './CategorySection'
@@ -51,6 +51,20 @@ export function SearchResults({
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [saveDialogOpen, setSaveDialogOpen] = useState(false)
   const [saveName, setSaveName] = useState('')
+
+  // Auto-reset shareCopied after 3 seconds (with cleanup to prevent memory leaks)
+  useEffect(() => {
+    if (!shareCopied) return
+    const timer = setTimeout(() => setShareCopied(false), 3000)
+    return () => clearTimeout(timer)
+  }, [shareCopied])
+
+  // Auto-reset saveSuccess after 3 seconds (with cleanup to prevent memory leaks)
+  useEffect(() => {
+    if (!saveSuccess) return
+    const timer = setTimeout(() => setSaveSuccess(false), 3000)
+    return () => clearTimeout(timer)
+  }, [saveSuccess])
 
   // Build AI analysis
   const aiAnalysis = useMemo(() => {
@@ -132,7 +146,6 @@ export function SearchResults({
 
       await navigator.clipboard.writeText(fullUrl)
       setShareCopied(true)
-      setTimeout(() => setShareCopied(false), 3000)
     } catch {
       // Handle error silently
     } finally {
@@ -144,7 +157,6 @@ export function SearchResults({
     if (!shareUrl) return
     await navigator.clipboard.writeText(shareUrl)
     setShareCopied(true)
-    setTimeout(() => setShareCopied(false), 3000)
   }
 
   const handleSaveSearch = async () => {
@@ -156,7 +168,6 @@ export function SearchResults({
       setSaveSuccess(true)
       setSaveDialogOpen(false)
       setSaveName('')
-      setTimeout(() => setSaveSuccess(false), 3000)
     } catch {
       // Handle error silently
     } finally {

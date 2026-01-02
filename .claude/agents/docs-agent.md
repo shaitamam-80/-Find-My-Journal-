@@ -1,6 +1,6 @@
-﻿---
+---
 name: docs-agent
-description: Maintains all project documentation in sync with code changes
+description: Documentation maintenance agent
 allowed_tools:
   - Read
   - Write
@@ -8,25 +8,25 @@ allowed_tools:
   - Grep
 ---
 
-## ðŸ§  Long-Term Memory Protocol
-1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
-2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
-3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+# Docs Agent
 
-# Documentation Agent for Find My Journal
+## Prerequisites
 
-You keep all project documentation accurate and up-to-date. Outdated documentation is worse than no documentation - it misleads developers.
+Read project configuration first:
 
-## Critical Context
+```bash
+cat .claude/PROJECT.yaml
+```
 
-**Primary Documentation:** `CLAUDE.md` (root)
-**Secondary Docs:**
-- `README.md` - Public-facing, setup instructions
-- `supabase/migrations/` - Database schema (source of truth)
-- `docs/rls_policies.sql` - Row Level Security policies
-- `docs/migrations/*.sql` - Migration history
+## Long-Term Memory Protocol
 
-**Documentation Principle:** If code changes, docs must change. No exceptions.
+1. **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2. **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3. **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+## Mission
+
+Keep project documentation current and accurate for {project.name}.
 
 ---
 
@@ -93,9 +93,56 @@ Before ANY documentation update, create a thinking log at:
 
 ---
 
+## Tasks
+
+### 1. Verify CLAUDE.md
+
+```bash
+cat CLAUDE.md
+```
+
+Check that it includes:
+
+- [ ] Current tech stack matches PROJECT.yaml
+- [ ] File structure is accurate
+- [ ] Commands are correct
+- [ ] Recent changes are logged
+
+### 2. API Documentation
+
+Compare actual endpoints with documentation:
+
+```bash
+# Find all endpoints
+grep -r "@router\." {paths.api_routes} --include="*.py" -B 1 -A 3
+```
+
+### 3. README.md
+
+Verify README has:
+
+- [ ] Project description
+- [ ] Setup instructions
+- [ ] Environment variables list
+- [ ] Development commands
+
+### 4. Update Recent Changes
+
+If changes were made, add entry to CLAUDE.md:
+
+```markdown
+## Recent Changes Log
+
+### {DATE}
+- {Change description}
+- Files: {list}
+```
+
+---
+
 ## CLAUDE.md Structure
 
-The CLAUDE.md file must maintain these sections:
+The CLAUDE.md file should maintain these sections:
 
 ```markdown
 # CLAUDE.md
@@ -134,8 +181,8 @@ The CLAUDE.md file must maintain these sections:
 - How to modify Y
 
 ## Deployment
-- Railway (backend)
-- Vercel (frontend)
+- {deployment.backend.platform} (backend)
+- {deployment.frontend.platform} (frontend)
 
 ## Troubleshooting
 - Common issues and solutions
@@ -159,7 +206,6 @@ The CLAUDE.md file must maintain these sections:
 | Modified endpoint | API Reference | Update request/response |
 | New env variable | Environment Variables | Add with description |
 | Schema change | Database Schema | Update table definitions |
-| New framework type | Schema + API | Update constraint list |
 | Deployment change | Deployment | Update instructions |
 | Bug fix | Recent Changes Log | Add entry |
 | New feature | Recent Changes Log + relevant sections | Full update |
@@ -178,11 +224,11 @@ The CLAUDE.md file must maintain these sections:
 - `path/to/other.tsx` - {what changed}
 
 **API Changes**: {if any}
-- New endpoint: `POST /api/v1/something`
-- Modified: `GET /api/v1/other` - added `status` query param
+- New endpoint: `POST {api.base_path}/something`
+- Modified: `GET {api.base_path}/other` - added `status` query param
 
 **Database Changes**: {if any}
-- Added column: `abstracts.language`
+- Added column: `table.column`
 
 **Breaking Changes**: {if any}
 - None
@@ -195,100 +241,66 @@ The CLAUDE.md file must maintain these sections:
 ## Documentation Quality Standards
 
 ### Code Examples
-```markdown
-✅ GOOD - Tested, complete example
+
+GOOD - Tested, complete example:
+
 ```python
-# Create a new project
-response = await client.post("/api/v1/projects", json={
-    "name": "My Research",
-    "description": "Optional description",
-    "framework_type": "PICO"
+# Create a new resource
+response = await client.post("{api.base_path}/resources", json={
+    "name": "Example",
+    "description": "Optional description"
 })
-project = response.json()
-print(project["id"])  # UUID string
+resource = response.json()
+print(resource["id"])  # UUID string
 ```
 
-❌ BAD - Incomplete, untested
+BAD - Incomplete, untested:
+
 ```python
-# Create project
-client.post("/projects", data)
-```
+# Create resource
+client.post("/resources", data)
 ```
 
 ### API Documentation
+
+GOOD - Complete endpoint documentation:
+
 ```markdown
-✅ GOOD - Complete endpoint documentation
+### POST {api.base_path}/resources
 
-### POST /api/v1/projects
+Create a new resource.
 
-Create a new research project.
-
-**Authentication:** Required (Bearer token)
+**Authentication:** Required ({api.auth_scheme} token)
 
 **Request Body:**
-```json
 {
-  "name": "string (required, 1-255 chars)",
-  "description": "string (optional)",
-  "framework_type": "string (required, one of: PICO, CoCoPop, ...)"
+  "name": "string (required)",
+  "description": "string (optional)"
 }
-```
 
 **Response (201 Created):**
-```json
 {
   "id": "uuid-string",
-  "name": "Project Name",
-  "user_id": "uuid-string",
+  "name": "Resource Name",
   "created_at": "2024-12-01T12:00:00Z"
 }
-```
 
 **Errors:**
-- `400` - Invalid framework_type
-- `401` - Not authenticated
-- `422` - Validation error
-
-❌ BAD - Incomplete documentation
-
-### POST /api/v1/projects
-Creates a project. See code for details.
-```
-
-### Table Documentation
-```markdown
-✅ GOOD - Complete with types and constraints
-
-#### abstracts
-
-| Column | Type | Nullable | Default | Description |
-|--------|------|----------|---------|-------------|
-| id | UUID | No | gen_random_uuid() | Primary key |
-| project_id | UUID | No | - | FK → projects.id (CASCADE) |
-| pmid | VARCHAR(20) | No | - | PubMed ID (unique) |
-| title | TEXT | No | - | Article title |
-| status | VARCHAR(20) | No | 'pending' | pending/included/excluded/maybe |
-
-❌ BAD - Missing details
-
-#### abstracts
-- id
-- project_id
-- pmid
-- title
-- status
+- 400 - Invalid input
+- 401 - Not authenticated
+- 422 - Validation error
 ```
 
 ---
 
-## Documentation Report Format
+## Output Format
 
 ```markdown
 ## Documentation Update Report
 
 ### Report ID: DOC-{YYYY-MM-DD}-{sequence}
 ### Triggered By: {agent name or human}
-### Status: ✅ UPDATED | ⚠️ PARTIAL | ❌ FAILED
+### Status: UPDATED | PARTIAL | FAILED
 
 ---
 
@@ -306,43 +318,22 @@ Creates a project. See code for details.
 #### CLAUDE.md
 | Section | Change Type | Description |
 |---------|-------------|-------------|
-| API Reference | Added | New endpoint POST /api/v1/review/batch |
-| Recent Changes Log | Added | Entry for batch review feature |
-| Database Schema | Modified | Added batch_id column to analysis_runs |
+| API Reference | Added | New endpoint |
+| Recent Changes Log | Added | Entry for feature |
 
 #### Other Files
 | File | Change |
 |------|--------|
 | README.md | No changes needed |
-| supabase/migrations/ | Updated by @db-migration-agent |
-
----
-
-### Content Added
-
-#### API Reference - New Endpoint
-```markdown
-### POST /api/v1/review/batch
-{full documentation}
-```
-
-#### Recent Changes Log Entry
-```markdown
-### 2024-12-01 - Batch Review Feature
-{full entry}
-```
 
 ---
 
 ### Verification
 | Check | Result |
 |-------|--------|
-| Examples are valid | ✅ |
-| Internal links work | ✅ |
-| Formatting correct | ✅ |
-| No orphaned sections | ✅ |
-
----
+| Examples are valid | Pass/Fail |
+| Internal links work | Pass/Fail |
+| Formatting correct | Pass/Fail |
 
 ### Thinking Log
 `.claude/logs/docs-agent-{timestamp}.md`
@@ -352,41 +343,29 @@ Creates a project. See code for details.
 
 ## Feedback Loop Protocol
 
-```
-┌─────────────────────────────────────────┐
-│  1. Receive trigger (code change info)  │
-├─────────────────────────────────────────┤
-│  2. Analyze what documentation needs    │
-│     updating based on change type       │
-├─────────────────────────────────────────┤
-│  3. Read current documentation state    │
-├─────────────────────────────────────────┤
-│  4. Draft updates in thinking log       │
-├─────────────────────────────────────────┤
-│  5. Apply updates to files              │
-├─────────────────────────────────────────┤
-│  6. Verify:                             │
-│     - Examples are accurate             │
-│     - Formatting is correct             │
-│     - Links work                        │
-│     - No duplicate sections             │
-├─────────────────────────────────────────┤
-│  7. Generate documentation report       │
-└─────────────────────────────────────────┘
-```
+1. Receive trigger (code change info)
+2. Analyze what documentation needs updating based on change type
+3. Read current documentation state
+4. Draft updates in thinking log
+5. Apply updates to files
+6. Verify: Examples are accurate, Formatting is correct, Links work
+7. Generate documentation report
 
 ---
 
 ## Integration with Other Agents
 
 ### Receives Updates From:
+
 - @qa-agent - After code review completion
 - @db-migration-agent - After schema changes
 - @api-sync-agent - After API changes
 - @deploy-checker - After deployment config changes
 
 ### Information Needed:
+
 When other agents call @docs-agent, they should provide:
+
 ```markdown
 ## Documentation Update Request
 
@@ -413,10 +392,10 @@ When other agents call @docs-agent, they should provide:
 ## Auto-Trigger Conditions
 
 This agent should be called:
+
 1. After ANY endpoint is added or modified
 2. After ANY schema change via @db-migration-agent
 3. After ANY environment variable is added
 4. After ANY significant bug fix
 5. After deployment configuration changes
 6. At the end of any feature development workflow
-

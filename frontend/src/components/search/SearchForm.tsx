@@ -7,6 +7,7 @@ import {
   Trash2,
   Search as SearchIcon,
 } from 'lucide-react'
+import { VALIDATION_RULES, validateSearchForm } from '../../constants/validation'
 
 interface SearchFormProps {
   onSearch: (data: SearchFormData) => Promise<void>
@@ -50,13 +51,9 @@ export function SearchForm({
     setLocalError('')
     onClearError()
 
-    if (title.length < 5) {
-      setLocalError('Title must be at least 5 characters')
-      return
-    }
-
-    if (abstract.length < 50) {
-      setLocalError('Abstract must be at least 50 characters')
+    const validation = validateSearchForm({ title, abstract })
+    if (!validation.isValid) {
+      setLocalError(validation.error!)
       return
     }
 
@@ -126,10 +123,10 @@ export function SearchForm({
             required
           />
           <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-400">Minimum 50 characters required</p>
+            <p className="text-xs text-gray-400">Minimum {VALIDATION_RULES.ABSTRACT_MIN_LENGTH} characters required</p>
             <p
               className={`text-xs font-medium ${
-                abstract.length >= 50 ? 'text-green-500' : 'text-gray-400'
+                abstract.length >= VALIDATION_RULES.ABSTRACT_MIN_LENGTH ? 'text-green-500' : 'text-gray-400'
               }`}
             >
               {abstract.length} characters
@@ -242,6 +239,3 @@ export function SearchForm({
     </div>
   )
 }
-
-// Export form data for reuse
-export type { SearchFormData }

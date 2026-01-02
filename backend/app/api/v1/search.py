@@ -122,7 +122,7 @@ async def get_search_history(
         List of recent searches
     """
     try:
-        result = (
+        result = await (
             db_service.client.table("search_logs")
             .select("id, query, results_count, created_at")
             .eq("user_id", user.id)

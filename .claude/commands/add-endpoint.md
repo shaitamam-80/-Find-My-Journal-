@@ -1,5 +1,5 @@
-﻿---
-description: Add a new API endpoint with synchronized backend (FastAPI) and frontend (React + Vite) implementation
+---
+description: Add a new API endpoint with synchronized backend and frontend implementation
 allowed_tools:
   - Read
   - Write
@@ -10,7 +10,18 @@ allowed_tools:
 
 # Add API Endpoint Workflow
 
+## Prerequisites
+
+Read project configuration:
+
+```bash
+cat .claude/PROJECT.yaml
+```
+
+Use configuration values throughout this command.
+
 ## Endpoint Specification
+
 $ARGUMENTS
 
 ---
@@ -71,7 +82,7 @@ Create database changes for new endpoint:
 
 ### 3.1 Create/Update Pydantic Schemas
 
-**File:** `backend/app/api/models/schemas.py`
+**File:** `{paths.models}/schemas.py`
 
 ```python
 # Request model
@@ -79,7 +90,7 @@ class {Name}Request(BaseModel):
     """Request body for {endpoint description}."""
     field1: str = Field(..., description="Description")
     field2: Optional[int] = Field(None, description="Optional field")
-    
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -94,20 +105,19 @@ class {Name}Response(BaseModel):
     id: str
     field1: str
     created_at: datetime
-    
+
     class Config:
         from_attributes = True
 ```
 
 ### 3.2 Create Route Handler
 
-**File:** `backend/app/api/routes/{resource}.py`
+**File:** `{paths.api_routes}/{resource}.py`
 
 ```python
 from fastapi import APIRouter, Depends, HTTPException
 from app.core.auth import get_current_user
 from app.services.database import db_service
-from app.services.ai_service import ai_service
 from app.api.models.schemas import {Name}Request, {Name}Response
 import logging
 
@@ -121,12 +131,12 @@ async def {function_name}(
 ) -> {Name}Response:
     """
     {Endpoint description}.
-    
+
     - **request.field1**: Description of field1
     - **request.field2**: Description of field2
-    
+
     Returns the created/retrieved resource.
-    
+
     Raises:
         HTTPException 400: If validation fails
         HTTPException 401: If not authenticated
@@ -136,18 +146,18 @@ async def {function_name}(
         # Validate input
         if not request.field1:
             raise HTTPException(status_code=400, detail="field1 is required")
-        
+
         # Business logic
         result = await db_service.{operation}(
             user_id=current_user["id"],
             data=request.model_dump()
         )
-        
+
         if not result:
             raise HTTPException(status_code=404, detail="Resource not found")
-        
+
         return {Name}Response(**result)
-        
+
     except HTTPException:
         raise
     except Exception as e:
@@ -157,7 +167,7 @@ async def {function_name}(
 
 ### 3.3 Register Route (if new router)
 
-**File:** `backend/main.py`
+**File:** `{stack.backend.path}/app/main.py`
 
 ```python
 from app.api.routes.{resource} import router as {resource}_router
@@ -167,20 +177,20 @@ app.include_router({resource}_router, prefix="/api/v1", tags=["{Resource}"])
 
 ### 3.4 Add Service Method (if needed)
 
-**File:** `backend/app/services/database.py` or relevant service
+**File:** `{paths.services}/{service}.py`
 
 ```python
 async def {operation}(self, user_id: str, data: dict) -> dict:
     """
     {Description of what this does}.
-    
+
     Args:
         user_id: The authenticated user's ID
         data: The request data
-        
+
     Returns:
         The created/retrieved record
-        
+
     Raises:
         Exception: If database operation fails
     """
@@ -191,10 +201,10 @@ async def {operation}(self, user_id: str, data: dict) -> dict:
 ### 3.5 Verify Backend
 
 ```bash
-cd backend
+cd {stack.backend.path}
 python -m py_compile app/api/routes/{resource}.py
 python -m py_compile app/api/models/schemas.py
-python main.py  # Start and test manually or with curl
+uvicorn {stack.backend.entry_point} --reload --port {stack.backend.port}  # Start and test
 ```
 
 ---
@@ -203,7 +213,7 @@ python main.py  # Start and test manually or with curl
 
 ### 4.1 Add TypeScript Interfaces
 
-**File:** `frontend/types/api.ts` (create if needed) or in `frontend/lib/api.ts`
+**File:** `{paths.types}` or `{paths.api_service}`
 
 ```typescript
 // Request type
@@ -222,7 +232,7 @@ export interface {Name}Response {
 
 ### 4.2 Add API Client Method
 
-**File:** `frontend/lib/api.ts`
+**File:** `{paths.api_service}`
 
 ```typescript
 /**
@@ -251,10 +261,10 @@ export const list{Name} = async (params?: { status?: string }): Promise<{Name}Re
 
 ### 4.3 Add Error Handling in UI Component
 
-**File:** Relevant page or component
+**File:** Relevant page in `{paths.pages}` or component in `{paths.components}`
 
 ```typescript
-import { {functionName} } from '@/lib/api';
+import { {functionName} } from '{paths.api_service}';
 import { useState } from 'react';
 
 const Component = () => {
@@ -264,7 +274,7 @@ const Component = () => {
   const handleSubmit = async (data: {Name}Request) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const result = await {functionName}(data);
       // Handle success
@@ -298,9 +308,9 @@ const Component = () => {
 ### 4.4 Verify Frontend
 
 ```bash
-cd frontend
+cd {stack.frontend.path}
 npx tsc --noEmit  # Type check
-npm run build     # Build check
+{stack.frontend.build_command}  # Build check
 ```
 
 ---
@@ -313,8 +323,8 @@ npm run build     # Build check
 Verify sync for new endpoint:
 - Method: {method}
 - Path: /api/v1/{path}
-- Backend file: backend/app/api/routes/{resource}.py
-- Frontend file: frontend/lib/api.ts
+- Backend file: {paths.api_routes}/{resource}.py
+- Frontend file: {paths.api_service}
 ```
 
 ### 5.2 Call @qa-agent
@@ -326,10 +336,10 @@ Review new endpoint:
 - Files: {list}
 ```
 
-### 5.3 Call @hebrew-validator (if Query-related)
+### 5.3 Call @hebrew-validator (if Query-related and conventions.primary_language == hebrew)
 
 ```
-Validate endpoint for Hebrew content:
+Validate endpoint for content:
 - Endpoint: {path}
 - Type: {input/output}
 ```
@@ -374,8 +384,8 @@ Add documentation for new endpoint:
 ```
 Test the full flow:
 
-1. Start backend: cd backend && python main.py
-2. Start frontend: cd frontend && npm run dev
+1. Start backend: cd {stack.backend.path} && uvicorn {stack.backend.entry_point} --reload --port {stack.backend.port}
+2. Start frontend: cd {stack.frontend.path} && npm run dev
 3. Test endpoint via UI or curl
 4. Verify response matches specification
 5. Test error cases
@@ -439,8 +449,8 @@ Test the full flow:
 ### Timestamp: {time}
 
 ### Files Created/Modified
-- api.ts: Added {functionName}
-- types: Added {interface names}
+- {paths.api_service}: Added {functionName}
+- {paths.types}: Added {interface names}
 - Component: {changes if made}
 
 ### Verification
@@ -476,4 +486,3 @@ Test the full flow:
 ### Files Changed: {count}
 ### Ready for Merge: {yes/no}
 ```
-

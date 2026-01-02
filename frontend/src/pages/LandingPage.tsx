@@ -31,6 +31,14 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Skip to main content link for keyboard navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-60 focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-teal-600"
+      >
+        Skip to main content
+      </a>
+
       {/* Side Menu */}
       <div className={`fixed top-0 start-0 h-full w-72 bg-white border-e border-slate-200 shadow-xl z-50 transform transition-transform duration-300 ${sideMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6">
@@ -41,19 +49,24 @@ export function LandingPage() {
               </div>
               <span className="font-bold text-slate-900">FindMyJournal</span>
             </div>
-            <button onClick={() => setSideMenuOpen(false)} className="p-2 hover:bg-slate-100 rounded-lg">
-              <X className="w-5 h-5 text-slate-500" />
+            <button
+              onClick={() => setSideMenuOpen(false)}
+              className="p-2 hover:bg-slate-100 rounded-lg"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5 text-slate-500" aria-hidden="true" />
             </button>
           </div>
 
-          <nav className="space-y-2">
+          <nav className="space-y-2" aria-label="Main navigation">
             {menuItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
                 className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-teal-600 hover:bg-slate-50 rounded-xl transition-all"
+                aria-label={`Navigate to ${item.name} section`}
               >
-                {item.icon}
+                <span aria-hidden="true">{item.icon}</span>
                 <span className="font-medium">{item.name}</span>
               </button>
             ))}
@@ -88,8 +101,12 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <button onClick={() => setSideMenuOpen(true)} className="p-2 hover:bg-slate-100 rounded-xl transition-colors lg:hidden">
-                <Menu className="w-6 h-6 text-slate-600" />
+              <button
+                onClick={() => setSideMenuOpen(true)}
+                className="p-2 hover:bg-slate-100 rounded-xl transition-colors lg:hidden"
+                aria-label="Open menu"
+              >
+                <Menu className="w-6 h-6 text-slate-600" aria-hidden="true" />
               </button>
               <div className="w-11 h-11 bg-slate-900 rounded-2xl flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-white" />
@@ -123,8 +140,9 @@ export function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section id="hero" className="relative pt-32 pb-20 px-6 bg-slate-50">
-        <div className="max-w-6xl mx-auto relative z-10">
+      <main id="main-content">
+        <section id="hero" className="relative pt-32 pb-20 px-6 bg-slate-50">
+          <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-50 border border-teal-200 rounded-full text-teal-600 text-sm font-medium mb-8">
               <Zap className="w-4 h-4" />
@@ -317,6 +335,7 @@ export function LandingPage() {
           </Link>
         </div>
       </section>
+      </main>
 
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-12 px-6">

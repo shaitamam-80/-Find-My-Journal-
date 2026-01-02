@@ -136,3 +136,93 @@ export interface ExplanationResponse {
   is_ai_generated: boolean
   remaining_today: number | null
 }
+
+// =============================================================================
+// User Profile Types
+// =============================================================================
+
+export interface ProfileUpdateRequest {
+  display_name?: string
+  institution?: string
+  research_field?: string
+  orcid_id?: string
+  country?: string
+  language_preference?: string
+  email_notifications?: boolean
+}
+
+export interface ProfileResponse {
+  id: string
+  email: string
+  display_name: string | null
+  institution: string | null
+  research_field: string | null
+  orcid_id: string | null
+  country: string | null
+  language_preference: string
+  email_notifications: boolean
+  tier: string
+  credits_used_today: number
+  explanations_used_today: number
+  has_unlimited_searches: boolean
+  is_active: boolean
+  created_at: string | null
+  updated_at: string | null
+  last_login_at: string | null
+}
+
+export interface UsageStats {
+  total_searches: number
+  total_saved_searches: number
+  total_feedback_given: number
+  searches_this_month: number
+  member_since: string | null
+  last_search_at: string | null
+}
+
+// =============================================================================
+// Admin Types
+// =============================================================================
+
+export interface UserListItem {
+  id: string
+  email: string
+  display_name: string | null
+  tier: string
+  is_active: boolean
+  credits_used_today: number
+  created_at: string | null
+  last_login_at: string | null
+}
+
+export interface UserListResponse {
+  users: UserListItem[]
+  total: number
+  page: number
+  limit: number
+  total_pages: number
+}
+
+export interface AdminUserUpdate {
+  tier?: 'free' | 'paid' | 'super_admin'
+  is_active?: boolean
+  has_unlimited_searches?: boolean
+}
+
+export interface PlatformStats {
+  total_users: number
+  active_users_today: number
+  active_users_week: number
+  active_users_month: number
+  users_by_tier: {
+    free: number
+    paid: number
+    super_admin: number
+  }
+  total_searches_today: number
+  total_searches_week: number
+  total_searches_month: number
+  new_users_today: number
+  new_users_week: number
+  new_users_month: number
+}

@@ -135,7 +135,17 @@
       "Bash(railway link:*)",
       "Bash(railway login:*)",
       "Bash(railway status:*)",
-      "Bash(railway service:*)"
+      "Bash(railway service:*)",
+      "Bash(python:*)",
+      "Bash(..venvScriptspip.exe install --upgrade supabase)",
+      "Bash(.venvScriptspython.exe -m pip install --upgrade supabase)",
+      "Bash(Select-Object -Last 10)",
+      "Bash(./venv/Scripts/python.exe -m pip install:*)",
+      "Bash(./venv/Scripts/python.exe:*)",
+      "Bash(timeout 15 ../venv/Scripts/python.exe -m uvicorn:*)",
+      "Bash(npm run lint:*)",
+      "Bash(git init:*)",
+      "Bash(gh repo create:*)"
     ]
   }
 }

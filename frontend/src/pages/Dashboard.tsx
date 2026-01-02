@@ -10,6 +10,8 @@ import {
   LogOut,
   AlertCircle,
   RefreshCw,
+  Settings,
+  Shield,
 } from 'lucide-react'
 
 interface DashboardStats {
@@ -29,7 +31,7 @@ interface Activity {
 }
 
 export function Dashboard() {
-  const { user, session, signOut } = useAuth()
+  const { user, session, profile, signOut } = useAuth()
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [activities, setActivities] = useState<Activity[]>([])
   const [loading, setLoading] = useState(true)
@@ -85,6 +87,24 @@ export function Dashboard() {
                 <Search className="w-5 h-5" />
                 <span className="hidden sm:inline">Search</span>
               </Link>
+
+              <Link
+                to="/settings"
+                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
+              >
+                <Settings className="w-5 h-5" />
+                <span className="hidden sm:inline">Settings</span>
+              </Link>
+
+              {profile?.tier === 'super_admin' && (
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-xl transition-colors"
+                >
+                  <Shield className="w-5 h-5" />
+                  <span className="hidden sm:inline">Admin</span>
+                </Link>
+              )}
 
               <div className="flex items-center gap-3">
                 <span className="hidden md:block text-sm text-gray-500">

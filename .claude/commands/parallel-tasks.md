@@ -1,4 +1,4 @@
-﻿---
+---
 description: Execute multiple tasks in parallel using Task Tool with proper coordination
 allowed_tools:
   - Read
@@ -9,7 +9,18 @@ allowed_tools:
 
 # Parallel Task Execution
 
+## Prerequisites
+
+Read project configuration:
+
+```bash
+cat .claude/PROJECT.yaml
+```
+
+Use configuration values throughout this command.
+
 ## Tasks to Execute
+
 $ARGUMENTS
 
 ---
@@ -82,26 +93,26 @@ Tasks modify overlapping files. Use Git Worktrees.
 ```
 First, set up worktrees:
 
-git worktree add ../medai-hub-task1 -b task/task1
-git worktree add ../medai-hub-task2 -b task/task2
-git worktree add ../medai-hub-task3 -b task/task3
+git worktree add ../{project.slug}-task1 -b task/task1
+git worktree add ../{project.slug}-task2 -b task/task2
+git worktree add ../{project.slug}-task3 -b task/task3
 
 Then run in parallel using task tool:
 
 Task 1:
-- Working directory: ../medai-hub-task1
+- Working directory: ../{project.slug}-task1
 - Branch: task/task1
 - {task description}
 - Write thinking log: .claude/logs/task1-{timestamp}.md
 
 Task 2:
-- Working directory: ../medai-hub-task2
+- Working directory: ../{project.slug}-task2
 - Branch: task/task2
 - {task description}
 - Write thinking log: .claude/logs/task2-{timestamp}.md
 
 Task 3:
-- Working directory: ../medai-hub-task3
+- Working directory: ../{project.slug}-task3
 - Branch: task/task3
 - {task description}
 - Write thinking log: .claude/logs/task3-{timestamp}.md
@@ -258,16 +269,16 @@ Task 3: {status}
 
 ```bash
 # Merge in dependency order
-cd ../medai-hub
+cd ../{project.slug}
 git merge task/task1
 git merge task/task2
 git merge task/task3
 
 # Resolve any conflicts
 # Then cleanup
-git worktree remove ../medai-hub-task1
-git worktree remove ../medai-hub-task2
-git worktree remove ../medai-hub-task3
+git worktree remove ../{project.slug}-task1
+git worktree remove ../{project.slug}-task2
+git worktree remove ../{project.slug}-task3
 git branch -d task/task1 task/task2 task/task3
 ```
 
@@ -280,7 +291,7 @@ After all tasks complete and merge (if applicable):
 
 1. Call @qa-agent for combined review
 2. Call @api-sync-agent if API changes
-3. Call @hebrew-validator if Query-related
+3. Call @hebrew-validator if content-related
 4. Call @docs-agent for documentation updates
 ```
 
@@ -322,6 +333,7 @@ After all tasks complete and merge (if applicable):
 ## Quick Reference: Task Tool Syntax
 
 ### Basic Parallel
+
 ```
 Run the following tasks in parallel using task tool:
 
@@ -330,21 +342,23 @@ Task 2: Do Y
 ```
 
 ### With Details
+
 ```
 Run the following tasks in parallel using task tool:
 
 Task 1 (Backend):
-- Working in: backend/
+- Working in: {stack.backend.path}/
 - Action: Create new service
 - Output: Report when done
 
 Task 2 (Frontend):
-- Working in: frontend/
+- Working in: {stack.frontend.path}/
 - Action: Create new component
 - Output: Report when done
 ```
 
 ### With Sub-Agents
+
 ```
 Run the following tasks in parallel using task tool:
 
@@ -391,4 +405,3 @@ Integration failed:
 Resolution:
 {How conflict was resolved}
 ```
-

@@ -1,5 +1,5 @@
-﻿---
-description: Complete pre-deployment verification checklist for Railway and Vercel
+---
+description: Complete pre-deployment verification checklist
 allowed_tools:
   - Read
   - Bash
@@ -9,10 +9,21 @@ allowed_tools:
 
 # Pre-Deployment Verification
 
+## Prerequisites
+
+Read project configuration:
+
+```bash
+cat .claude/PROJECT.yaml
+```
+
+Use configuration values throughout this command.
+
 ## Deployment Target
+
 $ARGUMENTS
 
-Default: Production (Railway + Vercel)
+Default: Production ({deployment.backend.platform} + {deployment.frontend.platform})
 
 ---
 
@@ -33,11 +44,11 @@ think about deployment context:
 # Current branch
 git branch --show-current
 
-# Changes since last deploy (compare with main)
-git log main..HEAD --oneline
+# Changes since last deploy (compare with {deployment.backend.auto_deploy_branch})
+git log {deployment.backend.auto_deploy_branch}..HEAD --oneline
 
 # Files changed
-git diff main --name-only
+git diff {deployment.backend.auto_deploy_branch} --name-only
 ```
 
 **Document in thinking log.**
@@ -72,12 +83,12 @@ Verify API sync for deployment:
 
 **Must show IN_SYNC before continuing.**
 
-### 2.3 Hebrew Validation
+### 2.3 Content Validation (if conventions.primary_language requires)
 
-Call @hebrew-validator:
+Call @hebrew-validator (if applicable):
 
 ```
-Validate all query-related code for Hebrew:
+Validate all query-related code for content:
 - Query generation endpoints
 - Framework data handling
 - Response content
@@ -103,7 +114,7 @@ Verify documentation is current:
 ### 3.1 Backend Build Test
 
 ```bash
-cd backend
+cd {stack.backend.path}
 
 # Syntax check all Python files
 find . -name "*.py" -exec python -m py_compile {} \;
@@ -112,21 +123,23 @@ find . -name "*.py" -exec python -m py_compile {} \;
 grep -r "DEBUG = True" . --include="*.py" && echo "⚠️ DEBUG=True found!"
 grep -r "localhost" . --include="*.py" | grep -v "# " | grep -v "0.0.0.0"
 
-# Verify Dockerfile
-cat Dockerfile
-docker build -t medai-hub-backend-test . 2>&1 | tail -20
+# Verify Dockerfile (if exists)
+if [ -f Dockerfile ]; then
+  cat Dockerfile
+  docker build -t {project.slug}-backend-test . 2>&1 | tail -20
+fi
 ```
 
 ### 3.2 Frontend Build Test
 
 ```bash
-cd frontend
+cd {stack.frontend.path}
 
 # Type check
 npx tsc --noEmit
 
 # Production build
-npm run build
+{stack.frontend.build_command}
 
 # Check for issues
 grep -r "localhost" . --include="*.ts" --include="*.tsx" | grep -v node_modules
@@ -139,35 +152,32 @@ grep -r "console.log" . --include="*.ts" --include="*.tsx" | grep -v node_module
 
 ### 4.1 Backend Environment Variables
 
-**Required in Railway:**
+**Required in {deployment.backend.platform}:**
 
 ```
 Variable                    Status    Notes
 ─────────────────────────────────────────────────
-GOOGLE_API_KEY             [ ]       Required, AI service
-SUPABASE_URL               [ ]       Required, database
-SUPABASE_KEY               [ ]       Required, anon key  
-SUPABASE_SERVICE_ROLE_KEY  [ ]       Required, NO SPACES!
+{environment.backend.required variables}
 DEBUG                      [ ]       Must be False
 ```
 
 **Verification:**
 ```python
-# Check config.py defaults
+# Check config defaults
 # DEBUG should default to False
 # No hardcoded keys
 ```
 
 ### 4.2 Frontend Environment Variables
 
-**Required in Vercel:**
+**Required in {deployment.frontend.platform}:**
 
 ```
 Variable                        Status    Notes
 ─────────────────────────────────────────────────────
-NEXT_PUBLIC_API_URL            [ ]       https://api.shaitamam.com
-NEXT_PUBLIC_SUPABASE_URL       [ ]       Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY  [ ]       Supabase anon key
+{stack.frontend.env_prefix}API_URL            [ ]       Production backend URL
+{stack.frontend.env_prefix}SUPABASE_URL       [ ]       Database project URL
+{stack.frontend.env_prefix}SUPABASE_ANON_KEY  [ ]       Database anon key
 ```
 
 ---
@@ -178,14 +188,14 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY  [ ]       Supabase anon key
 
 ```bash
 # Compare local schema with docs
-cat supabase/migrations/
+ls -la {stack.database.migrations_path}/
 ```
 
 ### 5.2 Migration Status
 
 ```
 Check:
-- [ ] All migrations in docs/migrations/ have been applied
+- [ ] All migrations in {stack.database.migrations_path}/ have been applied
 - [ ] Schema matches production
 - [ ] No pending migrations
 ```
@@ -208,9 +218,9 @@ Call @deploy-checker:
 ```
 Run complete deployment readiness check:
 - Environment: production
-- Backend: Railway
-- Frontend: Vercel
-- Database: Supabase
+- Backend: {deployment.backend.platform}
+- Frontend: {deployment.frontend.platform}
+- Database: {stack.database.provider}
 ```
 
 **Review report and address any issues.**
@@ -226,7 +236,7 @@ Backend:
 - [ ] Python syntax check passes
 - [ ] No DEBUG=True in production code
 - [ ] No hardcoded secrets
-- [ ] Dockerfile builds successfully
+- [ ] Dockerfile builds successfully (if applicable)
 - [ ] Health endpoint exists and works
 - [ ] CORS allows production frontend domain
 
@@ -244,7 +254,7 @@ Database:
 Integration:
 - [ ] @api-sync-agent shows IN_SYNC
 - [ ] @qa-agent shows APPROVED
-- [ ] @hebrew-validator shows CLEAN
+- [ ] Content validation shows CLEAN (if applicable)
 
 Documentation:
 - [ ] CLAUDE.md updated
@@ -270,9 +280,9 @@ All mandatory checks pass. Proceed with deployment.
 
 ```
 Deployment Plan:
-1. Merge to main/develop
-2. Railway auto-deploys backend
-3. Vercel auto-deploys frontend
+1. Merge to {deployment.backend.auto_deploy_branch}
+2. {deployment.backend.platform} auto-deploys backend
+3. {deployment.frontend.platform} auto-deploys frontend
 4. Verify health endpoints
 5. Test key user flows
 6. Monitor for errors
@@ -312,23 +322,23 @@ git merge feature/{name}
 git push origin develop
 
 # For production
-git checkout main
+git checkout {deployment.backend.auto_deploy_branch}
 git merge develop
-git push origin main
+git push origin {deployment.backend.auto_deploy_branch}
 ```
 
 ### 9.2 Monitor Deployment
 
 ```
-Railway:
+{deployment.backend.platform}:
 - Watch build logs
 - Verify deployment completes
-- Check health endpoint: https://api.shaitamam.com/health
+- Check health endpoint: {production_backend_url}{stack.backend.health_endpoint}
 
-Vercel:
+{deployment.frontend.platform}:
 - Watch build logs
 - Verify deployment completes
-- Check site loads: https://shaitamam.com
+- Check site loads: {production_frontend_url}
 ```
 
 ### 9.3 Post-Deployment Verification
@@ -337,10 +347,8 @@ Vercel:
 Test critical flows:
 1. [ ] Homepage loads
 2. [ ] Login works
-3. [ ] Create project works
-4. [ ] Define tool chat works
-5. [ ] Query generation works
-6. [ ] File upload works (if changed)
+3. [ ] Core functionality works
+4. [ ] Key user flows complete successfully
 ```
 
 ---
@@ -349,20 +357,20 @@ Test critical flows:
 
 If issues occur post-deployment:
 
-### Railway Rollback
+### Backend Rollback ({deployment.backend.platform})
 
 ```
-1. Go to Railway dashboard
-2. Select medai-hub-backend service
+1. Go to {deployment.backend.platform} dashboard
+2. Select {project.slug}-backend service
 3. Go to Deployments
 4. Click "Rollback" on previous working deployment
 ```
 
-### Vercel Rollback
+### Frontend Rollback ({deployment.frontend.platform})
 
 ```
-1. Go to Vercel dashboard
-2. Select medai-hub project
+1. Go to {deployment.frontend.platform} dashboard
+2. Select {project.slug} project
 3. Go to Deployments
 4. Click "..." on previous deployment
 5. Select "Promote to Production"
@@ -371,9 +379,9 @@ If issues occur post-deployment:
 ### Database Rollback (if migration was applied)
 
 ```
-1. Run rollback script: docs/migrations/{date}_{name}_rollback.sql
+1. Run rollback script: {stack.database.migrations_path}/{date}_{name}_rollback.sql
 2. Verify data integrity
-3. Update schema.sql to previous state
+3. Update schema file to previous state
 ```
 
 ---
@@ -412,16 +420,13 @@ If issues occur post-deployment:
 
 ## Phase 4: Environment
 ### Backend Env Vars
-- [ ] GOOGLE_API_KEY
-- [ ] SUPABASE_URL
-- [ ] SUPABASE_KEY
-- [ ] SUPABASE_SERVICE_ROLE_KEY
+- [ ] All required variables configured
 - [ ] DEBUG=False
 
 ### Frontend Env Vars
-- [ ] NEXT_PUBLIC_API_URL
-- [ ] NEXT_PUBLIC_SUPABASE_URL
-- [ ] NEXT_PUBLIC_SUPABASE_ANON_KEY
+- [ ] {stack.frontend.env_prefix}API_URL
+- [ ] {stack.frontend.env_prefix}SUPABASE_URL
+- [ ] {stack.frontend.env_prefix}SUPABASE_ANON_KEY
 
 ## Phase 5: Database
 - Schema current: {yes/no}
@@ -451,8 +456,8 @@ If issues occur post-deployment:
 
 ## Phase 9: Deployment
 - Merge completed: {timestamp}
-- Railway deployment: {status}
-- Vercel deployment: {status}
+- {deployment.backend.platform} deployment: {status}
+- {deployment.frontend.platform} deployment: {status}
 
 ## Phase 10: Post-Deployment
 - Health check: {pass/fail}
@@ -464,4 +469,3 @@ If issues occur post-deployment:
 - Deployment successful: {yes/no}
 - Notes: {any important observations}
 ```
-

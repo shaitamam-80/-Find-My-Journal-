@@ -1,4 +1,4 @@
-﻿---
+---
 description: Complete workflow for developing a new feature with parallel execution support
 allowed_tools:
   - Read
@@ -10,7 +10,18 @@ allowed_tools:
 
 # New Feature Development Workflow
 
+## Prerequisites
+
+Read project configuration:
+
+```bash
+cat .claude/PROJECT.yaml
+```
+
+Use configuration values throughout this command.
+
 ## Feature Request
+
 $ARGUMENTS
 
 ---
@@ -23,7 +34,7 @@ Before ANY code:
 ultrathink about this feature request:
 
 1. SCOPE ANALYSIS
-   - What tool does this affect? (Define/Query/Review)
+   - What part of the application does this affect?
    - Is this a new capability or enhancement?
    - What's the minimum viable implementation?
 
@@ -153,10 +164,10 @@ For each backend component:
 ```
 think hard about the implementation:
 
-1. Read existing related code
+1. Read existing related code in {paths.api_routes}, {paths.services}, {paths.models}
 2. Follow project patterns from CLAUDE.md
 3. Implement with proper error handling
-4. Use service layer (ai_service, db_service)
+4. Use service layer
 5. Add authentication where needed
 ```
 
@@ -171,11 +182,11 @@ For each frontend component:
 ```
 think hard about the implementation:
 
-1. Read existing related components
+1. Read existing related components in {paths.components}, {paths.pages}
 2. Follow project patterns
 3. Use TypeScript properly
 4. Handle loading/error states
-5. Use API client from lib/api.ts
+5. Use API client from {paths.api_service}
 ```
 
 **After each significant change:**
@@ -201,8 +212,8 @@ After implementation:
 │  → Verify backend/frontend sync         │
 │  → Fix any mismatches                   │
 ├─────────────────────────────────────────┤
-│  Call @hebrew-validator (if Query tool) │
-│  → Verify no Hebrew in queries          │
+│  Call @hebrew-validator (if applicable) │
+│  → Verify content is valid              │
 └─────────────────────────────────────────┘
 ```
 
@@ -353,4 +364,3 @@ git branch -d feature/{feature-name}
 - Total time: {duration}
 - Lessons learned: {notes}
 ```
-

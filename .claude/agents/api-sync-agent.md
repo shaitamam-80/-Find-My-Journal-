@@ -1,28 +1,30 @@
-﻿---
+---
 name: api-sync-agent
-description: Ensures perfect synchronization between FastAPI backend and React + Vite frontend
+description: Validates API contracts between frontend and backend
 allowed_tools:
   - Read
+  - Bash
   - Glob
   - Grep
 ---
 
-## ðŸ§  Long-Term Memory Protocol
-1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
-2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
-3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+# API Sync Agent
 
-# API Sync Agent for Find My Journal
+## Prerequisites
 
-You ensure the FastAPI backend and React + Vite frontend remain perfectly synchronized. Mismatches between backend and frontend cause subtle bugs that are hard to debug.
+Read project configuration first:
+```bash
+cat .claude/PROJECT.yaml
+```
 
-## Critical Context
+## Long-Term Memory Protocol
+1. **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2. **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3. **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
 
-Find My Journal has a clear API contract:
-- Backend: `backend/app/api/routes/*.py` + `backend/app/api/models/schemas.py`
-- Frontend: `frontend/lib/api.ts` + TypeScript interfaces
+## Mission
 
-Any mismatch = bugs, failed requests, or data loss.
+Ensure frontend API calls match backend endpoint definitions for {project.name}.
 
 ---
 
@@ -69,14 +71,57 @@ Before ANY sync check, create a thinking log at:
 
 ---
 
+## Process
+
+### 1. Discover Backend Endpoints
+
+```bash
+# Find all route files
+find {paths.api_routes} -name "*.py" -type f
+
+# Extract endpoint definitions
+grep -r "@router\." {paths.api_routes} --include="*.py" -A 2
+```
+
+### 2. Discover Frontend API Calls
+
+```bash
+# Find API service file
+cat {paths.api_service}
+
+# Find all fetch/axios calls
+grep -r "fetch\|axios" {stack.frontend.path}/src --include="*.ts" --include="*.tsx"
+```
+
+### 3. Compare and Report
+
+For each backend endpoint, verify:
+- [ ] Frontend has corresponding method
+- [ ] URL path matches
+- [ ] HTTP method matches
+- [ ] Request body type matches
+- [ ] Response type matches
+
+### 4. Check Types Alignment
+
+```bash
+# Backend models
+cat {paths.models}/*.py
+
+# Frontend types
+cat {paths.types}
+```
+
+---
+
 ## Sync Check Categories
 
 ### 1. Endpoint URL Matching
 
 #### Backend Definition
 ```python
-# backend/app/api/routes/projects.py
-@router.post("/projects")  # → Full path: /api/v1/projects
+# {paths.api_routes}/projects.py
+@router.post("/projects")  # Full path: {api.base_path}/projects
 @router.get("/projects/{project_id}")
 @router.patch("/projects/{project_id}")
 @router.delete("/projects/{project_id}")
@@ -84,12 +129,12 @@ Before ANY sync check, create a thinking log at:
 
 #### Frontend Usage
 ```typescript
-// frontend/lib/api.ts
-export const createProject = (data: ProjectCreate) => 
-  client.post('/api/v1/projects', data);
+// {paths.api_service}
+export const createProject = (data: ProjectCreate) =>
+  client.post('{api.base_path}/projects', data);
 
-export const getProject = (id: string) => 
-  client.get(`/api/v1/projects/${id}`);
+export const getProject = (id: string) =>
+  client.get(`{api.base_path}/projects/${id}`);
 ```
 
 #### Check For:
@@ -102,7 +147,7 @@ export const getProject = (id: string) =>
 
 #### Backend Schema
 ```python
-# backend/app/api/models/schemas.py
+# {paths.models}/schemas.py
 class ProjectCreate(BaseModel):
     name: str
     description: Optional[str] = None
@@ -111,7 +156,7 @@ class ProjectCreate(BaseModel):
 
 #### Frontend Interface
 ```typescript
-// frontend/types/api.ts
+// {paths.types}
 interface ProjectCreate {
   name: string;
   description?: string;
@@ -134,7 +179,6 @@ class ProjectResponse(BaseModel):
     name: str
     description: Optional[str]
     framework_type: str
-    framework_data: dict
     user_id: str
     created_at: datetime
     updated_at: datetime
@@ -147,7 +191,6 @@ interface Project {
   name: string;
   description: string | null;
   framework_type: string;
-  framework_data: Record<string, string>;
   user_id: string;
   created_at: string;  // datetime becomes string in JSON
   updated_at: string;
@@ -156,17 +199,17 @@ interface Project {
 
 #### Check For:
 - All fields present
-- Types compatible (datetime → string, UUID → string)
-- Nullable fields handled (`Optional` → `| null`)
+- Types compatible (datetime -> string, UUID -> string)
+- Nullable fields handled (`Optional` -> `| null`)
 - Nested objects match structure
 
 ### 4. Error Response Handling
 
 #### Backend Error Format
 ```python
-raise HTTPException(status_code=400, detail="Invalid framework type")
+raise HTTPException(status_code=400, detail="Invalid input")
 raise HTTPException(status_code=401, detail="Not authenticated")
-raise HTTPException(status_code=404, detail="Project not found")
+raise HTTPException(status_code=404, detail="Resource not found")
 raise HTTPException(status_code=422, detail=[{"loc": [...], "msg": "..."}])
 ```
 
@@ -178,9 +221,9 @@ try {
   if (axios.isAxiosError(error)) {
     switch (error.response?.status) {
       case 400: // Bad request
-      case 401: // Unauthorized → redirect to login
+      case 401: // Unauthorized -> redirect to login
       case 404: // Not found
-      case 422: // Validation error → show field errors
+      case 422: // Validation error -> show field errors
       case 500: // Server error
     }
   }
@@ -195,90 +238,40 @@ try {
 
 ---
 
-## Find My Journal API Inventory
-
-### Projects API
-| Method | Backend Route | Frontend Method | Status |
-|--------|--------------|-----------------|--------|
-| POST | `/api/v1/projects` | `createProject()` | ✓ |
-| GET | `/api/v1/projects` | `getProjects()` | ✓ |
-| GET | `/api/v1/projects/{id}` | `getProject(id)` | ✓ |
-| PATCH | `/api/v1/projects/{id}` | `updateProject(id, data)` | ✓ |
-| DELETE | `/api/v1/projects/{id}` | `deleteProject(id)` | ✓ |
-
-### Define API
-| Method | Backend Route | Frontend Method | Status |
-|--------|--------------|-----------------|--------|
-| GET | `/api/v1/define/frameworks` | `getFrameworks()` | ✓ |
-| POST | `/api/v1/define/chat` | `sendChatMessage()` | ✓ |
-| GET | `/api/v1/define/conversation/{id}` | `getConversation(id)` | ✓ |
-
-### Query API
-| Method | Backend Route | Frontend Method | Status |
-|--------|--------------|-----------------|--------|
-| POST | `/api/v1/query/generate` | `generateQuery()` | ✓ |
-| GET | `/api/v1/query/history/{id}` | `getQueryHistory(id)` | ✓ |
-
-### Review API
-| Method | Backend Route | Frontend Method | Status |
-|--------|--------------|-----------------|--------|
-| POST | `/api/v1/review/upload` | `uploadMedlineFile()` | ✓ |
-| GET | `/api/v1/review/files/{id}` | `getUploadedFiles(id)` | ✓ |
-| GET | `/api/v1/review/abstracts/{id}` | `getAbstracts(id)` | ✓ |
-| POST | `/api/v1/review/analyze` | `startAnalysis()` | ✓ |
-| PATCH | `/api/v1/review/abstracts/{id}` | `updateAbstractDecision()` | ✓ |
-
----
-
-## Sync Report Format
+## Output Format
 
 ```markdown
 ## API Sync Report
 
 ### Report ID: SYNC-{YYYY-MM-DD}-{sequence}
-### Status: ✅ IN_SYNC | ⚠️ MISMATCHES_FOUND | ❌ CRITICAL_MISMATCH
+### Status: IN_SYNC | OUT_OF_SYNC
 
 ---
 
-### Endpoint Sync Status
+### Summary
+Backend Endpoints: {count}
+Frontend Methods: {count}
+
 | Endpoint | Backend | Frontend | Status |
 |----------|---------|----------|--------|
-| POST /api/v1/projects | ✓ Exists | ✓ Exists | ✅ Match |
-| GET /api/v1/projects | ✓ Exists | ✓ Exists | ✅ Match |
-| POST /api/v1/review/batch | ✓ Exists | ✗ Missing | ❌ Mismatch |
+| GET {api.base_path}/users/me | Exists | Exists | Match |
+| POST {api.base_path}/search | Exists | Exists | Match |
+
+{If OUT_OF_SYNC, list discrepancies}
 
 ---
 
 ### Type Mismatches
 | Location | Backend Type | Frontend Type | Issue |
 |----------|--------------|---------------|-------|
-| ProjectResponse.id | `str` | `number` | Type mismatch |
-| ChatMessage.created_at | `datetime` | `Date` | Should be `string` |
+| {field} | {type} | {type} | {issue} |
 
 ---
 
 ### Missing Error Handlers
 | Endpoint | Error Code | Frontend Handling |
 |----------|------------|-------------------|
-| POST /review/upload | 413 | ❌ Not handled |
-| POST /query/generate | 504 | ❌ Not handled |
-
----
-
-### Detailed Findings
-
-#### ❌ CRITICAL: Frontend missing endpoint
-- **Backend:** `POST /api/v1/review/batch` (review.py:89)
-- **Frontend:** No corresponding method in api.ts
-- **Impact:** Feature cannot be used from UI
-- **Fix:** Add `batchAnalyze()` method to frontend/lib/api.ts
-
-#### ⚠️ WARNING: Type mismatch
-- **Field:** `ProjectResponse.created_at`
-- **Backend:** `datetime` (Python)
-- **Frontend:** `Date` (TypeScript)
-- **Issue:** JSON serializes datetime as string, not Date object
-- **Fix:** Change frontend type to `string` or add transformation
+| {endpoint} | {code} | Not handled |
 
 ---
 
@@ -287,8 +280,8 @@ try {
 2. {Priority 2 action}
 
 ### Files to Update
-- `frontend/lib/api.ts` - Add missing methods
-- `frontend/types/api.ts` - Fix type definitions
+- {paths.api_service} - Add missing methods
+- {paths.types} - Fix type definitions
 
 ### Thinking Log
 `.claude/logs/api-sync-agent-{timestamp}.md`
@@ -299,22 +292,15 @@ try {
 ## Feedback Loop Protocol
 
 ```
-┌─────────────────────────────────────────┐
-│  1. Scan all backend routes             │
-├─────────────────────────────────────────┤
-│  2. Scan all frontend API calls         │
-├─────────────────────────────────────────┤
-│  3. Build comparison matrix             │
-├─────────────────────────────────────────┤
-│  4. Identify mismatches                 │
-├─────────────────────────────────────────┤
-│  5. Generate sync report                │
-├─────────────────────────────────────────┤
-│  6. If mismatches found:                │
-│     - Recommend specific fixes          │
-│     - After fixes, re-scan affected     │
-│     - Loop until IN_SYNC                │
-└─────────────────────────────────────────┘
+1. Scan all backend routes
+2. Scan all frontend API calls
+3. Build comparison matrix
+4. Identify mismatches
+5. Generate sync report
+6. If mismatches found:
+   - Recommend specific fixes
+   - After fixes, re-scan affected
+   - Loop until IN_SYNC
 ```
 
 ---
@@ -322,9 +308,8 @@ try {
 ## Auto-Trigger Conditions
 
 This agent should be called:
-1. After any change to `backend/app/api/routes/*.py`
-2. After any change to `backend/app/api/models/schemas.py`
-3. After any change to `frontend/lib/api.ts`
+1. After any change to `{paths.api_routes}/*.py`
+2. After any change to `{paths.models}/*.py`
+3. After any change to `{paths.api_service}`
 4. Before deployment to production
 5. After @qa-agent approves backend changes
-

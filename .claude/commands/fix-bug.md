@@ -1,4 +1,4 @@
-﻿---
+---
 description: Structured workflow for debugging and fixing bugs with root cause analysis
 allowed_tools:
   - Read
@@ -10,7 +10,18 @@ allowed_tools:
 
 # Bug Fix Workflow
 
+## Prerequisites
+
+Read project configuration:
+
+```bash
+cat .claude/PROJECT.yaml
+```
+
+Use configuration values throughout this command.
+
 ## Bug Report
+
 $ARGUMENTS
 
 ---
@@ -48,8 +59,8 @@ think harder about this bug:
 
 ```bash
 # Search for relevant code
-grep -r "relevant_term" backend/
-grep -r "relevant_term" frontend/
+grep -r "relevant_term" {stack.backend.path}/
+grep -r "relevant_term" {stack.frontend.path}/
 
 # Check recent changes that might have caused it
 git log --oneline -20
@@ -163,14 +174,14 @@ For each change:
 
 ```bash
 # Backend
-cd backend
+cd {stack.backend.path}
 python -m py_compile {modified_file}
-pytest {related_tests} -v
+{stack.backend.test_command} {related_tests} -v
 
 # Frontend
-cd frontend
+cd {stack.frontend.path}
 npx tsc --noEmit
-npm run build
+{stack.frontend.build_command}
 ```
 
 ### 4.4 Test Edge Cases
@@ -402,11 +413,10 @@ For critical production bugs:
 
 ```
 1. Skip planning documentation
-2. Create branch from main: git checkout -b hotfix/{name} main
+2. Create branch from {deployment.backend.auto_deploy_branch}: git checkout -b hotfix/{name} {deployment.backend.auto_deploy_branch}
 3. Minimal fix only
 4. @qa-agent quick review
-5. Merge to main immediately
-6. Then merge main to develop
+5. Merge to {deployment.backend.auto_deploy_branch} immediately
+6. Then merge {deployment.backend.auto_deploy_branch} to develop
 7. Document after the fact
 ```
-

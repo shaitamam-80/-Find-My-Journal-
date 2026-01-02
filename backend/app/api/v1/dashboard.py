@@ -56,7 +56,7 @@ async def get_dashboard_stats(
     """
     try:
         # Get profile for today's count
-        profile = db_service.get_profile_by_id(user.id)
+        profile = await db_service.get_profile_by_id(user.id)
         searches_today = 0
         if profile:
             last_search_date = profile.get("last_search_date")
@@ -64,14 +64,14 @@ async def get_dashboard_stats(
                 searches_today = profile.get("credits_used_today", 0)
 
         # Count total searches from search_logs
-        total_result = db_service.client.table("search_logs") \
+        total_result = await db_service.client.table("search_logs") \
             .select("id", count="exact") \
             .eq("user_id", user.id) \
             .execute()
         searches_total = total_result.count or 0
 
         # Count saved searches
-        saved_result = db_service.client.table("saved_searches") \
+        saved_result = await db_service.client.table("saved_searches") \
             .select("id", count="exact") \
             .eq("user_id", user.id) \
             .execute()
@@ -113,7 +113,7 @@ async def get_recent_activity(
         activities: List[RecentActivity] = []
 
         # Get recent searches
-        searches = db_service.client.table("search_logs") \
+        searches = await db_service.client.table("search_logs") \
             .select("id, discipline, results_count, created_at") \
             .eq("user_id", user.id) \
             .order("created_at", desc=True) \
@@ -130,7 +130,7 @@ async def get_recent_activity(
             ))
 
         # Get recent saved searches
-        saved = db_service.client.table("saved_searches") \
+        saved = await db_service.client.table("saved_searches") \
             .select("id, name, discipline, created_at") \
             .eq("user_id", user.id) \
             .order("created_at", desc=True) \
@@ -147,7 +147,7 @@ async def get_recent_activity(
             ))
 
         # Get recent feedback
-        feedback = db_service.client.table("journal_feedback") \
+        feedback = await db_service.client.table("journal_feedback") \
             .select("id, journal_id, rating, created_at") \
             .eq("user_id", user.id) \
             .order("created_at", desc=True) \

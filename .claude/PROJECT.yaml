@@ -1,0 +1,90 @@
+# Project Configuration for Claude Code Agents
+# This file defines project-specific settings used by all agents
+
+project:
+  name: "Find My Journal"
+  slug: "find-my-journal"
+  description: "AI-powered journal finder for medical researchers"
+  repository: "https://github.com/username/find-my-journal"
+
+stack:
+  backend:
+    framework: "fastapi"
+    language: "python"
+    version: "3.11"
+    path: "backend"
+    entry_point: "app.main:app"
+    port: 8000
+    health_endpoint: "/health"
+    test_command: "pytest"
+    lint_command: "ruff check ."
+
+  frontend:
+    framework: "vite"
+    ui_library: "react"
+    language: "typescript"
+    path: "frontend"
+    port: 5173
+    env_prefix: "VITE_"
+    build_command: "npm run build"
+    test_command: "npm run test"
+    lint_command: "npm run lint"
+
+  database:
+    provider: "supabase"
+    type: "postgresql"
+    migrations_path: "supabase/migrations"
+    schema_file: "supabase/schema.sql"
+
+deployment:
+  backend:
+    platform: "railway"
+    url_env_var: "RAILWAY_URL"
+    auto_deploy_branch: "main"
+  frontend:
+    platform: "vercel"
+    url_env_var: "VERCEL_URL"
+    auto_deploy_branch: "main"
+
+environment:
+  backend:
+    required:
+      - name: "SUPABASE_URL"
+        description: "Supabase project URL"
+      - name: "SUPABASE_KEY"
+        description: "Supabase anon key"
+      - name: "SUPABASE_SERVICE_ROLE_KEY"
+        description: "Supabase service role key (no spaces!)"
+      - name: "GEMINI_API_KEY"
+        description: "Google Gemini API key"
+    optional:
+      - name: "DEBUG"
+        description: "Enable debug mode"
+        default: "false"
+  frontend:
+    required:
+      - name: "VITE_API_URL"
+        description: "Backend API URL"
+      - name: "VITE_SUPABASE_URL"
+        description: "Supabase project URL"
+      - name: "VITE_SUPABASE_ANON_KEY"
+        description: "Supabase anon key"
+
+paths:
+  api_routes: "backend/app/api"
+  models: "backend/app/models"
+  services: "backend/app/services"
+  components: "frontend/src/components"
+  pages: "frontend/src/pages"
+  types: "frontend/src/types/index.ts"
+  api_service: "frontend/src/services/api.ts"
+
+conventions:
+  primary_language: "hebrew"
+  rtl_support: true
+  date_format: "DD/MM/YYYY"
+
+api:
+  base_path: "/api/v1"
+  auth_header: "Authorization"
+  auth_scheme: "Bearer"

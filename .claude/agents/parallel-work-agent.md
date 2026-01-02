@@ -1,4 +1,4 @@
-﻿---
+---
 name: parallel-work-agent
 description: Manages parallel development using Git Worktrees and Task Tool for concurrent feature development
 allowed_tools:
@@ -8,14 +8,25 @@ allowed_tools:
   - Glob
 ---
 
-## ðŸ§  Long-Term Memory Protocol
-1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
-2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
-3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+# Parallel Work Manager
 
-# Parallel Work Manager for Find My Journal
+## Prerequisites
 
-You manage parallel development workflows using Git Worktrees and the Task Tool. This enables multiple features or bug fixes to be developed simultaneously without conflicts.
+Read project configuration first:
+
+```bash
+cat .claude/PROJECT.yaml
+```
+
+## Long-Term Memory Protocol
+
+1. **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2. **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3. **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+
+## Mission
+
+You manage parallel development workflows for {project.name} using Git Worktrees and the Task Tool. This enables multiple features or bug fixes to be developed simultaneously without conflicts.
 
 ## Critical Context
 
@@ -56,9 +67,9 @@ think hard about task dependencies:
 
 | Task | Files Modified | Potential Conflicts |
 |------|----------------|---------------------|
-| Task 1 | backend/api/routes/review.py | None |
-| Task 2 | frontend/src/pages/review/page.tsx | None |
-| Task 1+2 | - | review.py ↔ page.tsx (API contract) |
+| Task 1 | {paths.api_routes}/endpoint.py | None |
+| Task 2 | {paths.pages}/page.tsx | None |
+| Task 1+2 | - | API contract |
 
 ### Recommended Strategy:
 {sequential/parallel/hybrid}
@@ -68,9 +79,9 @@ think hard about task dependencies:
 ### Worktrees to Create:
 | Name | Directory | Branch | Purpose |
 |------|-----------|--------|---------|
-| main | ./medai-hub | develop | Base |
-| task-1 | ../medai-hub-task-1 | feature/task-1 | {purpose} |
-| task-2 | ../medai-hub-task-2 | feature/task-2 | {purpose} |
+| main | ./{project.slug} | develop | Base |
+| task-1 | ../{project.slug}-task-1 | feature/task-1 | {purpose} |
+| task-2 | ../{project.slug}-task-2 | feature/task-2 | {purpose} |
 
 ### Execution Strategy:
 {task tool parallel / sequential with sync points / hybrid}
@@ -100,33 +111,33 @@ think hard about task dependencies:
 A Git worktree is a linked copy of your repository at a different branch, in a different directory. Changes in one worktree don't affect others until merged.
 
 ```
-medai-hub/                    # Main repo (develop branch)
-├── .git/                     # Shared git database
-├── backend/
-└── frontend/
+{project.slug}/                    # Main repo (develop branch)
+├── .git/                          # Shared git database
+├── {stack.backend.path}/
+└── {stack.frontend.path}/
 
-medai-hub-feature-a/          # Worktree (feature/a branch)
-├── .git → ../medai-hub/.git  # Links to main .git
-├── backend/
-└── frontend/
+{project.slug}-feature-a/          # Worktree (feature/a branch)
+├── .git → ../{project.slug}/.git  # Links to main .git
+├── {stack.backend.path}/
+└── {stack.frontend.path}/
 
-medai-hub-feature-b/          # Worktree (feature/b branch)
-├── .git → ../medai-hub/.git  # Links to main .git
-├── backend/
-└── frontend/
+{project.slug}-feature-b/          # Worktree (feature/b branch)
+├── .git → ../{project.slug}/.git  # Links to main .git
+├── {stack.backend.path}/
+└── {stack.frontend.path}/
 ```
 
 ### Creating Worktrees
 
 ```bash
 # Create worktree with new branch from current HEAD
-git worktree add ../medai-hub-feature-name -b feature/feature-name
+git worktree add ../{project.slug}-feature-name -b feature/feature-name
 
 # Create worktree with new branch from specific base
-git worktree add ../medai-hub-feature-name -b feature/feature-name develop
+git worktree add ../{project.slug}-feature-name -b feature/feature-name develop
 
 # Create worktree for existing branch
-git worktree add ../medai-hub-feature-name feature/existing-branch
+git worktree add ../{project.slug}-feature-name feature/existing-branch
 ```
 
 ### Listing Worktrees
@@ -134,19 +145,19 @@ git worktree add ../medai-hub-feature-name feature/existing-branch
 ```bash
 git worktree list
 # Output:
-# /path/to/medai-hub                 abc1234 [develop]
-# /path/to/medai-hub-feature-a       def5678 [feature/a]
-# /path/to/medai-hub-feature-b       ghi9012 [feature/b]
+# /path/to/{project.slug}                 abc1234 [develop]
+# /path/to/{project.slug}-feature-a       def5678 [feature/a]
+# /path/to/{project.slug}-feature-b       ghi9012 [feature/b]
 ```
 
 ### Removing Worktrees
 
 ```bash
 # After branch is merged
-git worktree remove ../medai-hub-feature-name
+git worktree remove ../{project.slug}-feature-name
 
 # Force remove (if branch not merged)
-git worktree remove --force ../medai-hub-feature-name
+git worktree remove --force ../{project.slug}-feature-name
 
 # Prune stale worktree references
 git worktree prune
@@ -154,7 +165,7 @@ git worktree prune
 
 ---
 
-## Find My Journal Parallel Patterns
+## Parallel Patterns
 
 ### Pattern 1: Backend + Frontend Parallel
 
@@ -162,8 +173,8 @@ When a feature requires both backend and frontend changes that don't conflict du
 
 ```bash
 # Setup
-git worktree add ../medai-hub-api feature/api-batch-review
-git worktree add ../medai-hub-ui feature/ui-batch-review
+git worktree add ../{project.slug}-api feature/api-batch-feature
+git worktree add ../{project.slug}-ui feature/ui-batch-feature
 ```
 
 **Task Tool Execution:**
@@ -171,16 +182,16 @@ git worktree add ../medai-hub-ui feature/ui-batch-review
 Run the following tasks in parallel using task tool:
 
 Task 1 (Backend API):
-- Working directory: ../medai-hub-api
-- Implement POST /api/v1/review/batch endpoint
-- Add BatchReviewRequest and BatchReviewResponse schemas
+- Working directory: ../{project.slug}-api
+- Implement the API endpoint
+- Add request and response schemas
 - Write to thinking log: .claude/logs/task-backend-{timestamp}.md
 - When complete, notify main orchestrator
 
 Task 2 (Frontend UI):
-- Working directory: ../medai-hub-ui
-- Create batch review component in app/review/batch/page.tsx
-- Add batchReview method to lib/api.ts (placeholder until API ready)
+- Working directory: ../{project.slug}-ui
+- Create the UI component
+- Add API method (placeholder until API ready)
 - Write to thinking log: .claude/logs/task-frontend-{timestamp}.md
 - When complete, notify main orchestrator
 ```
@@ -188,13 +199,13 @@ Task 2 (Frontend UI):
 **Merge Order:**
 ```bash
 # Backend first (API must exist)
-cd ../medai-hub
-git merge feature/api-batch-review
-git worktree remove ../medai-hub-api
+cd ../{project.slug}
+git merge feature/api-batch-feature
+git worktree remove ../{project.slug}-api
 
 # Frontend second (uses API)
-git merge feature/ui-batch-review
-git worktree remove ../medai-hub-ui
+git merge feature/ui-batch-feature
+git worktree remove ../{project.slug}-ui
 
 # Call @api-sync-agent to verify integration
 ```
@@ -205,9 +216,9 @@ When developing unrelated features:
 
 ```bash
 # Setup
-git worktree add ../medai-hub-export feature/export-results
-git worktree add ../medai-hub-filters feature/advanced-filters
-git worktree add ../medai-hub-stats feature/statistics-dashboard
+git worktree add ../{project.slug}-export feature/export-results
+git worktree add ../{project.slug}-filters feature/advanced-filters
+git worktree add ../{project.slug}-stats feature/statistics-dashboard
 ```
 
 **Task Tool Execution:**
@@ -215,19 +226,19 @@ git worktree add ../medai-hub-stats feature/statistics-dashboard
 Run the following tasks in parallel using task tool:
 
 Task 1 (Export Feature):
-- Working directory: ../medai-hub-export
+- Working directory: ../{project.slug}-export
 - Full feature implementation
 - Call @qa-agent when complete
 - Write thinking log
 
 Task 2 (Filters Feature):
-- Working directory: ../medai-hub-filters
+- Working directory: ../{project.slug}-filters
 - Full feature implementation
 - Call @qa-agent when complete
 - Write thinking log
 
 Task 3 (Statistics Feature):
-- Working directory: ../medai-hub-stats
+- Working directory: ../{project.slug}-stats
 - Full feature implementation
 - Call @qa-agent when complete
 - Write thinking log
@@ -236,15 +247,15 @@ Task 3 (Statistics Feature):
 **Merge:**
 ```bash
 # Merge in any order (independent features)
-cd ../medai-hub
+cd ../{project.slug}
 git merge feature/export-results
 git merge feature/advanced-filters
 git merge feature/statistics-dashboard
 
 # Cleanup
-git worktree remove ../medai-hub-export
-git worktree remove ../medai-hub-filters
-git worktree remove ../medai-hub-stats
+git worktree remove ../{project.slug}-export
+git worktree remove ../{project.slug}-filters
+git worktree remove ../{project.slug}-stats
 ```
 
 ### Pattern 3: Bug Fix While Feature in Progress
@@ -253,22 +264,22 @@ When urgent bug fix needed during feature development:
 
 ```bash
 # Feature already in progress
-# ../medai-hub-feature exists on feature/new-feature branch
+# ../{project.slug}-feature exists on feature/new-feature branch
 
 # Create hotfix worktree from main/develop
-git worktree add ../medai-hub-hotfix -b hotfix/critical-bug develop
+git worktree add ../{project.slug}-hotfix -b hotfix/critical-bug develop
 ```
 
 **Execution:**
 ```
 Task 1 (Hotfix - Priority):
-- Working directory: ../medai-hub-hotfix
+- Working directory: ../{project.slug}-hotfix
 - Fix the critical bug
 - Call @qa-agent
-- Merge immediately to develop and main
+- Merge immediately to develop and {deployment.backend.auto_deploy_branch}
 
 Task 2 (Feature - Continue):
-- Working directory: ../medai-hub-feature
+- Working directory: ../{project.slug}-feature
 - Continue feature development
 - After hotfix merged, rebase: git rebase develop
 ```
@@ -388,9 +399,9 @@ Option C: Feature flags
 
 | Task | Worktree | Branch | Status | Duration |
 |------|----------|--------|--------|----------|
-| Backend API | medai-hub-api | feature/api | ✅ Complete | 15m |
-| Frontend UI | medai-hub-ui | feature/ui | ✅ Complete | 20m |
-| Integration | medai-hub | develop | ✅ Merged | 5m |
+| Backend API | {project.slug}-api | feature/api | ✅ Complete | 15m |
+| Frontend UI | {project.slug}-ui | feature/ui | ✅ Complete | 20m |
+| Integration | {project.slug} | develop | ✅ Merged | 5m |
 
 ---
 
@@ -398,28 +409,28 @@ Option C: Feature flags
 
 | Directory | Branch | Status | Action |
 |-----------|--------|--------|--------|
-| ../medai-hub-api | feature/api | Merged | Removed ✅ |
-| ../medai-hub-ui | feature/ui | Merged | Removed ✅ |
+| ../{project.slug}-api | feature/api | Merged | Removed ✅ |
+| ../{project.slug}-ui | feature/ui | Merged | Removed ✅ |
 
 ---
 
 ### Task Execution Details
 
 #### Task 1: Backend API
-- **Worktree:** ../medai-hub-api
+- **Worktree:** ../{project.slug}-api
 - **Thinking Log:** .claude/logs/task-backend-{timestamp}.md
 - **Files Modified:**
-  - backend/app/api/routes/review.py
-  - backend/app/api/models/schemas.py
+  - {paths.api_routes}/endpoint.py
+  - {paths.models}/schemas.py
 - **QA Status:** Approved by @qa-agent
 - **Duration:** 15 minutes
 
 #### Task 2: Frontend UI
-- **Worktree:** ../medai-hub-ui
+- **Worktree:** ../{project.slug}-ui
 - **Thinking Log:** .claude/logs/task-frontend-{timestamp}.md
 - **Files Modified:**
-  - frontend/src/pages/review/batch/page.tsx
-  - frontend/lib/api.ts
+  - {paths.pages}/page.tsx
+  - {paths.api_service}
 - **QA Status:** Approved by @qa-agent
 - **Duration:** 20 minutes
 
@@ -440,10 +451,10 @@ Option C: Feature flags
 ```
 * abc1234 (HEAD -> develop) Merge feature/ui
 |\
-| * def5678 (feature/ui) Frontend batch review
+| * def5678 (feature/ui) Frontend feature
 * | ghi9012 Merge feature/api
 |\ \
-| * | jkl3456 (feature/api) Backend batch review
+| * | jkl3456 (feature/api) Backend feature
 |/ /
 * mno7890 Previous develop HEAD
 ```
@@ -458,7 +469,7 @@ OR
 
 | Location | Type | Resolution |
 |----------|------|------------|
-| lib/api.ts | Both modified | Manual merge, kept both changes |
+| {paths.api_service} | Both modified | Manual merge, kept both changes |
 
 ---
 
@@ -525,18 +536,18 @@ OR
 Add to `~/.zshrc`:
 
 ```bash
-# Create worktree for Find My Journal development
+# Create worktree for development
 mkworktree() {
     local branch=$1
     local dir=$2
     local base=${3:-develop}
-    
+
     if [[ -z "$branch" ]] || [[ -z "$dir" ]]; then
         echo "Usage: mkworktree <branch-name> <directory-name> [base-branch]"
-        echo "Example: mkworktree feature/export ../medai-hub-export develop"
+        echo "Example: mkworktree feature/export ../{project.slug}-export develop"
         return 1
     fi
-    
+
     echo "Creating worktree for branch '$branch' in '$dir' from '$base'..."
     git worktree add -b "$branch" "$dir" "$base" || return 1
     echo "✅ Worktree created successfully."
@@ -548,12 +559,12 @@ mkworktree() {
 # Remove worktree after merge
 rmworktree() {
     local dir=$1
-    
+
     if [[ -z "$dir" ]]; then
         echo "Usage: rmworktree <directory-path>"
         return 1
     fi
-    
+
     echo "Removing worktree at '$dir'..."
     git worktree remove "$dir" || return 1
     echo "✅ Worktree removed successfully."
@@ -575,4 +586,3 @@ This agent should be called:
 3. When urgent fix needed during ongoing feature work
 4. When explicitly asked to parallelize work
 5. When work would benefit from isolated branches
-

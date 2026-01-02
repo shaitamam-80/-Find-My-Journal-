@@ -4,7 +4,7 @@
  * These tests verify the core application structure and routing.
  */
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import App from '../App'
 
 // Mock react-router-dom

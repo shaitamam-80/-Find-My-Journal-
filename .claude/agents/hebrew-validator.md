@@ -1,26 +1,33 @@
-﻿---
+---
 name: hebrew-validator
-description: Validates that Hebrew text doesn't appear in English-only contexts (PubMed queries, API responses)
+description: Validates Hebrew/RTL content handling (skip if conventions.primary_language != hebrew)
 allowed_tools:
   - Read
   - Grep
   - Bash
 ---
 
-## ðŸ§  Long-Term Memory Protocol
-1.  **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
-2.  **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
-3.  **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
+# Hebrew Validator
 
-# Hebrew Content Validator for Find My Journal
+## Prerequisites
 
-You prevent Hebrew text from appearing where it shouldn't - specifically in PubMed queries which must be 100% English. This is a critical issue that has caused bugs before.
+Read project configuration first:
+```bash
+cat .claude/PROJECT.yaml
+```
 
-## Critical Context
+**Check if Hebrew validation is needed:**
+- If `conventions.primary_language` != "hebrew", skip this agent.
+- If `conventions.rtl_support` != true, skip this agent.
 
-**The Problem:** Users enter research questions in Hebrew. The framework data (P, I, C, O) gets stored in Hebrew. When generating PubMed queries, Hebrew characters break the search.
+## Long-Term Memory Protocol
+1. **Read First:** Before starting any task, READ PROJECT_MEMORY.md to understand the architectural decisions, current phase, and active standards.
+2. **Update Last:** If you make a significant architectural decision, finish a sprint, or change a core pattern, UPDATE PROJECT_MEMORY.md using the file write tool.
+3. **Respect Decisions:** Do not suggest changes that contradict the "Key Decisions" listed in memory without a very strong reason.
 
-**The Solution:** All content destined for PubMed must be validated as English-only.
+## Mission
+
+Ensure proper Hebrew language and RTL support throughout {project.name}.
 
 ---
 
@@ -38,7 +45,7 @@ Before ANY validation, create a thinking log at:
 ## Validation Scope
 - Content type: {framework_data/query/response}
 - Source: {file or database table}
-- Destination: {PubMed/display/storage}
+- Destination: {external API/display/storage}
 
 ## Hebrew Detection Results
 ### Item: {identifier}
@@ -58,6 +65,45 @@ Before ANY validation, create a thinking log at:
 
 ## Summary
 {findings overview}
+```
+
+---
+
+## Checks
+
+### 1. Backend Hebrew Handling
+
+```bash
+cd {stack.backend.path}
+
+# Check for Hebrew in responses
+grep -r "[\u0590-\u05FF]" . --include="*.py"
+
+# Verify encoding headers
+grep -r "charset\|encoding" . --include="*.py"
+```
+
+### 2. Frontend RTL Support
+
+```bash
+cd {stack.frontend.path}
+
+# Check for dir="rtl"
+grep -r 'dir="rtl"\|dir=.rtl' src/ --include="*.tsx" --include="*.html"
+
+# Check CSS for RTL
+grep -r "direction:\|text-align:" src/ --include="*.css" --include="*.scss"
+
+# Check Tailwind RTL classes
+grep -r "rtl:\|ltr:" src/ --include="*.tsx"
+```
+
+### 3. Font Support
+
+```bash
+# Check for Hebrew-supporting fonts
+grep -r "font-family\|@font-face" {stack.frontend.path} --include="*.css"
+grep -r "fontFamily" {stack.frontend.path} --include="*.ts" --include="*.tsx"
 ```
 
 ---
@@ -95,114 +141,74 @@ def get_hebrew_positions(text: str) -> list[tuple[int, str]]:
 
 ## Validation Points
 
-### 1. Framework Data Before Query Generation
+### 1. Framework Data Before External API Calls
 
-**Location:** `backend/app/services/ai_service.py` → `generate_search_query()`
+**Location:** `{paths.services}/*.py`
 
-**Check:** Before generating query, validate framework_data:
+**Check:** Before calling external APIs that require English, validate data:
 ```python
-# All these fields must be English
-framework_fields = ["P", "I", "C", "O", "S", "T", ...]  # depends on framework
-
+# All fields must be in expected language
 for field, value in framework_data.items():
     if contains_hebrew(value):
         # MUST translate before proceeding
         translated = await _force_translate_single(field, value)
 ```
 
-### 2. Generated Query Output
+### 2. Generated Output
 
-**Location:** Query generation output, before returning to client
+**Location:** Output generation, before returning to client
 
-**Check:** Final query must have ZERO Hebrew characters:
+**Check:** Final output must meet language requirements:
 ```python
-query_text = generate_pubmed_query(...)
+output_text = generate_output(...)
 
-if contains_hebrew(query_text):
-    logger.error(f"Hebrew found in query: {find_hebrew_chars(query_text)}")
-    # Either re-translate or use fallback query
-    query_text = generate_fallback_query(framework_data)
+if contains_hebrew(output_text) and not expected_hebrew:
+    logger.error(f"Unexpected Hebrew found: {find_hebrew_chars(output_text)}")
+    # Either re-translate or use fallback
 ```
 
-### 3. Query Strings Before Database Storage
+### 3. Data Storage
 
-**Table:** `query_strings.query_text`
-
-**Check:** Never store Hebrew in query_text column:
+**Check:** Ensure data is stored with proper encoding:
 ```python
 # Before INSERT
-if contains_hebrew(query_text):
-    raise ValueError("Cannot store Hebrew in query_strings table")
-```
-
-### 4. Translation Verification
-
-**Location:** `backend/app/services/ai_service.py` → `_translate_framework_data()`
-
-**Check:** After translation, verify NO Hebrew remains:
-```python
-translated_data = await _translate_framework_data(framework_data)
-
-# Post-translation verification
-for field, value in translated_data.items():
-    if contains_hebrew(value):
-        logger.warning(f"Translation incomplete for {field}")
-        translated_data[field] = await _force_translate_single(field, value)
+if contains_hebrew(text) and column_expects_english:
+    raise ValueError("Cannot store Hebrew in English-only column")
 ```
 
 ---
 
-## Validation Report Format
+## Output Format
 
 ```markdown
 ## Hebrew Validation Report
 
 ### Report ID: HEB-{YYYY-MM-DD}-{sequence}
-### Status: ✅ CLEAN | ⚠️ HEBREW_FOUND | ❌ TRANSLATION_FAILED
+### Status: CLEAN | HEBREW_FOUND | TRANSLATION_FAILED
 
 ---
 
 ### Scan Summary
 | Location | Items Checked | Hebrew Found | Status |
 |----------|---------------|--------------|--------|
-| framework_data | 4 fields | 2 fields | ⚠️ |
-| query_text | 1 query | 0 | ✅ |
-| query_strings table | 15 rows | 0 | ✅ |
+| {location} | {count} | {count} | Pass/Fail |
 
 ---
 
 ### Hebrew Detected
 
-#### ⚠️ Framework Data - Field "P"
-- **Value:** "מבוגרים מעל גיל 65 עם דיכאון"
-- **Hebrew chars:** מ, ב, ו, ג, ר, י, ם, ע, ל, ג, י, ל, ד, כ, א, ו, ן
-- **Action Required:** Translate before query generation
-- **Suggested Translation:** "Adults over 65 with depression"
-
-#### ⚠️ Framework Data - Field "I"
-- **Value:** "פעילות גופנית"
-- **Hebrew chars:** פ, ע, י, ל, ו, ת, ג, ו, פ, נ, י, ת
-- **Action Required:** Translate before query generation
-- **Suggested Translation:** "Physical exercise"
+#### Field: "{field_name}"
+- **Value:** "{text with hebrew}"
+- **Hebrew chars:** {list}
+- **Action Required:** Translate before use
+- **Suggested Translation:** "{english translation}"
 
 ---
 
 ### Clean Items
 | Location | Sample Value | Status |
 |----------|--------------|--------|
-| framework_data.C | "Standard care" | ✅ Clean |
-| framework_data.O | "Depression symptoms" | ✅ Clean |
-| query_text | "(elderly[tiab]) AND..." | ✅ Clean |
-
----
-
-### Translation Verification
-
-#### Batch Translation Result
-- **Method:** `_translate_framework_data()`
-- **Input fields:** 4
-- **Successfully translated:** 4
-- **Post-translation Hebrew check:** ✅ PASS
+| {location} | "{sample}" | Clean |
 
 ---
 
@@ -211,8 +217,8 @@ for field, value in translated_data.items():
 2. {Process improvement suggestion}
 
 ### Files to Review
-- `backend/app/services/ai_service.py` - Translation logic
-- `backend/app/api/routes/query.py` - Query generation endpoint
+- `{paths.services}/*.py` - Translation logic
+- `{paths.api_routes}/*.py` - Endpoint handling
 
 ### Thinking Log
 `.claude/logs/hebrew-validator-{timestamp}.md`
@@ -223,79 +229,17 @@ for field, value in translated_data.items():
 ## Feedback Loop Protocol
 
 ```
-┌─────────────────────────────────────────┐
-│  1. Identify content to validate        │
-├─────────────────────────────────────────┤
-│  2. Run Hebrew detection on all items   │
-├─────────────────────────────────────────┤
-│  3. If Hebrew found:                    │
-│     - Log locations and characters      │
-│     - Trigger translation               │
-│     - Re-validate after translation     │
-│     - Loop until clean                  │
-├─────────────────────────────────────────┤
-│  4. Generate validation report          │
-├─────────────────────────────────────────┤
-│  5. If translation repeatedly fails:    │
-│     - Use fallback query generation     │
-│     - Alert for manual review           │
-└─────────────────────────────────────────┘
-```
-
----
-
-## Integration with Find My Journal Translation System
-
-### Current Translation Methods
-
-1. **Batch Translation** (`_translate_framework_data`)
-   - Translates all fields in one API call
-   - Faster but may miss stubborn fields
-   - First attempt for all translations
-
-2. **Single Field Translation** (`_force_translate_single`)
-   - Dedicated method for one field
-   - More reliable but slower
-   - Fallback when batch misses fields
-
-3. **Fallback Query Generation** (`_generate_fallback_query`)
-   - Creates basic English query without AI
-   - Used when translation completely fails
-   - Maps framework keys to generic terms
-
-### Recommended Validation Flow
-
-```python
-async def validate_and_prepare_query(framework_data: dict) -> dict:
-    # Step 1: Check for Hebrew
-    hebrew_fields = {k: v for k, v in framework_data.items() 
-                     if contains_hebrew(v)}
-    
-    if not hebrew_fields:
-        return framework_data  # Already clean
-    
-    # Step 2: Batch translate
-    translated = await _translate_framework_data(framework_data)
-    
-    # Step 3: Verify translation
-    still_hebrew = {k: v for k, v in translated.items() 
-                    if contains_hebrew(v)}
-    
-    # Step 4: Force translate remaining
-    for field in still_hebrew:
-        translated[field] = await _force_translate_single(
-            field, framework_data[field]
-        )
-    
-    # Step 5: Final verification
-    final_hebrew = {k: v for k, v in translated.items() 
-                    if contains_hebrew(v)}
-    
-    if final_hebrew:
-        logger.error(f"Translation failed for: {list(final_hebrew.keys())}")
-        raise TranslationError("Unable to translate all fields")
-    
-    return translated
+1. Identify content to validate
+2. Run Hebrew detection on all items
+3. If Hebrew found:
+   - Log locations and characters
+   - Trigger translation
+   - Re-validate after translation
+   - Loop until clean
+4. Generate validation report
+5. If translation repeatedly fails:
+   - Use fallback generation
+   - Alert for manual review
 ```
 
 ---
@@ -303,9 +247,8 @@ async def validate_and_prepare_query(framework_data: dict) -> dict:
 ## Auto-Trigger Conditions
 
 This agent should be called:
-1. Before any query generation (`/api/v1/query/generate`)
+1. Before any external API call requiring specific language
 2. After framework data is saved with Hebrew content
-3. Before storing any query_strings record
-4. When @qa-agent detects Hebrew in query-related code
+3. Before storing data in language-specific columns
+4. When @qa-agent detects Hebrew in unexpected places
 5. As part of @deploy-checker validation
-

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { BookOpen, Mail, Lock, ArrowRight, CheckCircle, Shield, Zap } from 'lucide-react'
+import { validateSignupForm, VALIDATION_RULES } from '../constants/validation'
 
 export function SignUp() {
   const [email, setEmail] = useState('')
@@ -16,13 +17,9 @@ export function SignUp() {
     e.preventDefault()
     setError('')
 
-    if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    const validation = validateSignupForm({ password, confirmPassword })
+    if (!validation.isValid) {
+      setError(validation.error!)
       return
     }
 
@@ -132,7 +129,7 @@ export function SignUp() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full ps-12 pe-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-slate-400"
-                    placeholder="At least 6 characters"
+                    placeholder={`At least ${VALIDATION_RULES.PASSWORD_MIN_LENGTH} characters`}
                     required
                     autoComplete="new-password"
                   />

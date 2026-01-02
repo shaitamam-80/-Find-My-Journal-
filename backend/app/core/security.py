@@ -79,13 +79,13 @@ async def get_current_user(
         )
 
     # Fetch user profile from database
-    profile_data = db_service.get_profile_by_id(user_id)
+    profile_data = await db_service.get_profile_by_id(user_id)
 
     if not profile_data:
         # Auto-create profile if it doesn't exist (trigger may have failed)
         email = payload.get("email")
         try:
-            db_service.client.table("profiles").insert({
+            await db_service.client.table("profiles").insert({
                 "id": user_id,
                 "email": email,
                 "tier": "free",
@@ -169,7 +169,7 @@ async def increment_search_count(user_id: str) -> bool:
 
     try:
         # Get current profile
-        profile = db_service.get_profile_by_id(user_id)
+        profile = await db_service.get_profile_by_id(user_id)
         if not profile:
             return False
 
@@ -183,7 +183,7 @@ async def increment_search_count(user_id: str) -> bool:
             new_count = current_count + 1
 
         # Update in database
-        db_service.client.table("profiles").update({
+        await db_service.client.table("profiles").update({
             "credits_used_today": new_count,
             "last_search_date": str(today)
         }).eq("id", user_id).execute()
@@ -267,7 +267,7 @@ async def increment_explanation_count(user_id: str) -> bool:
     today = date.today()
 
     try:
-        profile = db_service.get_profile_by_id(user_id)
+        profile = await db_service.get_profile_by_id(user_id)
         if not profile:
             return False
 
@@ -280,7 +280,7 @@ async def increment_explanation_count(user_id: str) -> bool:
         else:
             new_count = current_count + 1
 
-        db_service.client.table("profiles").update({
+        await db_service.client.table("profiles").update({
             "explanations_used_today": new_count,
             "last_explanation_date": str(today)
         }).eq("id", user_id).execute()
