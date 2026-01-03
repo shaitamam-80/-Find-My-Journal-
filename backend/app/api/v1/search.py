@@ -11,7 +11,13 @@ from app.core.security import check_search_limit, increment_search_count
 from app.core.config import get_settings
 from app.core.logging import get_logger
 from app.models.user import UserProfile
-from app.models.journal import SearchRequest, SearchResponse, DisciplineDetection
+from app.models.journal import (
+    SearchRequest,
+    SearchResponse,
+    DisciplineDetection,
+    DetectedDisciplineInfo,
+    ArticleTypeInfo,
+)
 from app.services.openalex_service import openalex_service
 from app.services.db_service import db_service
 from app.services.trust_safety import verify_journals_batch
@@ -46,15 +52,22 @@ async def search_journals(
         HTTPException 429: If daily limit reached (free users)
         HTTPException 401: If not authenticated
     """
-    # Search for journals
-    journals, discipline, field, confidence = openalex_service.search_journals_by_text(
+    # Search for journals (enhanced with multi-discipline and article type)
+    (
+        journals,
+        discipline,
+        field,
+        confidence,
+        detected_disciplines_raw,
+        article_type_raw,
+    ) = openalex_service.search_journals_by_text(
         title=request.title,
         abstract=request.abstract,
         keywords=request.keywords,
         prefer_open_access=request.prefer_open_access,
     )
 
-    # Build discipline detection object (Story 2.1)
+    # Build discipline detection object (Story 2.1 - backward compatibility)
     discipline_detection = None
     if discipline:
         discipline_detection = DisciplineDetection(
@@ -62,6 +75,29 @@ async def search_journals(
             field=field if field else None,
             confidence=round(confidence, 2),
             source="openalex",
+        )
+
+    # Build multi-discipline detection list (NEW)
+    detected_disciplines = [
+        DetectedDisciplineInfo(
+            name=d["name"],
+            confidence=d["confidence"],
+            evidence=d.get("evidence", []),
+            openalex_field_id=d.get("openalex_field_id"),
+            openalex_subfield_id=d.get("openalex_subfield_id"),
+        )
+        for d in detected_disciplines_raw
+    ] if detected_disciplines_raw else []
+
+    # Build article type info (NEW)
+    article_type = None
+    if article_type_raw:
+        article_type = ArticleTypeInfo(
+            type=article_type_raw.get("type", ""),
+            display_name=article_type_raw.get("display_name", ""),
+            confidence=article_type_raw.get("confidence", 0),
+            evidence=article_type_raw.get("evidence", []),
+            preferred_journal_types=article_type_raw.get("preferred_journal_types", []),
         )
 
     # Debug logging
@@ -100,7 +136,9 @@ async def search_journals(
     return SearchResponse(
         query=query_summary,
         discipline=discipline,
-        discipline_detection=discipline_detection,  # Story 2.1
+        discipline_detection=discipline_detection,  # Story 2.1 (backward compat)
+        detected_disciplines=detected_disciplines,  # NEW: All detected disciplines
+        article_type=article_type,  # NEW: Detected article type
         total_found=len(journals),
         journals=journals,
         search_id=search_id,

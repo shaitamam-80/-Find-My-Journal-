@@ -2,7 +2,9 @@
 Journal Search Operations
 
 Hybrid search combining keywords and topic matching.
+Enhanced with multi-discipline detection, article type awareness, and topic validation.
 """
+import logging
 from collections import Counter
 from typing import Dict, List, Optional, Tuple, Set
 
@@ -11,8 +13,22 @@ from .client import get_client
 from .config import get_min_journal_works
 from .constants import load_core_journals, get_key_journals_for_discipline
 from .utils import extract_search_terms, detect_discipline
-from .scoring import calculate_relevance_score, generate_match_details
+from .scoring import (
+    calculate_relevance_score,
+    generate_match_details,
+    EnhancedJournalScorer,
+    ScoringContext,
+)
 from .journals import convert_to_journal, categorize_journals, merge_journal_results
+
+# Import analysis modules
+from app.services.analysis import (
+    MultiDisciplineDetector,
+    ArticleTypeDetector,
+    TopicRelevanceValidator,
+)
+
+logger = logging.getLogger(__name__)
 
 
 def find_journals_from_works(
@@ -516,12 +532,12 @@ def search_journals_by_text(
     abstract: str,
     keywords: List[str] = None,
     prefer_open_access: bool = False,
-) -> Tuple[List[Journal], str, str, float]:
+) -> Tuple[List[Journal], str, str, float, List[Dict], Optional[Dict]]:
     """
     Search for journals based on article title and abstract.
 
     Uses HYBRID approach: Keywords + Topics.
-    Now uses OpenAlex subfield/field for discipline instead of static keywords.
+    Enhanced with multi-discipline detection, article type awareness, and topic validation.
 
     Args:
         title: Article title.
@@ -532,44 +548,71 @@ def search_journals_by_text(
     Returns:
         Tuple of:
         - journals list
-        - detected subfield from OpenAlex
+        - detected subfield from OpenAlex (primary discipline)
         - parent field name
-        - confidence score (0-1) for discipline detection (Story 2.1)
+        - confidence score (0-1) for discipline detection
+        - detected_disciplines: List of all detected disciplines with confidence
+        - article_type: Detected article type info
     """
     core_journals = load_core_journals()
     combined_text = f"{title} {abstract}"
     search_terms = extract_search_terms(combined_text, keywords or [])
 
-    # === HYBRID APPROACH ===
+    # === ENHANCED ANALYSIS ===
 
-    # 1. TOPIC-BASED SEARCH (ML-based approach) - Do this FIRST to get subfield
-    # Use extracted search terms (max 8) instead of full text for better API results
+    # 1. MULTI-DISCIPLINE DETECTION (NEW)
+    discipline_detector = MultiDisciplineDetector()
+    detected_disciplines = discipline_detector.detect(title, abstract, keywords or [])
+    detected_disciplines_dicts = discipline_detector.to_dict_list(detected_disciplines)
+
+    logger.info(f"Detected disciplines: {[(d.name, f'{d.confidence:.0%}') for d in detected_disciplines]}")
+
+    # 2. ARTICLE TYPE DETECTION (NEW)
+    article_type_detector = ArticleTypeDetector()
+    detected_article_type = article_type_detector.detect(abstract, title)
+    article_type_dict = article_type_detector.to_dict(detected_article_type)
+
+    logger.info(f"Detected article type: {detected_article_type.display_name} ({detected_article_type.confidence:.0%})")
+
+    # === HYBRID SEARCH ===
+
+    # 3. TOPIC-BASED SEARCH (ML-based approach) - Do this FIRST to get subfield
     topic_search_query = " ".join(search_terms[:8])
     topic_ids, subfield, field, subfield_id, confidence = get_topics_from_similar_works(topic_search_query)
     topic_journals = find_journals_by_topics(topic_ids)
 
-    # Use OpenAlex subfield as discipline (e.g., "Endocrinology, Diabetes and Metabolism")
-    # Fall back to field if no subfield, or static detection as last resort
+    # Use OpenAlex subfield as discipline (for backward compatibility)
+    # But also use multi-discipline info for enhanced scoring
     if subfield:
         discipline = subfield
     elif field:
         discipline = field
+    elif detected_disciplines:
+        discipline = detected_disciplines[0].name
     else:
         discipline = detect_discipline(combined_text)
 
-    # 2. SUBFIELD-BASED SEARCH - Find specialized journals
-    # Prefer ID-based search (accurate) over text-based (fuzzy)
+    # 4. SUBFIELD-BASED SEARCH - Find specialized journals
+    # Search for ALL detected disciplines (not just primary)
     if subfield_id:
         subfield_journals = find_journals_by_subfield_id(subfield_id)
     else:
-        # Fallback to text-based search if no subfield ID detected
         subfield_journals = find_journals_by_subfield(subfield, search_terms)
-    # Merge subfield journals into topic_journals (they get topic-match treatment)
+
+    # Also search for secondary disciplines
+    for disc in detected_disciplines[1:3]:  # Top 2 secondary disciplines
+        if disc.openalex_subfield_id:
+            secondary_journals = find_journals_by_subfield(disc.openalex_subfield_id, search_terms)
+            for source_id, data in secondary_journals.items():
+                if source_id not in subfield_journals:
+                    subfield_journals[source_id] = data
+
+    # Merge subfield journals into topic_journals
     for source_id, data in subfield_journals.items():
         if source_id not in topic_journals:
             topic_journals[source_id] = data
 
-    # 3. KEYWORD-BASED SEARCH
+    # 5. KEYWORD-BASED SEARCH
     keyword_journals_list = search_journals_by_keywords(
         search_terms,
         prefer_open_access=prefer_open_access,
@@ -578,17 +621,8 @@ def search_journals_by_text(
     )
     keyword_journals: Dict[str, Journal] = {j.id: j for j in keyword_journals_list}
 
-    # 4. MERGE RESULTS - journals in both lists get boosted
+    # 6. MERGE RESULTS - journals in both lists get boosted
     merged_journals = merge_journal_results(keyword_journals, topic_journals)
-
-    # 4. INJECT KEY JOURNALS - DISABLED
-    # Was forcing generic "important" journals (NEJM, Lancet) into results
-    # even when not relevant to the specific research topic
-    # all_journals: Dict[str, Journal] = {j.id: j for j in merged_journals}
-    # all_journals = inject_key_journals(
-    #     discipline, all_journals, core_journals, search_terms
-    # )
-    # merged_journals = list(all_journals.values())
 
     # If no results from hybrid, try broader search
     if not merged_journals:
@@ -602,22 +636,33 @@ def search_journals_by_text(
     # Categorize journals
     categorized = categorize_journals(merged_journals)
 
-    # 5. FILTER IRRELEVANT JOURNALS
-    # Remove journals that don't match the detected subfield/field
+    # 7. FILTER IRRELEVANT JOURNALS
     if subfield or field:
         filtered = [
             j for j in categorized
             if is_journal_relevant_to_subfield(j, subfield, field)
         ]
-        # Only use filtered if we have enough results
         if len(filtered) >= 3:
             categorized = filtered
+
+    # === ENHANCED SCORING ===
+
+    # Create scoring context with multi-discipline and article type info
+    scoring_context = ScoringContext(
+        detected_disciplines=detected_disciplines_dicts,
+        article_type=article_type_dict,
+        keywords=keywords or [],
+        prefer_open_access=prefer_open_access,
+    )
+
+    # Initialize enhanced scorer
+    enhanced_scorer = EnhancedJournalScorer()
 
     # Identify sources for score recalculation
     keyword_ids = set(keyword_journals.keys())
     topic_id_set = set(topic_journals.keys())
 
-    # Recalculate scores with Weighted Scoring
+    # Recalculate scores with Enhanced Scoring
     for journal in categorized:
         is_keyword = journal.id in keyword_ids
         is_topic = journal.id in topic_id_set
@@ -625,13 +670,13 @@ def search_journals_by_text(
         # Preserve existing merge bonus
         merge_bonus = journal.relevance_score if journal.relevance_score else 0
 
-        journal.relevance_score = calculate_relevance_score(
+        # Use enhanced scorer with multi-discipline awareness
+        journal.relevance_score = enhanced_scorer.score_journal(
             journal=journal,
-            discipline=discipline,
+            context=scoring_context,
             is_topic_match=is_topic,
             is_keyword_match=is_keyword,
             search_terms=search_terms,
-            core_journals=core_journals,
         ) + (merge_bonus * 10)  # Amplify merge bonus
 
         # Generate match details (Story 1.1 - Why it's a good fit)
@@ -644,6 +689,26 @@ def search_journals_by_text(
         )
         journal.match_details = details
         journal.matched_topics = matched
+
+    # === TOPIC VALIDATION ===
+
+    # Add topic validation warnings (NEW)
+    topic_validator = TopicRelevanceValidator()
+    for journal in categorized:
+        # Convert journal to dict format for validator
+        journal_dict = {
+            "topics": [{"display_name": t} for t in journal.topics],
+        }
+        validation = topic_validator.validate_journal_topics(
+            journal_dict,
+            detected_disciplines_dicts,
+            keywords or [],
+        )
+        # Store validation warning if present
+        if validation.get("warning"):
+            if not journal.match_details:
+                journal.match_details = []
+            journal.match_details.append(f"Note: {validation['warning']}")
 
     # Final sort: prioritize by Weighted relevance_score
     categorized.sort(
@@ -662,8 +727,7 @@ def search_journals_by_text(
             for journal in categorized:
                 journal.relevance_score = journal.relevance_score / max_score
 
-    # Fallback: ONLY add more if <3 results (reduced from 5)
-    # This prevents irrelevant journals from appearing
+    # Fallback: ONLY add more if <3 results
     if len(categorized) < 3:
         fallback_journals = search_journals_by_keywords(
             search_terms[:2],
@@ -677,4 +741,11 @@ def search_journals_by_text(
                 j.match_reason = "Broader search result"
                 categorized.append(j)
 
-    return categorized[:15], discipline, field, confidence
+    return (
+        categorized[:15],
+        discipline,
+        field,
+        confidence,
+        detected_disciplines_dicts,
+        article_type_dict,
+    )

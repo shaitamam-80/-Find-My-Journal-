@@ -5,7 +5,7 @@ Maintains backward compatibility with existing code.
 This class wraps the modular functions for users who prefer
 the object-oriented interface.
 """
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Set, Tuple, Dict
 
 from app.models.journal import Journal
 from .constants import load_core_journals
@@ -67,11 +67,12 @@ class OpenAlexService:
         abstract: str,
         keywords: List[str] = None,
         prefer_open_access: bool = False,
-    ) -> Tuple[List[Journal], str]:
+    ) -> Tuple[List[Journal], str, str, float, List[Dict], Optional[Dict]]:
         """
         Search for journals based on article title and abstract.
 
         Uses HYBRID approach: Keywords + Topics for best results.
+        Enhanced with multi-discipline detection and article type awareness.
 
         Args:
             title: Article title.
@@ -80,7 +81,13 @@ class OpenAlexService:
             prefer_open_access: Prioritize OA journals.
 
         Returns:
-            Tuple of (journals list, detected discipline).
+            Tuple of:
+            - journals list
+            - detected discipline (primary)
+            - field name
+            - confidence score
+            - detected_disciplines: List of all detected disciplines
+            - article_type: Detected article type info
         """
         return search_journals_by_text(
             title=title,

@@ -160,12 +160,38 @@ class DisciplineDetection(BaseModel):
     source: str = Field(default="openalex", description="Detection source")
 
 
+class DetectedDisciplineInfo(BaseModel):
+    """Multi-discipline detection result."""
+    name: str = Field(..., description="Discipline name (e.g., 'Urology')")
+    confidence: float = Field(..., ge=0, le=1, description="Confidence score 0-1")
+    evidence: List[str] = Field(default_factory=list, description="Keywords that led to detection")
+    openalex_field_id: Optional[str] = None
+    openalex_subfield_id: Optional[str] = None
+
+
+class ArticleTypeInfo(BaseModel):
+    """Detected article type information."""
+    type: str = Field(..., description="Article type ID (e.g., 'systematic_review')")
+    display_name: str = Field(..., description="Human-readable type name")
+    confidence: float = Field(..., ge=0, le=1, description="Detection confidence")
+    evidence: List[str] = Field(default_factory=list, description="Patterns that matched")
+    preferred_journal_types: List[str] = Field(default_factory=list)
+
+
 class SearchResponse(BaseModel):
     """Response from journal search."""
 
     query: str
     discipline: Optional[str] = None
-    discipline_detection: Optional[DisciplineDetection] = None  # Story 2.1
+    discipline_detection: Optional[DisciplineDetection] = None  # Story 2.1 (backward compat)
+    detected_disciplines: List[DetectedDisciplineInfo] = Field(
+        default_factory=list,
+        description="All detected disciplines with confidence scores"
+    )
+    article_type: Optional[ArticleTypeInfo] = Field(
+        None,
+        description="Detected article type (SR, RCT, cohort, etc.)"
+    )
     total_found: int
     journals: List[Journal]
     search_id: Optional[str] = None  # For logging
