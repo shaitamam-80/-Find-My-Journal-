@@ -51,8 +51,22 @@ app = FastAPI(
 )
 
 # CORS middleware for frontend access
-# Read allowed origins from environment variable, fallback to localhost for dev
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+# Default origins for development and production
+default_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000",
+    "https://find-my-journal.vercel.app",
+]
+
+# Read additional origins from environment variable
+env_origins = os.getenv("ALLOWED_ORIGINS", "")
+if env_origins:
+    default_origins.extend([o.strip() for o in env_origins.split(",") if o.strip()])
+
+# Remove duplicates while preserving order
+allowed_origins = list(dict.fromkeys(default_origins))
 
 app.add_middleware(
     CORSMiddleware,
@@ -60,6 +74,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
