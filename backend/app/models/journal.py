@@ -2,7 +2,7 @@
 Journal models for search results.
 """
 from pydantic import BaseModel, Field, HttpUrl, ConfigDict
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from enum import Enum
 from datetime import datetime
 
@@ -102,6 +102,10 @@ class Journal(BaseModel):
 
     # Concepts/Topics
     topics: List[str] = Field(default_factory=list)
+    concepts: Optional[List[Dict[str, Any]]] = Field(
+        None,
+        description="OpenAlex concepts with scores (for specialization analysis)"
+    )
 
     # Recommendation
     relevance_score: float = 0.0

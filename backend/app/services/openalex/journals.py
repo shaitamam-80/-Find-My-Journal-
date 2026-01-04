@@ -32,6 +32,9 @@ def convert_to_journal(source: dict) -> Optional[Journal]:
             if isinstance(topic, dict) and "display_name" in topic:
                 topics.append(topic["display_name"])
 
+        # Extract concepts (x_concepts field from OpenAlex)
+        concepts = source.get("x_concepts", [])
+
         summary_stats = source.get("summary_stats", {}) or {}
         metrics = JournalMetrics(
             cited_by_count=source.get("cited_by_count"),
@@ -54,6 +57,7 @@ def convert_to_journal(source: dict) -> Optional[Journal]:
             apc_usd=source.get("apc_usd"),
             metrics=metrics,
             topics=topics,
+            concepts=concepts if concepts else None,
         )
     except Exception as e:
         logger.error(f"Error converting source: {e}")

@@ -1,0 +1,314 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "created_at": "2025-01-04",
+    "description": "Golden Set for Find My Journal search algorithm testing",
+    "total_cases": 11,
+    "sources": [
+      "Shai Tamam - 4 publications",
+      "Talor Orlitsky - 7 publications"
+    ],
+    "by_article_type": {
+      "systematic_review_meta_analysis": 4,
+      "systematic_review": 1,
+      "review": 1,
+      "longitudinal_study": 4,
+      "prospective_study": 1
+    },
+    "by_discipline": {
+      "pediatric_endocrinology": 2,
+      "urogynecology": 2,
+      "developmental_psychology": 7
+    }
+  },
+  "test_cases": [
+    {
+      "id": "shai_001",
+      "pmid": "35641437",
+      "title": "The association between overactive bladder and fibromyalgia: A systematic review and meta-analysis",
+      "abstract": "BACKGROUND: Overactive bladder is a common syndrome that significantly affects the quality of life. Fibromyalgia is characterized by widespread pain, impacting patients' lives. The exact mechanisms of the two syndromes remain unknown, but there is an overlap between the suspected pathophysiologies. OBJECTIVE: To present an overview of the current research on the association between overactive bladder (OAB) and fibromyalgia. SEARCH STRATEGY: A systematic search of four electronic databases was conducted. SEARCH STRATEGY: Studies examining the correlation between OAB and fibromyalgia with female patients aged over 18 years were included. DATA COLLECTION AND ANALYSIS: Two reviewers screened the studies for eligibility. Eligible studies were screened for quality. A meta-analysis was performed for eligible studies. MAIN RESULTS: Seven studies were included in the final review, of which six presented a positive association between the syndromes. The studies demonstrated a positive association between fibromyalgia and the severity of OAB and an adverse effect on the quality of life related to OAB. A mean effect size of 1.96 (95% confidence interval 0.85-3.06) was calculated. CONCLUSION: OAB and fibromyalgia are both complex and multifactorial syndromes. The study presents an association between them, but additional studies on the topic should be conducted for a more precise conclusion.",
+      "keywords": ["fibromyalgia", "overactive bladder", "urinary urgency"],
+      "article_type": "systematic_review_meta_analysis",
+      "published_in": {
+        "journal_name": "International Journal of Gynaecology and Obstetrics",
+        "abbreviation": "Int J Gynaecol Obstet",
+        "issn": "0020-7292",
+        "publisher": "Wiley (FIGO)"
+      },
+      "expected_disciplines": ["Urology", "Gynecology", "Rheumatology", "Pain Medicine"],
+      "must_appear_top_10": [
+        "International Journal of Gynaecology and Obstetrics",
+        "Neurourology and Urodynamics"
+      ],
+      "should_appear": [
+        "International Urogynecology Journal",
+        "Female Pelvic Medicine & Reconstructive Surgery",
+        "Journal of Rheumatology",
+        "Pain Medicine"
+      ],
+      "should_not_be_first": ["NEJM", "Nature Medicine", "The Lancet"],
+      "difficulty": "hard",
+      "notes": "Multi-disciplinary case - tests cross-discipline detection"
+    },
+    {
+      "id": "shai_002",
+      "pmid": "34115412",
+      "title": "A systematic review of stem cell therapy treatment for women suffering from stress urinary incontinence",
+      "abstract": "BACKGROUND: Stem cell therapy (SCT) is used for regeneration of injured tissues. This seems a novel promising strategy for restoring urethral sphincter function in patients with stress urinary incontinence (SUI). OBJECTIVE: To summarize the clinical trials available to date on SCT for treatment of SUI in women. SEARCH STRATEGY: PubMed, Cochrane Library, Scopus and Embase. SELECTION CRITERIA: Prospective interventional case series, randomized prospective interventional study and prospective cohort study assessing women aged 18 years and over diagnosed with SUI and treated by SCT were included. The quality of studies was finally assessed using the JBI Critical Appraisal Checklists according to the PRISMA guidelines. DATA COLLECTION AND ANALYSIS: Nineteen studies (n = 773 patients) were selected for final analysis. These were conducted worldwide between the years 2005 and 2016. Although different cell types were used, general processing steps were similar. The follow-up period ranged between 6 weeks and 6 years and included common subjective and objective evaluation tools. RESULTS: Overall, the studies imply that SCT for treatment of SUI is a safe and effective treatment. CONCLUSION: In our opinion, the initial results of SCT for the treatment of SUI seem promising. Standardization and validation of this treatment modality is required before it can be recommended for routine use.",
+      "keywords": ["cell- and tissue-based therapy", "regenerative medicine", "stem cell transplantation", "stress urinary continence", "urinary incontinence"],
+      "article_type": "systematic_review",
+      "published_in": {
+        "journal_name": "International Journal of Gynaecology and Obstetrics",
+        "abbreviation": "Int J Gynaecol Obstet",
+        "issn": "0020-7292",
+        "publisher": "Wiley (FIGO)"
+      },
+      "expected_disciplines": ["Urology", "Gynecology", "Regenerative Medicine"],
+      "must_appear_top_10": [
+        "International Journal of Gynaecology and Obstetrics",
+        "Neurourology and Urodynamics"
+      ],
+      "should_appear": [
+        "International Urogynecology Journal",
+        "Female Pelvic Medicine & Reconstructive Surgery",
+        "Stem Cell Research & Therapy"
+      ],
+      "should_not_be_first": ["NEJM", "Nature Medicine"],
+      "difficulty": "medium",
+      "notes": "Urogynecology + Regenerative medicine"
+    },
+    {
+      "id": "shai_003",
+      "pmid": "37152958",
+      "title": "GH treatment in pediatric Down syndrome: a systematic review and mini meta-analysis",
+      "abstract": "OBJECTIVE: To analyze and determine the safety and efficacy of growth hormone (GH) treatment in Down syndrome (DS) pediatric patients and to weigh ethical aspects involved. DESIGN: Systematic review and mini meta-analysis of the literature. METHODS: A search was performed in PubMed, Embase, Scopus, and PsycINFO through August 2022. Eligible studies included those who answered at least one of the following two questions: 1) What is the effect of growth hormone treatment in children with Down syndrome? 2) What are the ethical arguments in favor and against growth hormone treatment for children with Down syndrome? Multiple reviewers independently screened each article for eligibility. RESULTS: In total sixteen reports detailed medical effects of GH treatment in pediatric DS patients and eight studies dealt with ethical aspects of GH treatment. Treatment with GH resulted in significantly higher growth velocity in patients with DS. The ethical complexity is great but does not present insurmountable difficulties to the therapeutic option. CONCLUSIONS: As GH treatment is safe and effective for short-term height growth, GH therapy should be considered in long-term treatment of DS children.",
+      "keywords": ["Down syndrome", "GH", "IGF1", "growth hormone", "insulin-like growth factor 1", "rGH treatment"],
+      "article_type": "systematic_review_meta_analysis",
+      "published_in": {
+        "journal_name": "Frontiers in Endocrinology",
+        "abbreviation": "Front Endocrinol (Lausanne)",
+        "issn": "1664-2392",
+        "publisher": "Frontiers Media"
+      },
+      "expected_disciplines": ["Pediatric Endocrinology", "Genetics", "Pediatrics"],
+      "must_appear_top_10": [
+        "Frontiers in Endocrinology",
+        "Hormone Research in Paediatrics"
+      ],
+      "should_appear": [
+        "Journal of Clinical Endocrinology & Metabolism",
+        "European Journal of Endocrinology",
+        "Pediatric Endocrinology Reviews",
+        "Journal of Pediatric Endocrinology and Metabolism"
+      ],
+      "should_not_be_first": ["NEJM", "Nature Medicine"],
+      "difficulty": "medium",
+      "notes": "Pediatric endocrinology specialty"
+    },
+    {
+      "id": "shai_004",
+      "pmid": "36911030",
+      "title": "GHRH-GH-IGF1 axis in pediatric Down syndrome: A systematic review and mini meta-analysis",
+      "abstract": "OBJECTIVE: To analyze and determine the quality of functioning in different components of GHRH-GH-IGF1 axis in children with Down syndrome (DS). DESIGN: Systematic review and mini meta-analysis of the literature. METHODS: A search was performed in PubMed, Embase, Scopus, and PsycINFO through August 2022. Eligible studies included pediatric patients with DS who had undergone any laboratory evaluation of the GHRH-GH-IGF1 axis. Two reviewers independently screened articles for eligibility. Results of each type of test were weighed together in patients both with and without DS and were pooled using a random effects meta-analysis. RESULTS: In total, 20 studies assessed the GHRH-GH-IGF1 axis function. A defect in three major components of GHRH-GH-IGF1 axis was found in a significant proportion of pediatric DS patients. CONCLUSIONS: A significant portion of short-stature pathogenesis in children with DS is associated with impaired GHRH-GH-IGF1 axis function.",
+      "keywords": ["Down syndrome", "IGF1", "bio-inactive GH", "growth hormone", "hypothalamus", "neurosecretory dysfunction"],
+      "article_type": "systematic_review_meta_analysis",
+      "published_in": {
+        "journal_name": "Frontiers in Pediatrics",
+        "abbreviation": "Front Pediatr",
+        "issn": "2296-2360",
+        "publisher": "Frontiers Media"
+      },
+      "expected_disciplines": ["Pediatric Endocrinology", "Pediatrics", "Genetics"],
+      "must_appear_top_10": [
+        "Frontiers in Pediatrics",
+        "Frontiers in Endocrinology"
+      ],
+      "should_appear": [
+        "Journal of Pediatrics",
+        "Pediatric Research",
+        "Hormone Research in Paediatrics"
+      ],
+      "should_not_be_first": ["NEJM", "Nature Medicine"],
+      "difficulty": "medium",
+      "notes": "Pediatric endocrinology - hormone axis focus"
+    },
+    {
+      "id": "talor_001",
+      "pmid": "40961882",
+      "title": "Empathy development from birth to three: Advances in knowledge from 2000 to 2025",
+      "abstract": "Empathic abilities serve important functions in social life, supporting the formation and maintenance of social bonds and motivating people to help others. Studying the early development of empathy is valuable, both for advancing theoretical understanding of empathy and for designing interventions to promote it. The past 25 years have seen increased interest in studying empathy development from birth to three, leading to substantial advancements in knowledge and theory, as well as to some ongoing debate. Here we review these developments. First, we provide an integrative overview of the main bottom-up and top-down processes involved in empathy, and the different responses they can yield. We then review accumulated knowledge regarding each of these component/subtypes of empathy during infancy and early childhood, by addressing: (i) The early development of vicarious emotional arousal; (ii) Cognitive empathy - understanding others' emotions; (iii) When does other-oriented empathy emerge? An ongoing theoretical debate is presented, including the main points of disagreement and critical evaluation of empirical evidence; (iv) Development of more sophisticated forms of concern; and (v) Individual differences in early empathy. We conclude with a summary and important challenges and open questions for future research.",
+      "keywords": ["Concern for others", "Emotional contagion", "Empathy", "Other-oriented", "Sympathy"],
+      "article_type": "review",
+      "published_in": {
+        "journal_name": "Infant Behavior and Development",
+        "abbreviation": "Infant Behav Dev",
+        "issn": "0163-6383",
+        "publisher": "Elsevier"
+      },
+      "expected_disciplines": ["Developmental Psychology", "Child Psychology", "Infant Development"],
+      "must_appear_top_10": [
+        "Infant Behavior and Development",
+        "Developmental Psychology"
+      ],
+      "should_appear": [
+        "Child Development",
+        "Developmental Science",
+        "Infancy",
+        "Early Childhood Research Quarterly"
+      ],
+      "should_not_be_first": ["NEJM", "Nature"],
+      "difficulty": "medium",
+      "notes": "Developmental psychology - infancy focus"
+    },
+    {
+      "id": "talor_002",
+      "pmid": "39350535",
+      "title": "Predicting autism from young Infants' empathic responding: A prospective study",
+      "abstract": "Difficulties in empathy are frequent among children with autism spectrum disorder (ASD), and often considered a core feature of autism. Reduced empathy during the second year of life has been shown to predict subsequent ASD diagnosis. However, links between empathy in the first year and ASD have not yet been investigated. Moreover, prior work focused on empathy for others' distress but not for others' joy. To address these gaps, this prospective longitudinal study followed 60 infants (33% girls), 39 at high genetic risk of ASD (siblings of children with ASD) and a matching control group. Infants' empathic responses to others' distress and happiness were assessed at ages 6, 9, and 12 months, using simulations by the mother/experimenter and videos of crying and laughing infants. Diagnosis was determined between 18 and 36 months. Infants later diagnosed with ASD showed a reduced empathic response toward a person simulating distress, but not toward a video of a crying peer, and not in response to others' joy (either in simulation or video). Overall, reduced empathic concern during the first year of life appears to be an early prodromal marker of subsequent ASD. Implications for theory, research, and practice are discussed.",
+      "keywords": ["ASD", "Autism", "developmental delay", "empathy", "infancy", "siblings"],
+      "article_type": "prospective_study",
+      "published_in": {
+        "journal_name": "Development and Psychopathology",
+        "abbreviation": "Dev Psychopathol",
+        "issn": "0954-5794",
+        "publisher": "Cambridge University Press"
+      },
+      "expected_disciplines": ["Developmental Psychology", "Autism Research", "Child Psychiatry"],
+      "must_appear_top_10": [
+        "Development and Psychopathology",
+        "Journal of Autism and Developmental Disorders"
+      ],
+      "should_appear": [
+        "Autism",
+        "Autism Research",
+        "Journal of Child Psychology and Psychiatry"
+      ],
+      "should_not_be_first": ["NEJM", "Nature"],
+      "difficulty": "medium",
+      "notes": "Autism + empathy intersection"
+    },
+    {
+      "id": "talor_003",
+      "pmid": "39377585",
+      "title": "Which Aspects of Parenting Predict the Development of Empathic Concern During Infancy?",
+      "abstract": "This study examined which parenting behaviors predict the development of infants' empathic concern for others in distress. We distinguished between three forms of sensitive/responsive parenting: mothers' responsiveness to infant distress, their responsiveness to the infant's nondistress cues, and maternal expression of positive affect and affection in nondistress. Although in prior work these parenting behaviors were frequently combined, or subsumed under a single global construct, such as 'sensitive responsiveness', the three forms of parenting are theoretically distinct. We hypothesized that once all three were examined simultaneously, only responsiveness to distress would emerge as a unique predictor.",
+      "keywords": ["Concern for others", "Empathic concern", "Infants", "Parenting", "Sensitive responsiveness", "Socialization of empathy"],
+      "article_type": "longitudinal_study",
+      "published_in": {
+        "journal_name": "Developmental Science",
+        "abbreviation": "Dev Sci",
+        "issn": "1363-755X",
+        "publisher": "Wiley"
+      },
+      "expected_disciplines": ["Developmental Psychology", "Parenting Research", "Infant Development"],
+      "must_appear_top_10": [
+        "Developmental Science",
+        "Child Development"
+      ],
+      "should_appear": [
+        "Developmental Psychology",
+        "Parenting: Science and Practice",
+        "Infant Behavior and Development"
+      ],
+      "should_not_be_first": ["NEJM", "Nature"],
+      "difficulty": "easy",
+      "notes": "Pure developmental psychology"
+    },
+    {
+      "id": "talor_004",
+      "pmid": "32641835",
+      "title": "Empathy in early childhood predicts behavior problems",
+      "abstract": "BACKGROUND: Empathy for others has long been thought to reduce the likelihood of behavior problems, but longitudinal evidence beginning in early childhood is scant. We address this gap, examining whether empathic concern for others during infancy and toddlerhood predicts behavior problems during early childhood. METHODS: Israeli children (N = 161; 52% girls) were followed from 3 months of age. At 6, 12, and 18 months, empathic concern was assessed by observing infants' responses to an adult simulating distress. At 3 years, behavior problems were assessed by mothers using the CBCL 1.5-5. RESULTS: Concern for others at 6 and 12 months negatively predicted externalizing problems at age 3. Unexpectedly, concern at 18 months did not predict. Early concern for others predicted internalizing problems only for boys. CONCLUSIONS: Early empathic concern appears to be a protective factor against behavior problems.",
+      "keywords": ["Empathy", "aggression", "behavior problems", "gender"],
+      "article_type": "longitudinal_study",
+      "published_in": {
+        "journal_name": "Journal of Child Psychology and Psychiatry",
+        "abbreviation": "J Child Psychol Psychiatry",
+        "issn": "0021-9630",
+        "publisher": "Wiley"
+      },
+      "expected_disciplines": ["Child Psychology", "Child Psychiatry", "Developmental Psychology"],
+      "must_appear_top_10": [
+        "Journal of Child Psychology and Psychiatry",
+        "Development and Psychopathology"
+      ],
+      "should_appear": [
+        "Child Development",
+        "Journal of Abnormal Child Psychology",
+        "Developmental Psychology"
+      ],
+      "should_not_be_first": ["NEJM", "Nature"],
+      "difficulty": "medium",
+      "notes": "Empathy predicting behavioral outcomes"
+    },
+    {
+      "id": "talor_005",
+      "pmid": "32649796",
+      "title": "Caring babies: Concern for others in distress during infancy",
+      "abstract": "Concern for distressed others is a highly valued human capacity, but little is known about its early ontogeny. Theoretical accounts of empathy development have emphasized stages, but this has been called into question. This study sheds new light on four key issues: onset, consistency, development, and predictive power of early manifestations of concern for others. Three-month-old Israeli infants (N = 165) were followed longitudinally at ages 6, 12, and 18 months, and their observed responses to others' distress were assessed. Concern for distressed others was seen early in the first year of life, long before previous theories assumed. Empathic concern was moderately consistent across both situation and age, from as early as 3 months. Concern for others grew only modestly with age, plateauing during the second year, whereas prosocial behavior increased rapidly during the second year. Early individual differences in concern for others predicted later prosocial behavior on behalf of distressed others. Findings underscore the early roots of caring, and appear to refute assumptions of prior stage theories of empathy development.",
+      "keywords": ["concern for others", "development", "empathic concern", "empathy", "infancy", "prosocial behavior"],
+      "article_type": "longitudinal_study",
+      "published_in": {
+        "journal_name": "Developmental Science",
+        "abbreviation": "Dev Sci",
+        "issn": "1363-755X",
+        "publisher": "Wiley"
+      },
+      "expected_disciplines": ["Developmental Psychology", "Infant Development"],
+      "must_appear_top_10": [
+        "Developmental Science",
+        "Infant Behavior and Development"
+      ],
+      "should_appear": [
+        "Child Development",
+        "Developmental Psychology",
+        "Infancy"
+      ],
+      "should_not_be_first": ["NEJM", "Nature"],
+      "difficulty": "easy",
+      "notes": "Core developmental psychology"
+    },
+    {
+      "id": "talor_006",
+      "pmid": "36910831",
+      "title": "Prosocial behavior in toddlerhood and early childhood: Consistency across subtypes and over time",
+      "abstract": "INTRODUCTION: Young children show their capacity for compassion and their desire to enhance the welfare of others in multiple ways. The present study sought to address gaps in knowledge regarding prosociality in the early years. Specifically, the study examined whether different subtypes of prosociality are interrelated, whether they are consistent over time, as well as the meaning of young children's spontaneous versus cued prosocial behavior. METHODS: In a longitudinal sample (N = 151), three subtypes of prosocial behavior-instrumental helping, compassionate helping (comforting), and sharing-were assessed using behavioral tasks in toddlerhood (18 months) and early childhood (36 months). RESULTS: Consistent with hypothesis, partial convergence was found between the different prosociality subtypes at each age. There was also modest continuity over time, both within and across prosocial subtypes. Moreover, at both ages, when children helped or shared spontaneously, they also provided more assistance in the task. Children's tendency to assist spontaneously was partially consistent across situations by early childhood. DISCUSSION: The findings indicate that a moderately stable disposition toward prosociality is already evident during early ontogeny.",
+      "keywords": ["childhood", "compassion", "individual differences", "longitudinal study", "prosocial behavior"],
+      "article_type": "longitudinal_study",
+      "published_in": {
+        "journal_name": "Frontiers in Psychology",
+        "abbreviation": "Front Psychol",
+        "issn": "1664-1078",
+        "publisher": "Frontiers Media"
+      },
+      "expected_disciplines": ["Developmental Psychology", "Child Psychology"],
+      "must_appear_top_10": [
+        "Frontiers in Psychology",
+        "Child Development"
+      ],
+      "should_appear": [
+        "Developmental Psychology",
+        "Developmental Science",
+        "Early Childhood Research Quarterly"
+      ],
+      "should_not_be_first": ["NEJM", "Nature"],
+      "difficulty": "easy",
+      "notes": "Prosocial behavior in childhood"
+    }
+  ],
+  "validation_rules": {
+    "pass_criteria": {
+      "must_appear_top_10": "At least 1 of listed journals must appear in top 10 results",
+      "should_not_be_first": "None of listed journals should be ranked #1",
+      "discipline_detection": "At least 2 expected disciplines should be detected"
+    },
+    "scoring": {
+      "must_appear_top_10_found": 10,
+      "should_appear_found": 5,
+      "should_not_be_first_respected": 10,
+      "discipline_detection_correct": 5,
+      "article_type_correct": 5
+    },
+    "minimum_pass_score": 25
+  }
+}
