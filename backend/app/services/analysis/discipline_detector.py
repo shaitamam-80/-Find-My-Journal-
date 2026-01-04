@@ -287,7 +287,7 @@ DISCIPLINE_KEYWORDS: Dict[str, Dict[str, List[str]]] = {
 # OpenAlex field/subfield mappings with numeric IDs
 # Numeric IDs are required for accurate filtering in OpenAlex API
 OPENALEX_FIELD_MAPPING: Dict[str, Dict[str, str]] = {
-    "Urology": {"field": "Medicine", "subfield": "Urology", "subfield_id": 2746},
+    "Urology": {"field": "Medicine", "subfield": "Urology", "subfield_id": 2748},
     "Gynecology": {"field": "Medicine", "subfield": "Obstetrics and Gynecology", "subfield_id": 2729},
     "Rheumatology": {"field": "Medicine", "subfield": "Rheumatology", "subfield_id": 2745},
     "Pain Medicine": {"field": "Medicine", "subfield": "Anesthesiology and Pain Medicine", "subfield_id": 2700},
