@@ -13,6 +13,58 @@ from .utils import normalize_journal_name
 
 
 # =============================================================================
+# Phase 1: Quality Tier Calculation (Bounded Metrics)
+# =============================================================================
+
+def calculate_quality_tier(journal: Journal) -> int:
+    """
+    Convert raw metrics to bounded tier (0-4).
+    Prevents outliers like NEJM (h-index 1478) from dominating.
+
+    Tier 4: Elite (top 5%)
+    Tier 3: High (top 20%)
+    Tier 2: Good (top 50%)
+    Tier 1: Standard
+    Tier 0: Below average / new
+
+    Args:
+        journal: Journal to calculate tier for.
+
+    Returns:
+        Quality tier (0-4).
+    """
+    h_index = journal.metrics.h_index or 0
+    citedness = journal.metrics.two_yr_mean_citedness or 0
+
+    # H-index tiers
+    if h_index >= 200:
+        h_tier = 4
+    elif h_index >= 100:
+        h_tier = 3
+    elif h_index >= 50:
+        h_tier = 2
+    elif h_index >= 20:
+        h_tier = 1
+    else:
+        h_tier = 0
+
+    # Citedness tiers
+    if citedness >= 15:
+        c_tier = 4
+    elif citedness >= 8:
+        c_tier = 3
+    elif citedness >= 4:
+        c_tier = 2
+    elif citedness >= 2:
+        c_tier = 1
+    else:
+        c_tier = 0
+
+    # Combined (weight citedness more - it's current)
+    return round((h_tier * 0.3) + (c_tier * 0.7))
+
+
+# =============================================================================
 # Enhanced Scoring Context and Scorer
 # =============================================================================
 
@@ -38,25 +90,28 @@ class EnhancedJournalScorer:
     4. Topic relevance validation
     """
 
-    # Scoring weights
+    # Scoring weights - Phase 1: Reduced metric dominance, increased relevance
     WEIGHTS = {
         # Existing base weights
-        "topic_match": 20,
-        "keyword_match": 10,
+        "topic_match": 25,  # INCREASED from 20
+        "keyword_match": 15,  # INCREASED from 10
         "journal_name_match": 50,
-        "h_index_factor": 0.05,
-        "citation_rate_factor": 1.5,
+        "h_index_factor": 0.005,  # REDUCED from 0.05 (10x reduction!)
+        "citation_rate_factor": 0.5,  # REDUCED from 1.5
 
-        # NEW: Multi-discipline scoring
-        "primary_discipline_match": 30,
-        "secondary_discipline_match": 15,
-        "cross_discipline_coverage": 35,  # Journal covers multiple detected disciplines
+        # Multi-discipline scoring (INCREASED)
+        "primary_discipline_match": 40,  # INCREASED from 30
+        "secondary_discipline_match": 20,  # INCREASED from 15
+        "cross_discipline_coverage": 50,  # INCREASED from 35
 
-        # NEW: Article type scoring
-        "article_type_fit": 20,
+        # Article type scoring (INCREASED)
+        "article_type_fit": 25,  # INCREASED from 20
 
-        # NEW: Topic relevance
-        "topic_relevance_penalty": -30,  # Penalty for irrelevant topics
+        # Topic relevance (INCREASED penalty)
+        "topic_relevance_penalty": -40,  # INCREASED from -30
+
+        # NEW: Quality tier scoring (Phase 1)
+        "quality_tier_points": 8,  # Points per tier (max 32 for tier 4)
     }
 
     def score_journal(
@@ -97,11 +152,14 @@ class EnhancedJournalScorer:
                 score += self.WEIGHTS["journal_name_match"]
                 break
 
-        # H-index quality
+        # PHASE 1: Use quality tier instead of raw metrics for bounded contribution
+        quality_tier = calculate_quality_tier(journal)
+        score += quality_tier * self.WEIGHTS["quality_tier_points"]
+
+        # Legacy metrics with minimal weight (for fine-tuning only)
         h_index = journal.metrics.h_index or 0
         score += h_index * self.WEIGHTS["h_index_factor"]
 
-        # Citation rate
         citation_rate = journal.metrics.two_yr_mean_citedness or 0
         score += citation_rate * self.WEIGHTS["citation_rate_factor"]
 
