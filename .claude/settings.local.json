@@ -159,7 +159,8 @@
       "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_dynamic_stats.py -v --tb=short)",
       "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_dynamic_stats.py::TestPercentileCalculation -v --tb=short)",
       "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_dynamic_stats.py::TestSubfieldStats -v --tb=short)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat\\(stats\\): dynamic subfield statistics from OpenAlex\n\nImplements Phase U2 of Universal Mode:\n\n- Add DynamicStatsCalculator for computing field-specific statistics\n- Calculate h-index and citedness percentiles for ANY subfield\n- 24-hour in-memory caching to minimize API calls\n- Add calculate_percentile_score\\(\\) for normalized scoring\n- Benefits:\n  - Works for all 252 subfields automatically\n  - No hardcoded statistics needed\n  - Always up-to-date from OpenAlex data\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat\\(stats\\): dynamic subfield statistics from OpenAlex\n\nImplements Phase U2 of Universal Mode:\n\n- Add DynamicStatsCalculator for computing field-specific statistics\n- Calculate h-index and citedness percentiles for ANY subfield\n- 24-hour in-memory caching to minimize API calls\n- Add calculate_percentile_score\\(\\) for normalized scoring\n- Benefits:\n  - Works for all 252 subfields automatically\n  - No hardcoded statistics needed\n  - Always up-to-date from OpenAlex data\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_search.py::TestUniversalSearch::test_search_medical_paper -v -s)"
     ]
   }
 }
