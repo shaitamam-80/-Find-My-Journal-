@@ -147,7 +147,14 @@
       "Bash(git init:*)",
       "Bash(gh repo create:*)",
       "Bash(timeout /t 30 /nobreak)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "Bash(git checkout:*)",
+      "Bash(..venvScriptspython.exe -m pytest tests/test_universal_detection.py::TestUniversalDetection::test_medicine_urogynecology -v -s)",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py::TestUniversalDetection::test_medicine_urogynecology -v -s)",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py::TestUniversalDetection -v --timeout=60)",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest:*)",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py -v)",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py -v --tb=short)"
     ]
   }
 }

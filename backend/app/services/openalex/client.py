@@ -2,13 +2,12 @@
 OpenAlex API Client
 
 Wraps pyalex library with error handling and logging.
+Also provides async methods using httpx for better performance.
 
-NOTE: This client uses synchronous pyalex library. FastAPI automatically
-runs sync functions in a threadpool, so no explicit async conversion needed.
-For future optimization, consider using httpx.AsyncClient directly with
-the OpenAlex REST API instead of pyalex.
-
-TODO: [ASYNC] Convert to async using httpx for better performance under load.
+NOTE: This client uses synchronous pyalex library for most operations.
+FastAPI automatically runs sync functions in a threadpool.
+Async methods (search_works_async, get_sources_async) use httpx directly
+for Universal Mode operations.
 """
 import pyalex
 from typing import List, Dict, Optional, Any
@@ -17,6 +16,9 @@ import logging
 from .config import get_config
 
 logger = logging.getLogger(__name__)
+
+# OpenAlex API base URL for async operations
+OPENALEX_API_BASE = "https://api.openalex.org"
 
 
 class OpenAlexClient:
@@ -165,6 +167,128 @@ class OpenAlexClient:
         except Exception as e:
             logger.error(f"Error finding sources by subfield {subfield_id}: {e}")
             return []
+
+    # ==================== ASYNC METHODS FOR UNIVERSAL MODE ====================
+
+    async def search_works_async(
+        self,
+        search: str,
+        per_page: int = 50,
+        select: Optional[str] = None,
+    ) -> List[Dict]:
+        """
+        Async search for works in OpenAlex.
+
+        Uses httpx for non-blocking HTTP requests.
+
+        Args:
+            search: Search query text
+            per_page: Number of results
+            select: Comma-separated fields to return (reduces payload)
+
+        Returns:
+            List of work objects
+        """
+        import httpx
+
+        params = {
+            "search": search,
+            "per_page": per_page,
+        }
+        if select:
+            params["select"] = select
+
+        # Add email for polite pool (faster rate limits)
+        email = self.config.email if hasattr(self.config, 'email') else None
+        if email:
+            params["mailto"] = email
+
+        url = f"{OPENALEX_API_BASE}/works"
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(url, params=params)
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get("results", [])
+                else:
+                    logger.error(f"OpenAlex API error: {response.status_code}")
+                    return []
+        except Exception as e:
+            logger.error(f"Async OpenAlex search failed: {e}")
+            return []
+
+    async def get_sources_async(
+        self,
+        filter_str: Optional[str] = None,
+        sort: str = "cited_by_count:desc",
+        per_page: int = 50,
+        select: Optional[str] = None,
+    ) -> List[Dict]:
+        """
+        Async get sources (journals) from OpenAlex.
+
+        Args:
+            filter_str: OpenAlex filter string
+            sort: Sort parameter
+            per_page: Number of results
+            select: Comma-separated fields to return
+
+        Returns:
+            List of source objects
+        """
+        import httpx
+
+        params = {
+            "per_page": per_page,
+            "sort": sort,
+        }
+        if filter_str:
+            params["filter"] = filter_str
+        if select:
+            params["select"] = select
+
+        # Add email for polite pool
+        email = self.config.email if hasattr(self.config, 'email') else None
+        if email:
+            params["mailto"] = email
+
+        url = f"{OPENALEX_API_BASE}/sources"
+
+        try:
+            async with httpx.AsyncClient(timeout=30.0) as client:
+                response = await client.get(url, params=params)
+                if response.status_code == 200:
+                    data = response.json()
+                    return data.get("results", [])
+                else:
+                    logger.error(f"OpenAlex Sources API error: {response.status_code}")
+                    return []
+        except Exception as e:
+            logger.error(f"Async OpenAlex sources failed: {e}")
+            return []
+
+    async def get_sources_by_subfield_async(
+        self,
+        subfield_id: int,
+        per_page: int = 30,
+    ) -> List[Dict]:
+        """
+        Async get journals filtered by subfield ID.
+
+        Args:
+            subfield_id: OpenAlex numeric subfield ID
+            per_page: Number of results
+
+        Returns:
+            List of source/journal objects
+        """
+        filter_str = f"topics.subfield.id:https://openalex.org/subfields/{subfield_id}"
+        return await self.get_sources_async(
+            filter_str=filter_str,
+            per_page=per_page,
+            select="id,display_name,h_index,summary_stats,topics,type,is_oa",
+        )
 
 
 # Global client instance
