@@ -599,13 +599,19 @@ def search_journals_by_text(
     else:
         subfield_journals = find_journals_by_subfield(subfield, search_terms)
 
-    # Also search for secondary disciplines
-    for disc in detected_disciplines[1:3]:  # Top 2 secondary disciplines
-        if disc.openalex_subfield_id:
+    # Also search for secondary disciplines using numeric IDs for accurate filtering
+    for disc in detected_disciplines[1:5]:  # Top 4 secondary disciplines (expand coverage)
+        # Use numeric ID if available (more accurate), fall back to name search
+        if disc.openalex_subfield_numeric_id:
+            secondary_journals = find_journals_by_subfield_id(disc.openalex_subfield_numeric_id)
+        elif disc.openalex_subfield_id:
             secondary_journals = find_journals_by_subfield(disc.openalex_subfield_id, search_terms)
-            for source_id, data in secondary_journals.items():
-                if source_id not in subfield_journals:
-                    subfield_journals[source_id] = data
+        else:
+            continue
+
+        for source_id, data in secondary_journals.items():
+            if source_id not in subfield_journals:
+                subfield_journals[source_id] = data
 
     # Merge subfield journals into topic_journals
     for source_id, data in subfield_journals.items():

@@ -145,7 +145,9 @@
       "Bash(timeout 15 ../venv/Scripts/python.exe -m uvicorn:*)",
       "Bash(npm run lint:*)",
       "Bash(git init:*)",
-      "Bash(gh repo create:*)"
+      "Bash(gh repo create:*)",
+      "Bash(timeout /t 30 /nobreak)",
+      "Bash(ping:*)"
     ]
   }
 }

@@ -17,7 +17,8 @@ class DetectedDiscipline:
     confidence: float  # 0.0 to 1.0
     evidence: List[str]  # Keywords/phrases that led to detection
     openalex_field_id: Optional[str] = None
-    openalex_subfield_id: Optional[str] = None
+    openalex_subfield_id: Optional[str] = None  # Subfield name (e.g., "Obstetrics and Gynecology")
+    openalex_subfield_numeric_id: Optional[int] = None  # Numeric ID for API filtering (e.g., 2729)
 
 
 # Discipline keyword mappings with primary (high weight) and secondary (lower weight) terms
@@ -283,33 +284,34 @@ DISCIPLINE_KEYWORDS: Dict[str, Dict[str, List[str]]] = {
 }
 
 
-# OpenAlex field/subfield mappings
+# OpenAlex field/subfield mappings with numeric IDs
+# Numeric IDs are required for accurate filtering in OpenAlex API
 OPENALEX_FIELD_MAPPING: Dict[str, Dict[str, str]] = {
-    "Urology": {"field": "Medicine", "subfield": "Urology"},
-    "Gynecology": {"field": "Medicine", "subfield": "Obstetrics and Gynecology"},
-    "Rheumatology": {"field": "Medicine", "subfield": "Rheumatology"},
-    "Pain Medicine": {"field": "Medicine", "subfield": "Anesthesiology and Pain Medicine"},
-    "Cardiology": {"field": "Medicine", "subfield": "Cardiology and Cardiovascular Medicine"},
-    "Neurology": {"field": "Medicine", "subfield": "Neurology"},
-    "Oncology": {"field": "Medicine", "subfield": "Oncology"},
-    "Endocrinology": {"field": "Medicine", "subfield": "Endocrinology, Diabetes and Metabolism"},
-    "Psychiatry": {"field": "Medicine", "subfield": "Psychiatry and Mental Health"},
-    "Pulmonology": {"field": "Medicine", "subfield": "Pulmonary and Respiratory Medicine"},
-    "Gastroenterology": {"field": "Medicine", "subfield": "Gastroenterology"},
-    "Nephrology": {"field": "Medicine", "subfield": "Nephrology"},
-    "Infectious Disease": {"field": "Medicine", "subfield": "Infectious Diseases"},
-    "Immunology": {"field": "Medicine", "subfield": "Immunology"},
-    "Pediatrics": {"field": "Medicine", "subfield": "Pediatrics, Perinatology and Child Health"},
-    "Geriatrics": {"field": "Medicine", "subfield": "Geriatrics and Gerontology"},
-    "Pharmacology": {"field": "Medicine", "subfield": "Pharmacology"},
-    "Emergency Medicine": {"field": "Medicine", "subfield": "Emergency Medicine"},
-    "Dermatology": {"field": "Medicine", "subfield": "Dermatology"},
-    "Ophthalmology": {"field": "Medicine", "subfield": "Ophthalmology"},
-    "Orthopedics": {"field": "Medicine", "subfield": "Orthopedics and Sports Medicine"},
-    "Surgery": {"field": "Medicine", "subfield": "Surgery"},
-    "Radiology": {"field": "Medicine", "subfield": "Radiology, Nuclear Medicine and Imaging"},
-    "Epidemiology": {"field": "Medicine", "subfield": "Epidemiology"},
-    "Public Health": {"field": "Medicine", "subfield": "Public Health, Environmental and Occupational Health"},
+    "Urology": {"field": "Medicine", "subfield": "Urology", "subfield_id": 2746},
+    "Gynecology": {"field": "Medicine", "subfield": "Obstetrics and Gynecology", "subfield_id": 2729},
+    "Rheumatology": {"field": "Medicine", "subfield": "Rheumatology", "subfield_id": 2745},
+    "Pain Medicine": {"field": "Medicine", "subfield": "Anesthesiology and Pain Medicine", "subfield_id": 2700},
+    "Cardiology": {"field": "Medicine", "subfield": "Cardiology and Cardiovascular Medicine", "subfield_id": 2705},
+    "Neurology": {"field": "Medicine", "subfield": "Neurology", "subfield_id": 2728},
+    "Oncology": {"field": "Medicine", "subfield": "Oncology", "subfield_id": 2730},
+    "Endocrinology": {"field": "Medicine", "subfield": "Endocrinology, Diabetes and Metabolism", "subfield_id": 2712},
+    "Psychiatry": {"field": "Medicine", "subfield": "Psychiatry and Mental Health", "subfield_id": 2738},
+    "Pulmonology": {"field": "Medicine", "subfield": "Pulmonary and Respiratory Medicine", "subfield_id": 2740},
+    "Gastroenterology": {"field": "Medicine", "subfield": "Gastroenterology", "subfield_id": 2715},
+    "Nephrology": {"field": "Medicine", "subfield": "Nephrology", "subfield_id": 2727},
+    "Infectious Disease": {"field": "Medicine", "subfield": "Infectious Diseases", "subfield_id": 2725},
+    "Immunology": {"field": "Medicine", "subfield": "Immunology", "subfield_id": 2723},
+    "Pediatrics": {"field": "Medicine", "subfield": "Pediatrics, Perinatology and Child Health", "subfield_id": 2735},
+    "Geriatrics": {"field": "Medicine", "subfield": "Geriatrics and Gerontology", "subfield_id": 2718},
+    "Pharmacology": {"field": "Medicine", "subfield": "Pharmacology", "subfield_id": 2736},
+    "Emergency Medicine": {"field": "Medicine", "subfield": "Emergency Medicine", "subfield_id": 2711},
+    "Dermatology": {"field": "Medicine", "subfield": "Dermatology", "subfield_id": 2708},
+    "Ophthalmology": {"field": "Medicine", "subfield": "Ophthalmology", "subfield_id": 2731},
+    "Orthopedics": {"field": "Medicine", "subfield": "Orthopedics and Sports Medicine", "subfield_id": 2732},
+    "Surgery": {"field": "Medicine", "subfield": "Surgery", "subfield_id": 2746},
+    "Radiology": {"field": "Medicine", "subfield": "Radiology, Nuclear Medicine and Imaging", "subfield_id": 2741},
+    "Epidemiology": {"field": "Medicine", "subfield": "Epidemiology", "subfield_id": 2713},
+    "Public Health": {"field": "Medicine", "subfield": "Public Health, Environmental and Occupational Health", "subfield_id": 2739},
 }
 
 
@@ -359,6 +361,7 @@ class MultiDisciplineDetector:
                     evidence=evidence,
                     openalex_field_id=openalex_info.get("field"),
                     openalex_subfield_id=openalex_info.get("subfield"),
+                    openalex_subfield_numeric_id=openalex_info.get("subfield_id"),
                 ))
 
         # Sort by confidence descending
@@ -466,6 +469,7 @@ class MultiDisciplineDetector:
                 "evidence": d.evidence,
                 "openalex_field_id": d.openalex_field_id,
                 "openalex_subfield_id": d.openalex_subfield_id,
+                "openalex_subfield_numeric_id": d.openalex_subfield_numeric_id,
             }
             for d in disciplines
         ]
