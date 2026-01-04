@@ -372,6 +372,44 @@ def is_journal_relevant_to_subfield(
     return False
 
 
+def is_journal_relevant_to_any_discipline(
+    journal: Journal, detected_disciplines: List[dict]
+) -> bool:
+    """
+    Check if a journal is relevant to ANY of the detected disciplines.
+
+    This is important for multi-discipline papers where secondary disciplines
+    may have relevant journals that don't match the primary discipline.
+
+    Args:
+        journal: Journal to check.
+        detected_disciplines: List of detected discipline dicts with names.
+
+    Returns:
+        True if journal is relevant to any discipline, False otherwise.
+    """
+    if not detected_disciplines:
+        return True  # No filter if no disciplines detected
+
+    # Check against each detected discipline
+    for disc in detected_disciplines:
+        discipline_name = disc.get("name", "")
+        if not discipline_name:
+            continue
+
+        # Get the subfield from the mapping
+        from app.services.analysis.discipline_detector import OPENALEX_FIELD_MAPPING
+        openalex_info = OPENALEX_FIELD_MAPPING.get(discipline_name, {})
+        subfield = openalex_info.get("subfield", "")
+        field = openalex_info.get("field", "")
+
+        # If journal is relevant to this discipline, keep it
+        if is_journal_relevant_to_subfield(journal, subfield, field):
+            return True
+
+    return False
+
+
 def search_journals_by_keywords(
     keywords: List[str],
     prefer_open_access: bool = False,
@@ -643,7 +681,17 @@ def search_journals_by_text(
     categorized = categorize_journals(merged_journals)
 
     # 7. FILTER IRRELEVANT JOURNALS
-    if subfield or field:
+    # CHANGED: Check relevance to ANY detected discipline (not just primary)
+    # This allows secondary disciplines like Gynecology to contribute journals
+    if detected_disciplines_dicts:
+        filtered = [
+            j for j in categorized
+            if is_journal_relevant_to_any_discipline(j, detected_disciplines_dicts)
+        ]
+        if len(filtered) >= 3:
+            categorized = filtered
+    elif subfield or field:
+        # Fallback to single discipline check if no multi-discipline detected
         filtered = [
             j for j in categorized
             if is_journal_relevant_to_subfield(j, subfield, field)
