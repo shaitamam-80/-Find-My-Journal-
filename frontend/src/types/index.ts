@@ -115,6 +115,11 @@ export interface DetectedDiscipline {
   evidence: string[]  // Keywords that led to detection
   openalex_field_id?: string | null
   openalex_subfield_id?: string | null
+  // Universal Mode fields
+  domain?: string | null  // e.g., "Health Sciences", "Physical Sciences"
+  field?: string | null   // e.g., "Medicine", "Computer Science"
+  numeric_id?: number | null  // OpenAlex subfield ID for API filtering
+  source?: string | null  // "openalex_ml" or "keyword_fallback"
 }
 
 /** Detected article type (NEW) */
@@ -135,6 +140,10 @@ export interface SearchResponse {
   total_found: number
   journals: Journal[]
   search_id: string | null
+  // Universal Mode metadata
+  detection_method?: 'universal_openalex_ml' | 'keyword_fallback' | null
+  primary_domain?: string | null  // e.g., "Health Sciences", "Physical Sciences"
+  primary_field?: string | null   // e.g., "Medicine", "Computer Science"
 }
 
 // =============================================================================
