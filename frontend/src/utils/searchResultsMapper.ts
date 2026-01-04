@@ -6,6 +6,12 @@ export type JournalCategoryKey = 'topTier' | 'niche' | 'methodology' | 'broad'
 // Filter types for the filter bar
 export type FilterType = 'all' | 'openAccess' | 'highHIndex'
 
+// Secondary discipline for display
+export interface SecondaryDiscipline {
+  name: string
+  confidence: number
+}
+
 // AI Analysis data structure
 export interface AIAnalysis {
   greeting: string
@@ -13,7 +19,14 @@ export interface AIAnalysis {
   primaryDiscipline: string | null
   parentField: string | null // Story 2.1: Parent field (e.g., "Medicine")
   disciplineConfidence: number // Story 2.1: Confidence score 0-1
-  // TODO: [FUTURE_DATA] secondaryDiscipline - Enhanced discipline detection
+  // NEW: Secondary disciplines from multi-discipline detection
+  secondaryDisciplines: SecondaryDiscipline[]
+  // NEW: Detected article type
+  articleType: {
+    type: string
+    displayName: string
+    confidence: number
+  } | null
   keyThemes: string[]
   // TODO: [FUTURE_DATA] strategicSummary - AI-generated summary
   totalJournals: number
@@ -105,12 +118,32 @@ export function buildAIAnalysis(
   const parentField = disciplineDetection?.field ?? null
   const disciplineConfidence = disciplineDetection?.confidence ?? 0
 
+  // NEW: Extract secondary disciplines (skip first which is primary)
+  const secondaryDisciplines: SecondaryDiscipline[] = (response.detected_disciplines || [])
+    .slice(1, 4) // Get 2nd, 3rd, 4th disciplines
+    .filter(d => d.confidence >= 0.15) // Only show if confidence >= 15%
+    .map(d => ({
+      name: d.name,
+      confidence: d.confidence,
+    }))
+
+  // NEW: Extract article type info
+  const articleType = response.article_type
+    ? {
+        type: response.article_type.type,
+        displayName: response.article_type.display_name,
+        confidence: response.article_type.confidence,
+      }
+    : null
+
   return {
     greeting: 'Hello! I have analyzed your manuscript,',
     title: request.title,
     primaryDiscipline: formatDiscipline(response.discipline),
     parentField, // Story 2.1
     disciplineConfidence, // Story 2.1
+    secondaryDisciplines, // NEW
+    articleType, // NEW
     keyThemes: request.keywords,
     totalJournals: response.total_found,
     topTierCount,

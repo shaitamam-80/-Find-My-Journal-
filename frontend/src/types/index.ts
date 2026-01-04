@@ -108,10 +108,30 @@ export interface DisciplineDetection {
   source: string
 }
 
+/** Multi-discipline detection result (NEW) */
+export interface DetectedDiscipline {
+  name: string
+  confidence: number  // 0-1
+  evidence: string[]  // Keywords that led to detection
+  openalex_field_id?: string | null
+  openalex_subfield_id?: string | null
+}
+
+/** Detected article type (NEW) */
+export interface ArticleTypeInfo {
+  type: string  // e.g., 'systematic_review', 'randomized_controlled_trial'
+  display_name: string  // e.g., 'Systematic Review & Meta-Analysis'
+  confidence: number  // 0-1
+  evidence: string[]  // Patterns that matched
+  preferred_journal_types: string[]
+}
+
 export interface SearchResponse {
   query: string
   discipline: string | null
-  discipline_detection: DisciplineDetection | null  // Story 2.1
+  discipline_detection: DisciplineDetection | null  // Story 2.1 (backward compat)
+  detected_disciplines: DetectedDiscipline[]  // NEW: All detected disciplines
+  article_type: ArticleTypeInfo | null  // NEW: Detected article type
   total_found: number
   journals: Journal[]
   search_id: string | null

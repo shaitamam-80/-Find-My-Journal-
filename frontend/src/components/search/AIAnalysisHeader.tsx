@@ -1,4 +1,4 @@
-import { Sparkles, Target, Heart, CheckCircle, Star, TrendingUp } from 'lucide-react'
+import { Sparkles, Target, Heart, CheckCircle, Star, TrendingUp, Layers, FileText } from 'lucide-react'
 import type { AIAnalysis } from '../../utils/searchResultsMapper'
 
 interface AIAnalysisHeaderProps {
@@ -73,7 +73,56 @@ export function AIAnalysisHeader({ analysis }: AIAnalysisHeaderProps) {
               </div>
             )}
 
-            {/* TODO: [FUTURE_DATA] secondaryDiscipline - Enhanced discipline detection */}
+            {/* Secondary Disciplines (Multi-discipline detection) */}
+            {analysis.secondaryDisciplines && analysis.secondaryDisciplines.length > 0 && (
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-purple-50 rounded-xl shrink-0">
+                  <Layers className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <span className="text-slate-500 font-medium">Related Disciplines:</span>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {analysis.secondaryDisciplines.map((disc, i) => (
+                      <span
+                        key={i}
+                        className="px-3 py-1.5 bg-white text-slate-700 text-sm font-medium rounded-full border border-purple-200 shadow-sm"
+                      >
+                        {disc.name}
+                        <span className="ml-1.5 text-purple-600 text-xs">
+                          {Math.round(disc.confidence * 100)}%
+                        </span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Article Type */}
+            {analysis.articleType && (
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-blue-50 rounded-xl shrink-0">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <span className="text-slate-500 font-medium">Article Type:</span>
+                  <div className="flex items-center gap-3 mt-1">
+                    <p className="text-slate-800 font-semibold">
+                      {analysis.articleType.displayName}
+                    </p>
+                    {analysis.articleType.confidence > 0 && (
+                      <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                        analysis.articleType.confidence >= 0.5
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}>
+                        {Math.round(analysis.articleType.confidence * 100)}% match
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Key Themes */}
             {analysis.keyThemes.length > 0 && (
