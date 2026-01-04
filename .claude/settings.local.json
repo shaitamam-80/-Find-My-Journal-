@@ -154,7 +154,12 @@
       "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py::TestUniversalDetection -v --timeout=60)",
       "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest:*)",
       "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py -v)",
-      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py -v --tb=short)"
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_universal_detection.py -v --tb=short)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat\\(detection\\): universal discipline detection using OpenAlex ML\n\nImplements Phase U1 of Universal Mode:\n\n- Add UniversalDisciplineDetector class that leverages OpenAlex''s\n  Specter 2 ML classification to detect academic disciplines\n- Works for ALL 252 subfields across 4 domains \\(Health, Life, Physical,\n  Social Sciences\\) - not just medical fields\n- Add HybridDisciplineDetector with keyword-based fallback\n- Add async methods to OpenAlexClient \\(search_works_async, get_sources_async\\)\n- Add comprehensive tests covering:\n  - Health Sciences \\(urogynecology, pediatrics, cardiology\\)\n  - Social Sciences \\(psychology, economics, sociology\\)\n  - Physical Sciences \\(AI/ML, quantum physics, engineering, chemistry\\)\n  - Life Sciences \\(molecular biology, ecology\\)\n\nKey benefits:\n- No manual keyword maintenance needed\n- Subfield IDs ready for direct API filtering\n- Automatic support for new fields as OpenAlex adds them\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_dynamic_stats.py -v --tb=short)",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_dynamic_stats.py::TestPercentileCalculation -v --tb=short)",
+      "Bash(\"..\\\\venv\\\\Scripts\\\\python.exe\" -m pytest tests/test_dynamic_stats.py::TestSubfieldStats -v --tb=short)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat\\(stats\\): dynamic subfield statistics from OpenAlex\n\nImplements Phase U2 of Universal Mode:\n\n- Add DynamicStatsCalculator for computing field-specific statistics\n- Calculate h-index and citedness percentiles for ANY subfield\n- 24-hour in-memory caching to minimize API calls\n- Add calculate_percentile_score\\(\\) for normalized scoring\n- Benefits:\n  - Works for all 252 subfields automatically\n  - No hardcoded statistics needed\n  - Always up-to-date from OpenAlex data\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

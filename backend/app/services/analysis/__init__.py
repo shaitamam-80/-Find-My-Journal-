@@ -39,6 +39,15 @@ from .hybrid_detector import (
     detect_disciplines_merged,
 )
 
+# Dynamic Statistics (Phase U2)
+from .dynamic_stats import (
+    DynamicStatsCalculator,
+    SubfieldStats,
+    get_stats_calculator,
+    get_subfield_stats,
+    calculate_percentile_score,
+)
+
 __all__ = [
     # Discipline detection (keyword-based)
     "MultiDisciplineDetector",
@@ -63,4 +72,10 @@ __all__ = [
     "HybridDisciplineDetector",
     "detect_disciplines_hybrid",
     "detect_disciplines_merged",
+    # Dynamic Statistics
+    "DynamicStatsCalculator",
+    "SubfieldStats",
+    "get_stats_calculator",
+    "get_subfield_stats",
+    "calculate_percentile_score",
 ]
