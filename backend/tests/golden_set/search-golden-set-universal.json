@@ -1,0 +1,199 @@
+{
+  "metadata": {
+    "version": "2.0-universal",
+    "description": "Universal Golden Set - all academic domains. Tests Find My Journal across Health, Life, Physical, and Social Sciences.",
+    "total_cases": 16,
+    "by_domain": {
+      "Health Sciences": 4,
+      "Social Sciences": 4,
+      "Physical Sciences": 5,
+      "Life Sciences": 3
+    },
+    "success_criteria": {
+      "detection_rate": ">=85%",
+      "journal_coverage": ">=80%"
+    }
+  },
+  "test_cases": [
+    {
+      "id": "health_001",
+      "domain": "Health Sciences",
+      "field": "Medicine",
+      "subfield": "Urology",
+      "title": "The association between overactive bladder and fibromyalgia in women",
+      "abstract": "Overactive bladder is a common syndrome characterized by urinary urgency, with or without incontinence. Fibromyalgia is characterized by widespread pain and central sensitization. We examined 500 women in a cross-sectional study to determine the association between these conditions.",
+      "keywords": ["overactive bladder", "fibromyalgia", "women's health"],
+      "expected_domains": ["Health Sciences"],
+      "expected_fields": ["Medicine"],
+      "must_detect_subfields": ["Urology", "Obstetrics and Gynecology", "Rheumatology"]
+    },
+    {
+      "id": "health_002",
+      "domain": "Health Sciences",
+      "field": "Medicine",
+      "subfield": "Cardiology",
+      "title": "Novel biomarkers in acute heart failure prognosis",
+      "abstract": "Heart failure is a leading cause of hospitalization. This study evaluates novel cardiac biomarkers including NT-proBNP and troponin for risk stratification in acute heart failure patients admitted to the emergency department.",
+      "keywords": ["heart failure", "biomarkers", "prognosis"],
+      "expected_domains": ["Health Sciences"],
+      "expected_fields": ["Medicine"],
+      "must_detect_subfields": ["Cardiology and Cardiovascular Medicine"]
+    },
+    {
+      "id": "health_003",
+      "domain": "Health Sciences",
+      "field": "Medicine",
+      "subfield": "Psychiatry",
+      "title": "Cognitive behavioral therapy for treatment-resistant depression",
+      "abstract": "Treatment-resistant depression affects approximately 30% of patients with major depressive disorder. We conducted a randomized controlled trial comparing CBT augmentation with medication optimization in 200 patients.",
+      "keywords": ["depression", "CBT", "treatment-resistant"],
+      "expected_domains": ["Health Sciences"],
+      "must_detect_subfields": ["Psychiatry and Mental Health"]
+    },
+    {
+      "id": "health_004",
+      "domain": "Health Sciences",
+      "field": "Medicine",
+      "subfield": "Pediatrics",
+      "title": "Growth hormone treatment in pediatric Down syndrome",
+      "abstract": "To analyze the safety and efficacy of growth hormone treatment in Down syndrome pediatric patients. We performed a systematic review of randomized controlled trials assessing GH treatment outcomes.",
+      "keywords": ["growth hormone", "Down syndrome", "pediatrics"],
+      "expected_domains": ["Health Sciences", "Life Sciences"],
+      "must_detect_subfields": ["Pediatrics", "Endocrinology", "Genetics"]
+    },
+    {
+      "id": "social_001",
+      "domain": "Social Sciences",
+      "field": "Psychology",
+      "subfield": "Developmental Psychology",
+      "title": "Caring babies: Concern for others in distress during infancy",
+      "abstract": "Concern for distressed others is a highly valued human capacity. This study examines the early ontogeny of empathic concern in infants aged 8 to 16 months. We observed behavioral responses to simulated distress.",
+      "keywords": ["empathy", "infant development", "prosocial behavior"],
+      "expected_domains": ["Social Sciences"],
+      "expected_fields": ["Psychology"],
+      "must_detect_subfields": ["Developmental and Educational Psychology"]
+    },
+    {
+      "id": "social_002",
+      "domain": "Social Sciences",
+      "field": "Economics",
+      "subfield": "Finance",
+      "title": "The impact of quantitative easing on asset prices",
+      "abstract": "This paper examines the effects of unconventional monetary policy on equity and bond markets. Using panel data from G7 countries during 2008-2020, we analyze transmission mechanisms.",
+      "keywords": ["monetary policy", "quantitative easing", "asset prices"],
+      "expected_domains": ["Social Sciences"],
+      "must_detect_subfields": ["Economics and Econometrics", "Finance"]
+    },
+    {
+      "id": "social_003",
+      "domain": "Social Sciences",
+      "field": "Sociology",
+      "subfield": "Political Science",
+      "title": "Social media and political polarization in democracies",
+      "abstract": "We analyze the role of algorithmic curation in creating ideological echo chambers on social media platforms. Using survey data and network analysis, we examine how filter bubbles affect political discourse.",
+      "keywords": ["social media", "polarization", "echo chambers"],
+      "expected_domains": ["Social Sciences"],
+      "must_detect_subfields": ["Sociology and Political Science", "Communication"]
+    },
+    {
+      "id": "social_004",
+      "domain": "Social Sciences",
+      "field": "Education",
+      "subfield": "Educational Psychology",
+      "title": "The effectiveness of gamification in online learning",
+      "abstract": "This meta-analysis examines the impact of gamification elements on student engagement and learning outcomes in online educational platforms across K-12 and higher education.",
+      "keywords": ["gamification", "online learning", "education"],
+      "expected_domains": ["Social Sciences"],
+      "must_detect_subfields": ["Education"]
+    },
+    {
+      "id": "phys_001",
+      "domain": "Physical Sciences",
+      "field": "Computer Science",
+      "subfield": "Artificial Intelligence",
+      "title": "Attention Is All You Need: Transformer Architecture",
+      "abstract": "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on machine translation show superior quality.",
+      "keywords": ["transformer", "attention", "neural networks"],
+      "expected_domains": ["Physical Sciences"],
+      "expected_fields": ["Computer Science"],
+      "must_detect_subfields": ["Artificial Intelligence"]
+    },
+    {
+      "id": "phys_002",
+      "domain": "Physical Sciences",
+      "field": "Physics and Astronomy",
+      "subfield": "Quantum Physics",
+      "title": "Quantum entanglement and teleportation experiments",
+      "abstract": "We demonstrate a novel approach to quantum teleportation using entangled photon pairs. The experiment achieves fidelity above 95% for quantum state transfer across optical fiber links of 100km.",
+      "keywords": ["quantum", "entanglement", "teleportation"],
+      "expected_domains": ["Physical Sciences"],
+      "must_detect_subfields": ["Atomic and Molecular Physics", "Nuclear and High Energy Physics"]
+    },
+    {
+      "id": "phys_003",
+      "domain": "Physical Sciences",
+      "field": "Engineering",
+      "subfield": "Civil Engineering",
+      "title": "Seismic analysis of high-rise buildings with damping systems",
+      "abstract": "This study analyzes the performance of reinforced concrete structures during earthquakes using finite element analysis. We examine structural damping systems and their effectiveness in high-rise buildings.",
+      "keywords": ["seismic", "damping", "structural engineering"],
+      "expected_domains": ["Physical Sciences"],
+      "must_detect_subfields": ["Civil and Structural Engineering", "Building and Construction"]
+    },
+    {
+      "id": "phys_004",
+      "domain": "Physical Sciences",
+      "field": "Chemistry",
+      "subfield": "Materials Chemistry",
+      "title": "Metal-organic frameworks for carbon capture applications",
+      "abstract": "We report the synthesis of a novel MOF with exceptional CO2 adsorption capacity. The framework exhibits high selectivity for CO2 over N2 under ambient conditions, making it promising for industrial carbon capture.",
+      "keywords": ["MOF", "carbon capture", "materials science"],
+      "expected_domains": ["Physical Sciences"],
+      "must_detect_subfields": ["Materials Chemistry", "Inorganic Chemistry"]
+    },
+    {
+      "id": "phys_005",
+      "domain": "Physical Sciences",
+      "field": "Mathematics",
+      "subfield": "Applied Mathematics",
+      "title": "Deep learning approaches for solving partial differential equations",
+      "abstract": "We present neural network methods for approximating solutions to PDEs. Physics-informed neural networks combine data-driven learning with physical constraints for improved accuracy.",
+      "keywords": ["PDE", "neural networks", "physics-informed"],
+      "expected_domains": ["Physical Sciences"],
+      "must_detect_subfields": ["Applied Mathematics", "Artificial Intelligence", "Computational Mathematics"]
+    },
+    {
+      "id": "life_001",
+      "domain": "Life Sciences",
+      "field": "Biochemistry",
+      "subfield": "Genetics",
+      "title": "CRISPR-Cas9 precision genome editing in human cells",
+      "abstract": "We demonstrate programmable genome editing using the CRISPR-Cas9 system in human cell lines. The approach enables targeted modification of disease-causing mutations with high efficiency and specificity.",
+      "keywords": ["CRISPR", "gene editing", "genetics"],
+      "expected_domains": ["Life Sciences", "Health Sciences"],
+      "must_detect_subfields": ["Genetics", "Molecular Biology"]
+    },
+    {
+      "id": "life_002",
+      "domain": "Life Sciences",
+      "field": "Environmental Science",
+      "subfield": "Ecology",
+      "title": "Climate change effects on coral reef ecosystems",
+      "abstract": "Rising ocean temperatures are causing widespread coral bleaching. This study examines the resilience of reef ecosystems in the Pacific and their capacity for recovery under various warming scenarios.",
+      "keywords": ["coral reefs", "climate change", "marine ecology"],
+      "expected_domains": ["Life Sciences", "Physical Sciences"],
+      "must_detect_subfields": ["Ecology", "Marine Science", "Global and Planetary Change"]
+    },
+    {
+      "id": "life_003",
+      "domain": "Life Sciences",
+      "field": "Agricultural Sciences",
+      "subfield": "Agronomy",
+      "title": "Drought-resistant crop varieties and food security",
+      "abstract": "Using 30 years of field trial data, we analyze the performance of drought-resistant wheat and maize varieties across Sub-Saharan Africa. Results inform strategies for climate adaptation in agriculture.",
+      "keywords": ["drought resistance", "crops", "food security"],
+      "expected_domains": ["Life Sciences"],
+      "must_detect_subfields": ["Agronomy and Crop Science", "Food Science"]
+    }
+  ]
+}
