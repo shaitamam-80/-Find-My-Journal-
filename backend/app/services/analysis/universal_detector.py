@@ -162,6 +162,11 @@ class UniversalDisciplineDetector:
         """
         import pyalex
 
+        # Ensure pyalex is configured with email (required for polite pool)
+        # This must be called before any pyalex operations
+        from app.services.openalex.config import get_config
+        get_config()
+
         try:
             # Use pyalex to search for works
             works = pyalex.Works().search(search_text).get(per_page=per_page)
