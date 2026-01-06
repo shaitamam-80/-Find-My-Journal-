@@ -192,11 +192,13 @@ class EnhancedJournalScorer:
         journal_name_lower = journal.name.lower()
 
         for i, disc in enumerate(disciplines):
-            subfield = disc.get("openalex_subfield_id", "")
+            # openalex_subfield_id can be string (name) or int (numeric ID) - handle both
+            subfield_raw = disc.get("openalex_subfield_id", "")
+            subfield = str(subfield_raw).lower() if subfield_raw else ""
             name = disc.get("name", "").lower()
 
             # Check if journal publishes in this subfield
-            subfield_match = subfield and subfield.lower() in journal_subfields
+            subfield_match = subfield and subfield in journal_subfields
 
             # Check if discipline name appears in journal name/topics
             name_match = name and (
@@ -231,12 +233,14 @@ class EnhancedJournalScorer:
 
         overlap_count = 0
         for disc in disciplines[:3]:  # Check top 3 disciplines
-            subfield = disc.get("openalex_subfield_id", "")
+            # openalex_subfield_id can be string (name) or int (numeric ID) - handle both
+            subfield_raw = disc.get("openalex_subfield_id", "")
+            subfield = str(subfield_raw).lower() if subfield_raw else ""
             name = disc.get("name", "").lower()
             evidence = disc.get("evidence", [])
 
             # Check for subfield match
-            if subfield and subfield.lower() in journal_subfields:
+            if subfield and subfield in journal_subfields:
                 overlap_count += 1
                 continue
 

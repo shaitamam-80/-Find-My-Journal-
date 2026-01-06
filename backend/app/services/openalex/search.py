@@ -26,6 +26,7 @@ from app.services.analysis import (
     MultiDisciplineDetector,
     ArticleTypeDetector,
     TopicRelevanceValidator,
+    detect_disciplines_hybrid,
 )
 
 logger = logging.getLogger(__name__)
@@ -598,12 +599,22 @@ def search_journals_by_text(
 
     # === ENHANCED ANALYSIS ===
 
-    # 1. MULTI-DISCIPLINE DETECTION (NEW)
-    discipline_detector = MultiDisciplineDetector()
-    detected_disciplines = discipline_detector.detect(title, abstract, keywords or [])
-    detected_disciplines_dicts = discipline_detector.to_dict_list(detected_disciplines)
+    # 1. MULTI-DISCIPLINE DETECTION - Universal Mode (supports ALL 252 subfields)
+    # Uses OpenAlex ML classification with keyword fallback
+    detected_disciplines_dicts = detect_disciplines_hybrid(
+        title=title,
+        abstract=abstract,
+        keywords=keywords,
+        prefer_universal=True,  # Use OpenAlex ML first, fallback to keywords
+    )
 
-    logger.info(f"Detected disciplines: {[(d.name, f'{d.confidence:.0%}') for d in detected_disciplines]}")
+    # Log detection results
+    if detected_disciplines_dicts:
+        detection_method = detected_disciplines_dicts[0].get("source", "unknown")
+        disc_summary = [(d["name"], f"{d['confidence']:.0%}") for d in detected_disciplines_dicts[:5]]
+        logger.info(f"Detected disciplines ({detection_method}): {disc_summary}")
+    else:
+        logger.warning("No disciplines detected")
 
     # 2. ARTICLE TYPE DETECTION (NEW)
     article_type_detector = ArticleTypeDetector()
@@ -625,8 +636,8 @@ def search_journals_by_text(
         discipline = subfield
     elif field:
         discipline = field
-    elif detected_disciplines:
-        discipline = detected_disciplines[0].name
+    elif detected_disciplines_dicts:
+        discipline = detected_disciplines_dicts[0].get("name", "")
     else:
         discipline = detect_discipline(combined_text)
 
@@ -638,12 +649,15 @@ def search_journals_by_text(
         subfield_journals = find_journals_by_subfield(subfield, search_terms)
 
     # Also search for secondary disciplines using numeric IDs for accurate filtering
-    for disc in detected_disciplines[1:5]:  # Top 4 secondary disciplines (expand coverage)
+    for disc in detected_disciplines_dicts[1:5]:  # Top 4 secondary disciplines (expand coverage)
         # Use numeric ID if available (more accurate), fall back to name search
-        if disc.openalex_subfield_numeric_id:
-            secondary_journals = find_journals_by_subfield_id(disc.openalex_subfield_numeric_id)
-        elif disc.openalex_subfield_id:
-            secondary_journals = find_journals_by_subfield(disc.openalex_subfield_id, search_terms)
+        numeric_id = disc.get("numeric_id") or disc.get("openalex_subfield_id")
+        subfield_name = disc.get("name", "")
+
+        if numeric_id and isinstance(numeric_id, int):
+            secondary_journals = find_journals_by_subfield_id(numeric_id)
+        elif subfield_name:
+            secondary_journals = find_journals_by_subfield(subfield_name, search_terms)
         else:
             continue
 
