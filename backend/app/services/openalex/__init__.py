@@ -44,6 +44,14 @@ from .search import (
     find_journals_by_topics,
 )
 
+# Universal Mode search (works for ALL academic disciplines)
+from .universal_search import (
+    search_journals_universal,
+    UniversalSearchResult,
+    find_journals_by_subfield_id_universal,
+    get_search_metadata,
+)
+
 # Journal operations
 from .journals import (
     convert_to_journal,
@@ -96,6 +104,11 @@ __all__ = [
     "find_journals_from_works",
     "get_topic_ids_from_similar_works",
     "find_journals_by_topics",
+    # Universal Mode search
+    "search_journals_universal",
+    "UniversalSearchResult",
+    "find_journals_by_subfield_id_universal",
+    "get_search_metadata",
     # Journal operations
     "convert_to_journal",
     "categorize_journals",

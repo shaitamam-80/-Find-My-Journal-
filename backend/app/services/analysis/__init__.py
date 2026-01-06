@@ -2,6 +2,7 @@
 Analysis Services for Find My Journal
 
 Multi-discipline detection, article type detection, and topic validation.
+Includes Universal Mode detection using OpenAlex ML classification.
 """
 
 from .discipline_detector import (
@@ -24,8 +25,31 @@ from .topic_validator import (
     validate_topics,
 )
 
+# Universal Mode (OpenAlex ML-based detection)
+from .universal_detector import (
+    UniversalDisciplineDetector,
+    DetectedSubfield,
+    UniversalDetectionResult,
+    detect_disciplines_universal,
+)
+
+from .hybrid_detector import (
+    HybridDisciplineDetector,
+    detect_disciplines_hybrid,
+    detect_disciplines_merged,
+)
+
+# Dynamic Statistics (Phase U2)
+from .dynamic_stats import (
+    DynamicStatsCalculator,
+    SubfieldStats,
+    get_stats_calculator,
+    get_subfield_stats,
+    calculate_percentile_score,
+)
+
 __all__ = [
-    # Discipline detection
+    # Discipline detection (keyword-based)
     "MultiDisciplineDetector",
     "DetectedDiscipline",
     "detect_disciplines",
@@ -39,4 +63,19 @@ __all__ = [
     # Topic validation
     "TopicRelevanceValidator",
     "validate_topics",
+    # Universal Mode (OpenAlex ML-based)
+    "UniversalDisciplineDetector",
+    "DetectedSubfield",
+    "UniversalDetectionResult",
+    "detect_disciplines_universal",
+    # Hybrid detection
+    "HybridDisciplineDetector",
+    "detect_disciplines_hybrid",
+    "detect_disciplines_merged",
+    # Dynamic Statistics
+    "DynamicStatsCalculator",
+    "SubfieldStats",
+    "get_stats_calculator",
+    "get_subfield_stats",
+    "calculate_percentile_score",
 ]

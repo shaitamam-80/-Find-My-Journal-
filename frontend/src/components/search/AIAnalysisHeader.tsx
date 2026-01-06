@@ -1,4 +1,4 @@
-import { Sparkles, Target, Heart, CheckCircle, Star, TrendingUp, Layers, FileText } from 'lucide-react'
+import { Sparkles, Target, Heart, CheckCircle, Star, TrendingUp, Layers, FileText, Globe2, Cpu } from 'lucide-react'
 import type { AIAnalysis } from '../../utils/searchResultsMapper'
 
 interface AIAnalysisHeaderProps {
@@ -40,6 +40,29 @@ export function AIAnalysisHeader({ analysis }: AIAnalysisHeaderProps) {
           </p>
 
           <div className="space-y-4 bg-slate-50 rounded-2xl p-6 border border-slate-200">
+            {/* Academic Domain (Universal Mode) */}
+            {analysis.primaryDomain && (
+              <div className="flex items-start gap-4">
+                <div className="p-2 bg-indigo-50 rounded-xl shrink-0">
+                  <Globe2 className="w-5 h-5 text-indigo-600" />
+                </div>
+                <div className="flex-1">
+                  <span className="text-slate-500 font-medium">Academic Domain:</span>
+                  <div className="flex items-center gap-3 mt-1">
+                    <p className="text-slate-800 font-semibold text-lg">
+                      {analysis.primaryDomain}
+                    </p>
+                    {analysis.detectionMethod && (
+                      <span className="flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full bg-indigo-100 text-indigo-700">
+                        <Cpu className="w-3 h-3" />
+                        {analysis.detectionMethod === 'openalex_ml' ? 'ML Detection' : 'Keyword'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Primary Discipline with Confidence (Story 2.1) */}
             {analysis.primaryDiscipline && (
               <div className="flex items-start gap-4">

@@ -34,6 +34,9 @@ export interface AIAnalysis {
   // TODO: [FUTURE_DATA] avgImpactFactor - Scimago API integration
   bestMatch: number
   closingStatement: string
+  // Universal Mode: Domain and detection method
+  primaryDomain: string | null  // e.g., "Health Sciences", "Physical Sciences"
+  detectionMethod: 'openalex_ml' | 'keyword_fallback' | null
 }
 
 // Map API category to UI category key
@@ -136,6 +139,15 @@ export function buildAIAnalysis(
       }
     : null
 
+  // Universal Mode: Extract domain and detection method
+  const primaryDomain = response.primary_domain ??
+    (response.detected_disciplines?.[0]?.domain ?? null)
+  const detectionMethod = response.detection_method === 'universal_openalex_ml'
+    ? 'openalex_ml'
+    : response.detection_method === 'keyword_fallback'
+    ? 'keyword_fallback'
+    : (response.detected_disciplines?.[0]?.source as 'openalex_ml' | 'keyword_fallback' | null) ?? null
+
   return {
     greeting: 'Hello! I have analyzed your manuscript,',
     title: request.title,
@@ -149,6 +161,9 @@ export function buildAIAnalysis(
     topTierCount,
     bestMatch,
     closingStatement: 'Here are my recommendations for publication:',
+    // Universal Mode
+    primaryDomain,
+    detectionMethod,
   }
 }
 
