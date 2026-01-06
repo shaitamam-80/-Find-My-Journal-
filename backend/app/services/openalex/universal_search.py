@@ -13,21 +13,28 @@ Pipeline:
 """
 
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, TYPE_CHECKING
 
 from app.models.journal import Journal
-from app.services.analysis import (
-    detect_disciplines_hybrid,
-    detect_article_type,
-    ArticleTypeDetector,
-    get_subfield_stats,
-    calculate_percentile_score,
-)
 from .client import get_client
 from .journals import convert_to_journal, categorize_journals
 from .scoring import EnhancedJournalScorer, ScoringContext
 
 logger = logging.getLogger(__name__)
+
+
+# Lazy imports to avoid circular dependency with app.services.analysis
+def _get_analysis_imports():
+    """Lazy import analysis modules to break circular import."""
+    from app.services.analysis import (
+        detect_disciplines_hybrid,
+        ArticleTypeDetector,
+    )
+    from app.services.analysis.dynamic_stats import (
+        get_subfield_stats,
+        calculate_percentile_score,
+    )
+    return detect_disciplines_hybrid, ArticleTypeDetector, get_subfield_stats, calculate_percentile_score
 
 
 class UniversalSearchResult:
@@ -77,6 +84,9 @@ def search_journals_universal(
     Returns:
         UniversalSearchResult with journals and metadata
     """
+    # Lazy imports to avoid circular dependency
+    detect_disciplines_hybrid, ArticleTypeDetector, get_subfield_stats, calculate_percentile_score = _get_analysis_imports()
+
     # 1. Detect disciplines (Universal mode)
     detected_disciplines = detect_disciplines_hybrid(
         title=title,
@@ -228,6 +238,9 @@ def score_journals_universal(
     Returns:
         List of scored journals
     """
+    # Lazy imports to avoid circular dependency
+    _, _, get_subfield_stats, calculate_percentile_score = _get_analysis_imports()
+
     # Get dynamic stats for this subfield
     stats = get_subfield_stats(subfield_id, subfield_name)
 
