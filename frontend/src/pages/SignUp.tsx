@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { BookOpen, Mail, Lock, ArrowRight, CheckCircle, Shield, Zap } from 'lucide-react'
-import { validateSignupForm, VALIDATION_RULES } from '../constants/validation'
+import { BookOpen, Shield, Zap, CheckCircle } from 'lucide-react'
 
 const GoogleIcon = () => (
   <svg className="w-6 h-6" viewBox="0 0 24 24">
@@ -14,35 +13,9 @@ const GoogleIcon = () => (
 )
 
 export function SignUp() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
-  const { signUp, signInWithGoogle } = useAuth()
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-
-    const validation = validateSignupForm({ password, confirmPassword })
-    if (!validation.isValid) {
-      setError(validation.error!)
-      return
-    }
-
-    setLoading(true)
-
-    const { error } = await signUp(email, password)
-
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      setSuccess(true)
-    }
-  }
+  const { signInWithGoogle } = useAuth()
 
   const handleGoogleSignIn = async () => {
     setError('')
@@ -53,42 +26,6 @@ export function SignUp() {
       setLoading(false)
     }
     // Note: For OAuth, the user will be redirected to Google, so no need to navigate here
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
-        <div className="max-w-md w-full">
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-10 text-center">
-            {/* Success Icon */}
-            <div className="mb-6 inline-flex p-4 rounded-full bg-emerald-50 border border-emerald-200">
-              <CheckCircle className="w-12 h-12 text-emerald-600" />
-            </div>
-
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">
-              Check your email!
-            </h2>
-            <p className="text-slate-600 mb-2">
-              We've sent a confirmation link to
-            </p>
-            <p className="font-semibold mb-6 text-lg text-teal-600">
-              {email}
-            </p>
-            <p className="text-sm text-slate-500 mb-8">
-              Click the link in your email to activate your account and start discovering journals.
-            </p>
-
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 py-3.5 px-6 bg-slate-900 text-white font-semibold rounded-xl transition-all hover:bg-slate-800"
-            >
-              Go to Login
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -118,102 +55,37 @@ export function SignUp() {
             </div>
 
             {error && (
-              <div className="p-4 rounded-xl bg-red-50 border border-red-200 mb-5">
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 mb-6">
                 <p className="text-sm text-red-600">{error}</p>
               </div>
             )}
 
-            {/* Google Sign Up - Primary Method */}
+            {/* Google Sign Up - Only Method */}
             <button
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
               className="w-full py-4 bg-white border-2 border-slate-200 text-slate-700 font-semibold text-lg rounded-xl hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <GoogleIcon />
-              Continue with Google
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  Connecting to Google...
+                </>
+              ) : (
+                <>
+                  <GoogleIcon />
+                  Continue with Google
+                </>
+              )}
             </button>
 
-            {/* Divider */}
-            <div className="relative my-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-200"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white text-slate-500">Or sign up with email</span>
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Email Address</label>
-                <div className="relative">
-                  <Mail className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full ps-12 pe-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-slate-400"
-                    placeholder="you@example.com"
-                    required
-                    autoComplete="email"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Password</label>
-                <div className="relative">
-                  <Lock className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full ps-12 pe-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-slate-400"
-                    placeholder={`At least ${VALIDATION_RULES.PASSWORD_MIN_LENGTH} characters`}
-                    required
-                    autoComplete="new-password"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Confirm Password</label>
-                <div className="relative">
-                  <Lock className="absolute start-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full ps-12 pe-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:border-teal-600 focus:ring-2 focus:ring-teal-100 transition-all placeholder:text-slate-400"
-                    placeholder="Repeat your password"
-                    required
-                    autoComplete="new-password"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full py-4 bg-slate-900 text-white font-bold text-lg rounded-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Creating account...
-                  </>
-                ) : (
-                  <>
-                    Create Account
-                    <ArrowRight className="w-5 h-5" />
-                  </>
-                )}
-              </button>
-            </form>
+            <p className="mt-6 text-center text-sm text-slate-500">
+              Create your account securely with Google
+            </p>
 
             <div className="mt-6 text-center">
               <p className="text-slate-500 text-sm">

@@ -104,17 +104,18 @@ The search uses a "Soft Boost" approach - journals matching the user's disciplin
 **Score Normalization:** Relevance scores are normalized to 0-1 range before being sent to the frontend, which displays them as percentages (0-100%).
 
 ### Authentication Flow
-- **Primary method**: Google OAuth (recommended for new users)
-- **Fallback method**: Email/password (for existing users)
+- **Google OAuth only**: All users must sign in with their Google account
+- No email/password authentication available
 - Supabase handles user auth via JWT tokens
 - Backend validates tokens for protected endpoints
 - Role-based access: free, paid, admin tiers
 - Free users have rate limiting (5 searches/day)
 
-**Google OAuth Setup:**
-- Users can sign in/up with their Google account
+**Google OAuth:**
+- Users sign in/up exclusively with their Google account
 - OAuth callback redirects to `/search` after successful authentication
 - User metadata (name, email, picture) automatically populated from Google
+- Simplified, secure authentication with no password management needed
 - See "Google OAuth Configuration" section below for setup instructions
 
 ### Privacy Feature
@@ -294,11 +295,12 @@ grep -rn "eyJ\|sk-\|service_role" --include="*.ts" --include="*.tsx" --include="
 - Standardized primary buttons to Slate-900 (solid, no gradients)
 
 ### Google OAuth Integration (January 2026)
-- **Primary authentication method**: Google OAuth
-- **UI updates**: Login/SignUp pages now feature "Continue with Google" as the main CTA
-- **Fallback preserved**: Email/password auth still available for existing users
+- **Exclusive authentication method**: Google OAuth only
+- **Email/password removed**: All traditional email/password forms removed from UI
+- **UI simplification**: Login/SignUp pages now show only "Continue with Google" button
 - **Implementation**: Added `signInWithGoogle()` to AuthContext
-- **User experience**: New users redirected to `/search` after Google authentication
+- **User experience**: All users redirected to `/search` after Google authentication
+- **Security benefit**: No password management, reduced attack surface
 
 ---
 
