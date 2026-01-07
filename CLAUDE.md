@@ -104,10 +104,19 @@ The search uses a "Soft Boost" approach - journals matching the user's disciplin
 **Score Normalization:** Relevance scores are normalized to 0-1 range before being sent to the frontend, which displays them as percentages (0-100%).
 
 ### Authentication Flow
+- **Google OAuth only**: All users must sign in with their Google account
+- No email/password authentication available
 - Supabase handles user auth via JWT tokens
 - Backend validates tokens for protected endpoints
 - Role-based access: free, paid, admin tiers
 - Free users have rate limiting (5 searches/day)
+
+**Google OAuth:**
+- Users sign in/up exclusively with their Google account
+- OAuth callback redirects to `/search` after successful authentication
+- User metadata (name, email, picture) automatically populated from Google
+- Simplified, secure authentication with no password management needed
+- See "Google OAuth Configuration" section below for setup instructions
 
 ### Privacy Feature
 When `incognito_mode=True`, query text is NOT logged to the database.
@@ -284,3 +293,130 @@ grep -rn "eyJ\|sk-\|service_role" --include="*.ts" --include="*.tsx" --include="
 - Goals section: Changed from dark blue gradient to Slate-50 background
 - Standardized accent color to Teal-600 across all components
 - Standardized primary buttons to Slate-900 (solid, no gradients)
+
+### Google OAuth Integration (January 2026)
+- **Exclusive authentication method**: Google OAuth only
+- **Email/password removed**: All traditional email/password forms removed from UI
+- **UI simplification**: Login/SignUp pages now show only "Continue with Google" button
+- **Implementation**: Added `signInWithGoogle()` to AuthContext
+- **User experience**: All users redirected to `/search` after Google authentication
+- **Security benefit**: No password management, reduced attack surface
+
+---
+
+## Google OAuth Configuration
+
+### Prerequisites
+Before Google OAuth will work, you must configure it in both Google Cloud Console and Supabase Dashboard.
+
+### Step 1: Google Cloud Console Setup
+
+1. **Create/Select Project**
+   - Go to [Google Cloud Console](https://console.cloud.google.com)
+   - Create a new project or select existing one
+
+2. **Enable Google+ API**
+   - Navigate to **APIs & Services** > **Library**
+   - Search for "Google+ API" and click **Enable**
+
+3. **Create OAuth Credentials**
+   - Go to **APIs & Services** > **Credentials**
+   - Click **+ CREATE CREDENTIALS** > **OAuth client ID**
+   - Choose **Web application** as the application type
+
+4. **Configure Authorized Redirect URIs**
+
+   Add the following URIs:
+   ```
+   # Production
+   https://<YOUR_SUPABASE_PROJECT_REF>.supabase.co/auth/v1/callback
+
+   # Development (optional)
+   http://localhost:54321/auth/v1/callback
+   ```
+
+   **To find your Supabase Project URL:**
+   - Go to Supabase Dashboard > Settings > API
+   - Copy the **Project URL** (e.g., `https://abcdefghijklmnop.supabase.co`)
+   - The callback URL is: `https://abcdefghijklmnop.supabase.co/auth/v1/callback`
+
+5. **Save Credentials**
+   - After saving, you'll receive:
+     - **Client ID** (e.g., `123456789-abc.apps.googleusercontent.com`)
+     - **Client Secret** (e.g., `GOCSPX-xxxxxxxxxxxxx`)
+   - **IMPORTANT**: Store these securely! You'll need them in the next step.
+
+### Step 2: Supabase Dashboard Configuration
+
+1. **Enable Google Provider**
+   - Go to [Supabase Dashboard](https://app.supabase.com)
+   - Select your project
+   - Navigate to **Authentication** > **Providers**
+   - Find **Google** in the list
+
+2. **Add Credentials**
+   - Toggle **Google enabled** to ON
+   - Enter the **Client ID** from Google Cloud Console
+   - Enter the **Client Secret** from Google Cloud Console
+   - (Optional) Leave **Skip nonce check** disabled for better security
+   - Click **Save**
+
+3. **Verify Callback URL**
+   - Confirm the **Callback URL (for OAuth)** matches what you entered in Google Console:
+     ```
+     https://<YOUR_PROJECT>.supabase.co/auth/v1/callback
+     ```
+
+### Step 3: Verify Implementation
+
+The code is already implemented! Here's what was added:
+
+**AuthContext** (`frontend/src/contexts/AuthContext.tsx:151-163`):
+```typescript
+const signInWithGoogle = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/search`,
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+    },
+  })
+  return { error }
+}
+```
+
+**Login/SignUp Pages**: Both pages now display "Continue with Google" as the primary authentication method, with email/password as a fallback.
+
+### Step 4: Testing
+
+1. **Local Testing** (optional):
+   - Ensure `http://localhost:54321/auth/v1/callback` is in Google Console
+   - Run `cd frontend && npm run dev`
+   - Click "Continue with Google" on Login/SignUp page
+
+2. **Production Testing**:
+   - Deploy to Vercel/Railway
+   - Click "Continue with Google"
+   - Verify user appears in Supabase Dashboard > Authentication > Users
+
+### Security Checklist
+
+✅ **NEVER** commit Client Secret to Git
+✅ **NEVER** expose Client Secret in frontend code
+✅ **ALWAYS** use environment variables for secrets
+✅ **VERIFY** redirect URIs match exactly between Google Console and Supabase
+✅ **ENABLE** RLS policies on all database tables
+
+### Troubleshooting
+
+**Error: "redirect_uri_mismatch"**
+- Solution: Ensure the callback URL in Google Console exactly matches your Supabase callback URL
+
+**Error: "Access blocked: This app's request is invalid"**
+- Solution: Verify the Client ID and Client Secret are correct in Supabase Dashboard
+
+**User not created in database after OAuth**
+- Solution: Check that your backend's `/auth/me` endpoint handles new OAuth users correctly
