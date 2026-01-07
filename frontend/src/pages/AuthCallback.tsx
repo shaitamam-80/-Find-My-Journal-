@@ -15,55 +15,84 @@ export function AuthCallback() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let subscription: { unsubscribe: () => void } | null = null
+    let timeoutId: NodeJS.Timeout | null = null
+
     const handleOAuthCallback = async () => {
       try {
-        // Check if we have a session (Supabase client handles token exchange automatically)
+        console.log('🔄 AuthCallback: Starting OAuth callback handling...')
+
+        // Wait for Supabase to process the URL hash and establish session
+        // This is critical - Supabase needs time to exchange the code for a session
+        const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
+          async (event, session) => {
+            console.log('🔔 Auth state change:', event, 'User:', session?.user?.email)
+
+            if (event === 'SIGNED_IN' && session) {
+              console.log('✅ OAuth session established successfully!')
+
+              // Clean up
+              if (subscription) subscription.unsubscribe()
+              if (timeoutId) clearTimeout(timeoutId)
+
+              // Redirect to search
+              navigate('/search', { replace: true })
+            } else if (event === 'SIGNED_OUT') {
+              console.error('❌ User signed out during OAuth')
+
+              if (subscription) subscription.unsubscribe()
+              if (timeoutId) clearTimeout(timeoutId)
+
+              setError('Authentication failed. Please try again.')
+              setTimeout(() => navigate('/login'), 3000)
+            }
+          }
+        )
+
+        subscription = authSubscription
+
+        // Also check if session already exists (in case auth state change fired before we subscribed)
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
 
         if (sessionError) {
-          console.error('OAuth session error:', sessionError)
+          console.error('❌ OAuth session error:', sessionError)
           setError(sessionError.message)
-          // Redirect to login after 3 seconds
+          if (subscription) subscription.unsubscribe()
           setTimeout(() => navigate('/login'), 3000)
           return
         }
 
         if (session) {
-          // Session established successfully! Redirect to search
-          console.log('✅ OAuth session established:', session.user.email)
+          console.log('✅ Session already exists:', session.user.email)
+          if (subscription) subscription.unsubscribe()
           navigate('/search', { replace: true })
-        } else {
-          // No session yet, wait for auth state change
-          console.log('⏳ Waiting for OAuth session...')
-
-          const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            console.log('🔔 Auth state change:', event, session?.user?.email)
-
-            if (event === 'SIGNED_IN' && session) {
-              subscription.unsubscribe()
-              navigate('/search', { replace: true })
-            } else if (event === 'SIGNED_OUT') {
-              subscription.unsubscribe()
-              setError('Authentication failed. Please try again.')
-              setTimeout(() => navigate('/login'), 3000)
-            }
-          })
-
-          // Timeout after 10 seconds if no session
-          setTimeout(() => {
-            subscription.unsubscribe()
-            setError('Authentication timeout. Please try again.')
-            setTimeout(() => navigate('/login'), 2000)
-          }, 10000)
+          return
         }
+
+        // Set timeout for safety (15 seconds)
+        timeoutId = setTimeout(() => {
+          console.error('⏱️ OAuth timeout - no session established')
+          if (subscription) subscription.unsubscribe()
+          setError('Authentication timeout. Please try again.')
+          setTimeout(() => navigate('/login'), 2000)
+        }, 15000)
+
       } catch (err) {
-        console.error('OAuth callback error:', err)
+        console.error('❌ OAuth callback error:', err)
         setError('An unexpected error occurred.')
+        if (subscription) subscription.unsubscribe()
+        if (timeoutId) clearTimeout(timeoutId)
         setTimeout(() => navigate('/login'), 3000)
       }
     }
 
     handleOAuthCallback()
+
+    // Cleanup on unmount
+    return () => {
+      if (subscription) subscription.unsubscribe()
+      if (timeoutId) clearTimeout(timeoutId)
+    }
   }, [navigate])
 
   return (
