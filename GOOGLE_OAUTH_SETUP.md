@@ -145,6 +145,32 @@ https://<your-project>.supabase.co/auth/v1/callback
 
 **Verify**: This URL matches exactly what you entered in Google Cloud Console!
 
+### 2.4 ⚠️ CRITICAL: Configure Redirect URLs
+
+**This is the most important step!** Without this, OAuth will fail silently.
+
+1. In the left sidebar, click **Authentication** > **URL Configuration**
+2. Find the **Site URL** field and set it to:
+   ```
+   https://find-my-journal.vercel.app
+   ```
+3. Find the **Redirect URLs** field and add these URLs (one per line):
+   ```
+   https://find-my-journal.vercel.app/auth/callback
+   https://find-my-journal.vercel.app/search
+   https://find-my-journal.vercel.app/*
+   http://localhost:3000/auth/callback
+   http://localhost:3000/search
+   http://localhost:3000/*
+   ```
+4. Click **Save**
+
+**Why these URLs?**
+- `/auth/callback` - OAuth redirect handler (processes Google callback)
+- `/search` - Final destination after authentication
+- `/*` - Wildcard for any other app pages
+- `localhost:3000` - Local development URLs
+
 ---
 
 ## 📋 Step 3: Test Your Setup

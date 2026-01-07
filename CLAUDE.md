@@ -113,7 +113,8 @@ The search uses a "Soft Boost" approach - journals matching the user's disciplin
 
 **Google OAuth:**
 - Users sign in/up exclusively with their Google account
-- OAuth callback redirects to `/search` after successful authentication
+- OAuth flow: Login → Google → Supabase → `/auth/callback` → `/search`
+- Dedicated callback handler (`AuthCallback.tsx`) processes OAuth tokens
 - User metadata (name, email, picture) automatically populated from Google
 - Simplified, secure authentication with no password management needed
 - See "Google OAuth Configuration" section below for setup instructions
@@ -367,6 +368,21 @@ Before Google OAuth will work, you must configure it in both Google Cloud Consol
      https://<YOUR_PROJECT>.supabase.co/auth/v1/callback
      ```
 
+4. **⚠️ CRITICAL: Configure Redirect URLs**
+   - Navigate to **Authentication** > **URL Configuration**
+   - Set **Site URL** to: `https://find-my-journal.vercel.app`
+   - Add these **Redirect URLs** (one per line):
+     ```
+     https://find-my-journal.vercel.app/auth/callback
+     https://find-my-journal.vercel.app/search
+     https://find-my-journal.vercel.app/*
+     http://localhost:3000/auth/callback
+     http://localhost:3000/search
+     http://localhost:3000/*
+     ```
+   - Click **Save**
+   - **Why?** These URLs whitelist where Supabase can redirect after OAuth
+
 ### Step 3: Verify Implementation
 
 The code is already implemented! Here's what was added:
@@ -377,7 +393,7 @@ const signInWithGoogle = async () => {
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: `${window.location.origin}/search`,
+      redirectTo: `${window.location.origin}/auth/callback`,
       queryParams: {
         access_type: 'offline',
         prompt: 'consent',
@@ -388,7 +404,14 @@ const signInWithGoogle = async () => {
 }
 ```
 
-**Login/SignUp Pages**: Both pages now display "Continue with Google" as the primary authentication method, with email/password as a fallback.
+**OAuth Callback Handler** (`frontend/src/pages/AuthCallback.tsx`):
+- Dedicated page that handles OAuth redirect from Google
+- Waits for Supabase to establish the session
+- Shows loading state while processing
+- Redirects to `/search` after successful authentication
+- Handles errors gracefully with timeout protection
+
+**Login/SignUp Pages**: Both pages now display "Continue with Google" as the only authentication method.
 
 ### Step 4: Testing
 
