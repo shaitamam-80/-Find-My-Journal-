@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { Zap, Search, FileText } from 'lucide-react'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 
 const GoogleIcon = () => (
   <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -48,10 +49,10 @@ export function SignUp() {
   return (
     <div className="min-h-screen flex">
       {/* Left Panel - Visual */}
-      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-slate-50 via-teal-50/30 to-slate-50 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-linear-to-br from-slate-50 via-teal-50/30 to-slate-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 relative overflow-hidden">
         {/* Dot pattern */}
         <div
-          className="absolute inset-0 opacity-40"
+          className="absolute inset-0 opacity-40 dark:opacity-20"
           style={{
             backgroundImage: `radial-gradient(circle, #94a3b8 1px, transparent 1px)`,
             backgroundSize: '24px 24px'
@@ -62,34 +63,34 @@ export function SignUp() {
         <div className="relative z-10 flex flex-col justify-between w-full p-16">
           {/* Logo */}
           <Link to="/" className="inline-flex items-center gap-3">
-            <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center border border-teal-100">
-              <span className="text-teal-600 font-serif text-lg">√</span>
+            <div className="w-10 h-10 bg-teal-50 dark:bg-teal-900/50 rounded-xl flex items-center justify-center border border-teal-100 dark:border-teal-800">
+              <span className="text-teal-600 dark:text-teal-400 font-serif text-lg">√</span>
             </div>
             <div className="flex items-baseline gap-1">
-              <span className="font-semibold text-slate-900">FIND</span>
-              <span className="font-semibold text-teal-600">MYJOURNAL</span>
+              <span className="font-semibold text-slate-900 dark:text-white">FIND</span>
+              <span className="font-semibold text-teal-600 dark:text-teal-400">MYJOURNAL</span>
             </div>
           </Link>
 
           {/* Main Content */}
           <div className="flex-1 flex items-center justify-center">
             {/* How it works Card */}
-            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 p-10 max-w-lg border border-slate-100">
-              <h3 className="text-xs font-semibold text-teal-600 uppercase tracking-wider mb-2">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 p-10 max-w-lg border border-slate-100 dark:border-slate-700">
+              <h3 className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-2">
                 How it works
               </h3>
-              <p className="text-2xl font-serif text-slate-900 mb-8">
+              <p className="text-2xl font-serif text-slate-900 dark:text-white mb-8">
                 Three simple steps to find your journal
               </p>
               <div className="space-y-8">
                 {steps.map((step, index) => (
                   <div key={index} className="flex items-start gap-5">
-                    <div className="w-12 h-12 rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 shrink-0 border border-teal-100">
+                    <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-900/50 flex items-center justify-center text-teal-600 dark:text-teal-400 shrink-0 border border-teal-100 dark:border-teal-800">
                       {step.icon}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-slate-900 text-lg">{step.title}</h4>
-                      <p className="text-slate-500">{step.desc}</p>
+                      <h4 className="font-semibold text-slate-900 dark:text-white text-lg">{step.title}</h4>
+                      <p className="text-slate-500 dark:text-slate-400">{step.desc}</p>
                     </div>
                   </div>
                 ))}
@@ -98,38 +99,41 @@ export function SignUp() {
           </div>
 
           {/* Footer stats */}
-          <div className="flex items-center gap-8 text-sm text-slate-400">
-            <span><strong className="text-slate-600">250K+</strong> journals</span>
-            <span className="w-1 h-1 bg-slate-300 rounded-full" />
-            <span><strong className="text-slate-600">40+</strong> languages</span>
-            <span className="w-1 h-1 bg-slate-300 rounded-full" />
-            <span><strong className="text-slate-600">Free</strong> to start</span>
+          <div className="flex items-center gap-8 text-sm text-slate-400 dark:text-slate-500">
+            <span><strong className="text-slate-600 dark:text-slate-300">250K+</strong> journals</span>
+            <span className="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full" />
+            <span><strong className="text-slate-600 dark:text-slate-300">40+</strong> languages</span>
+            <span className="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full" />
+            <span><strong className="text-slate-600 dark:text-slate-300">Free</strong> to start</span>
           </div>
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute top-20 right-20 w-32 h-32 bg-teal-100/50 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-40 h-40 bg-amber-100/30 rounded-full blur-3xl" />
+        <div className="absolute top-20 right-20 w-32 h-32 bg-teal-100/50 dark:bg-teal-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 left-20 w-40 h-40 bg-amber-100/30 dark:bg-amber-500/10 rounded-full blur-3xl" />
       </div>
 
       {/* Right Panel - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col bg-white">
+      <div className="w-full lg:w-1/2 flex flex-col bg-white dark:bg-slate-900">
         {/* Header */}
         <header className="p-8 flex items-center justify-between">
           {/* Mobile logo */}
           <Link to="/" className="lg:hidden inline-flex items-center gap-3">
-            <div className="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center border border-teal-100">
-              <span className="text-teal-600 font-serif text-lg">√</span>
+            <div className="w-10 h-10 bg-teal-50 dark:bg-teal-900/50 rounded-xl flex items-center justify-center border border-teal-100 dark:border-teal-800">
+              <span className="text-teal-600 dark:text-teal-400 font-serif text-lg">√</span>
             </div>
-            <span className="font-semibold text-slate-900">FindMyJournal</span>
+            <span className="font-semibold text-slate-900 dark:text-white">FindMyJournal</span>
           </Link>
 
-          <Link
-            to="/login"
-            className="text-sm text-slate-500 hover:text-slate-900 transition-colors ml-auto"
-          >
-            Already have an account? <span className="font-medium text-teal-600">Sign in</span>
-          </Link>
+          <div className="flex items-center gap-4 ml-auto">
+            <ThemeToggle />
+            <Link
+              to="/login"
+              className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+            >
+              Already have an account? <span className="font-medium text-teal-600 dark:text-teal-400">Sign in</span>
+            </Link>
+          </div>
         </header>
 
         {/* Main Content */}
@@ -137,21 +141,21 @@ export function SignUp() {
           <div className="w-full max-w-md">
             {/* Title */}
             <div className="mb-10">
-              <h1 className="text-4xl lg:text-5xl font-serif text-slate-900 leading-tight mb-2">
+              <h1 className="text-4xl lg:text-5xl font-serif text-slate-900 dark:text-white leading-tight mb-2">
                 Find Your
               </h1>
-              <h1 className="text-4xl lg:text-5xl font-serif text-teal-600 leading-tight mb-6">
+              <h1 className="text-4xl lg:text-5xl font-serif text-teal-600 dark:text-teal-400 leading-tight mb-6">
                 Perfect Journal
               </h1>
-              <p className="text-slate-500 text-lg leading-relaxed">
+              <p className="text-slate-500 dark:text-slate-400 text-lg leading-relaxed">
                 AI-powered journal matching for academic researchers.
               </p>
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-lg">
-                <p className="text-sm text-red-700">{error}</p>
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 dark:border-red-500 rounded-r-lg">
+                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
               </div>
             )}
 
@@ -160,7 +164,7 @@ export function SignUp() {
               type="button"
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full py-4 px-6 bg-white border-2 border-slate-200 rounded-2xl hover:border-slate-300 hover:bg-slate-50 transition-all flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full py-4 px-6 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-2xl hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
@@ -168,36 +172,36 @@ export function SignUp() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  <span className="text-slate-600 font-medium">Creating account...</span>
+                  <span className="text-slate-600 dark:text-slate-300 font-medium">Creating account...</span>
                 </>
               ) : (
                 <>
                   <GoogleIcon />
-                  <span className="text-slate-700 font-medium">Sign up with Google</span>
+                  <span className="text-slate-700 dark:text-slate-200 font-medium">Sign up with Google</span>
                 </>
               )}
             </button>
 
             {/* Terms */}
-            <p className="mt-6 text-sm text-slate-400 text-center leading-relaxed">
+            <p className="mt-6 text-sm text-slate-400 dark:text-slate-500 text-center leading-relaxed">
               By signing up, you agree to our{' '}
-              <a href="#" className="text-teal-600 hover:underline">Terms of Service</a>
+              <a href="#" className="text-teal-600 dark:text-teal-400 hover:underline">Terms of Service</a>
               {' '}and{' '}
-              <a href="#" className="text-teal-600 hover:underline">Privacy Policy</a>
+              <a href="#" className="text-teal-600 dark:text-teal-400 hover:underline">Privacy Policy</a>
             </p>
 
             {/* Mobile: How it works */}
-            <div className="lg:hidden mt-12 pt-8 border-t border-slate-100">
-              <h3 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-4">
+            <div className="lg:hidden mt-12 pt-8 border-t border-slate-100 dark:border-slate-800">
+              <h3 className="text-sm font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-4">
                 How it works
               </h3>
               <div className="grid grid-cols-3 gap-4">
                 {steps.map((step, index) => (
                   <div key={index} className="text-center">
-                    <div className="w-10 h-10 mx-auto rounded-xl bg-teal-50 flex items-center justify-center text-teal-600 mb-2">
+                    <div className="w-10 h-10 mx-auto rounded-xl bg-teal-50 dark:bg-teal-900/50 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-2">
                       {step.icon}
                     </div>
-                    <p className="text-xs text-slate-600">{step.title}</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">{step.title}</p>
                   </div>
                 ))}
               </div>
@@ -205,9 +209,9 @@ export function SignUp() {
 
             {/* Sign In Link */}
             <div className="mt-8 text-center lg:hidden">
-              <p className="text-slate-500">
+              <p className="text-slate-500 dark:text-slate-400">
                 Already have an account?{' '}
-                <Link to="/login" className="text-teal-600 font-medium hover:underline">
+                <Link to="/login" className="text-teal-600 dark:text-teal-400 font-medium hover:underline">
                   Sign in
                 </Link>
               </p>
@@ -216,9 +220,9 @@ export function SignUp() {
         </main>
 
         {/* Footer */}
-        <footer className="p-8 flex items-center gap-6 text-sm text-slate-400">
-          <span>Powered by <span className="font-medium text-slate-600">OpenAlex</span></span>
-          <span className="w-1 h-1 bg-slate-300 rounded-full" />
+        <footer className="p-8 flex items-center gap-6 text-sm text-slate-400 dark:text-slate-500">
+          <span>Powered by <span className="font-medium text-slate-600 dark:text-slate-300">OpenAlex</span></span>
+          <span className="w-1 h-1 bg-slate-300 dark:bg-slate-600 rounded-full" />
           <span>Open academic data</span>
         </footer>
       </div>
