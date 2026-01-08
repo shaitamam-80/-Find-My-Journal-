@@ -12,7 +12,6 @@ from app.services.openalex import (
     OpenAlexService,
     openalex_service,
     extract_search_terms,
-    detect_discipline,
     convert_to_journal,
     categorize_journals,
     search_journals_by_keywords,
@@ -56,46 +55,6 @@ class TestUtilityFunctions:
         terms = extract_search_terms(text, [])
 
         assert len(terms) <= 10
-
-    def test_detect_discipline_medicine(self):
-        """Test detection of medical discipline."""
-        text = "Clinical treatment of patients with disease diagnosis"
-
-        discipline = detect_discipline(text)
-
-        assert discipline == "medicine"
-
-    def test_detect_discipline_computer_science(self):
-        """Test detection of computer science discipline."""
-        text = "Machine learning algorithm using neural networks and deep learning"
-
-        discipline = detect_discipline(text)
-
-        assert discipline == "computer_science"
-
-    def test_detect_discipline_biology(self):
-        """Test detection of biology discipline."""
-        text = "Gene expression in cell protein synthesis and molecular evolution"
-
-        discipline = detect_discipline(text)
-
-        assert discipline == "biology"
-
-    def test_detect_discipline_physics(self):
-        """Test detection of physics discipline."""
-        text = "Quantum particle energy wave electron photon magnetic field"
-
-        discipline = detect_discipline(text)
-
-        assert discipline == "physics"
-
-    def test_detect_discipline_general(self):
-        """Test fallback to general discipline."""
-        text = "Some random text without specific keywords"
-
-        discipline = detect_discipline(text)
-
-        assert discipline == "general"
 
 
 class TestJournalOperations:

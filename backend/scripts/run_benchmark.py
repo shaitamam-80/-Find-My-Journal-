@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.services.openalex_service import openalex_service
+from app.services.openalex import openalex_service
 
 
 @dataclass
@@ -192,7 +192,7 @@ def run_benchmark(data_path: str = None) -> BenchmarkSummary:
         # Call the service
         start_time = time.time()
         try:
-            journals, discipline = openalex_service.search_journals_by_text(
+            journals, discipline, _, _, _, _ = openalex_service.search_journals_by_text(
                 title=case["title"],
                 abstract=case["abstract"],
                 keywords=case.get("keywords", []),

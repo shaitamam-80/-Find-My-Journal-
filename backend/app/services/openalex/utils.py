@@ -1,12 +1,12 @@
 """
 OpenAlex Utility Functions
 
-Shared helpers for text processing and discipline detection.
-"""
-from collections import Counter
-from typing import List, Set
+Shared helpers for text processing.
 
-from .constants import DISCIPLINE_KEYWORDS
+Note: Discipline detection now uses OpenAlex's ML classification directly
+via get_topics_from_similar_works() in search.py.
+"""
+from typing import List, Set
 
 
 # Stopwords for search term extraction
@@ -182,31 +182,6 @@ def extract_search_terms(
                 break
 
     return terms[:max_terms]
-
-
-def detect_discipline(text: str) -> str:
-    """
-    Detect academic discipline from text.
-
-    Args:
-        text: Combined title and abstract text.
-
-    Returns:
-        Detected discipline name or "general".
-    """
-    text_lower = text.lower()
-    scores: Counter = Counter()
-
-    for discipline, keywords in DISCIPLINE_KEYWORDS.items():
-        for keyword in keywords:
-            if keyword in text_lower:
-                # Extra weight for longer/more specific keywords
-                weight = 2 if len(keyword) > 15 else 1
-                scores[discipline] += weight
-
-    if scores:
-        return scores.most_common(1)[0][0]
-    return "general"
 
 
 def normalize_journal_name(name: str) -> str:

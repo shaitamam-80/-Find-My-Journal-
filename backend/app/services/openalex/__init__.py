@@ -8,7 +8,7 @@ Usage:
     # Recommended - direct function import
     from app.services.openalex import search_journals_by_text
 
-    journals, discipline = search_journals_by_text(
+    journals, discipline, field, confidence, disciplines, article_type = search_journals_by_text(
         title="Machine Learning in Healthcare",
         abstract="This paper explores...",
     )
@@ -16,22 +16,22 @@ Usage:
     # Or use the service class (backward compatible)
     from app.services.openalex import openalex_service
 
-    journals, discipline = openalex_service.search_journals_by_text(
+    journals, discipline, field, confidence, disciplines, article_type = openalex_service.search_journals_by_text(
         title="...", abstract="..."
     )
 
 Modules:
-    - search: Main search functionality
+    - search: Main search functionality with OpenAlex ML discipline detection
     - journals: Journal operations (convert, categorize)
     - scoring: Relevance scoring algorithm
     - client: OpenAlex API client
     - config: Configuration
-    - constants: Domain knowledge (keywords, disciplines)
+    - constants: Soft-boost keywords for scoring
     - utils: Utility functions
     - service: Service facade (backward compat)
 """
 
-__version__ = "2.0.0"
+__version__ = "2.1.0"
 
 # === Public API ===
 
@@ -65,7 +65,6 @@ from .scoring import calculate_relevance_score
 # Utilities
 from .utils import (
     extract_search_terms,
-    detect_discipline,
     normalize_journal_name,
 )
 
@@ -83,12 +82,10 @@ from .config import (
     get_min_journal_works,
 )
 
-# Constants
+# Constants (soft-boost keywords for scoring)
 from .constants import (
     RELEVANT_TOPIC_KEYWORDS,
-    DISCIPLINE_KEYWORDS,
     load_core_journals,
-    get_key_journals_for_discipline,
 )
 
 # Service class and global instance (backward compat)
@@ -117,7 +114,6 @@ __all__ = [
     "calculate_relevance_score",
     # Utilities
     "extract_search_terms",
-    "detect_discipline",
     "normalize_journal_name",
     # Client
     "OpenAlexClient",
@@ -129,9 +125,7 @@ __all__ = [
     "get_min_journal_works",
     # Constants
     "RELEVANT_TOPIC_KEYWORDS",
-    "DISCIPLINE_KEYWORDS",
     "load_core_journals",
-    "get_key_journals_for_discipline",
     # Service (backward compat)
     "OpenAlexService",
     "openalex_service",

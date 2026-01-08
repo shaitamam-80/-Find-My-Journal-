@@ -11,8 +11,8 @@ from typing import Dict, List, Optional, Tuple, Set
 from app.models.journal import Journal
 from .client import get_client
 from .config import get_min_journal_works
-from .constants import load_core_journals, get_key_journals_for_discipline
-from .utils import extract_search_terms, detect_discipline
+from .constants import load_core_journals
+from .utils import extract_search_terms
 from .scoring import (
     calculate_relevance_score,
     generate_match_details,
@@ -21,12 +21,10 @@ from .scoring import (
 )
 from .journals import convert_to_journal, categorize_journals, merge_journal_results
 
-# Import analysis modules
+# Import analysis modules (discipline detection uses OpenAlex directly now)
 from app.services.analysis import (
-    MultiDisciplineDetector,
     ArticleTypeDetector,
     TopicRelevanceValidator,
-    detect_disciplines_hybrid,
 )
 
 logger = logging.getLogger(__name__)
@@ -384,7 +382,7 @@ def is_journal_relevant_to_any_discipline(
 
     Args:
         journal: Journal to check.
-        detected_disciplines: List of detected discipline dicts with names.
+        detected_disciplines: List of detected discipline dicts with subfield/field info.
 
     Returns:
         True if journal is relevant to any discipline, False otherwise.
@@ -392,17 +390,11 @@ def is_journal_relevant_to_any_discipline(
     if not detected_disciplines:
         return True  # No filter if no disciplines detected
 
-    # Check against each detected discipline
+    # Check against each detected discipline using OpenAlex subfield/field directly
     for disc in detected_disciplines:
-        discipline_name = disc.get("name", "")
-        if not discipline_name:
-            continue
-
-        # Get the subfield from the mapping
-        from app.services.analysis.discipline_detector import OPENALEX_FIELD_MAPPING
-        openalex_info = OPENALEX_FIELD_MAPPING.get(discipline_name, {})
-        subfield = openalex_info.get("subfield", "")
-        field = openalex_info.get("field", "")
+        # Get subfield and field from the discipline dict (from OpenAlex)
+        subfield = disc.get("name", "")  # OpenAlex subfield name
+        field = disc.get("field", "")    # OpenAlex field name
 
         # If journal is relevant to this discipline, keep it
         if is_journal_relevant_to_subfield(journal, subfield, field):
@@ -514,58 +506,6 @@ def search_journals_by_keywords(
     return journals[:15]  # Return more candidates for hybrid merge
 
 
-def inject_key_journals(
-    discipline: str,
-    existing_journals: Dict[str, Journal],
-    core_journals: Set[str],
-    search_terms: List[str],
-) -> Dict[str, Journal]:
-    """
-    Proactively inject key journals for a discipline that may be missed by search.
-
-    This ensures important discipline-specific journals always appear.
-
-    Args:
-        discipline: Detected discipline.
-        existing_journals: Already found journals.
-        core_journals: Set of core journal names.
-        search_terms: Search terms for scoring.
-
-    Returns:
-        Updated journal dict with injected journals.
-    """
-    client = get_client()
-    key_journal_names = get_key_journals_for_discipline(discipline)
-
-    for journal_name in key_journal_names:
-        # Search for journal by name
-        sources = client.search_sources(journal_name, per_page=5)
-
-        for source in sources:
-            source_id = source.get("id", "")
-            display_name = source.get("display_name", "")
-
-            # Check if name matches closely
-            if journal_name.lower() in display_name.lower():
-                if source_id and source_id not in existing_journals:
-                    journal = convert_to_journal(source)
-                    if journal:
-                        journal.match_reason = f"Key journal for {discipline.replace('_', ' ')}"
-                        # Calculate score with discipline boost
-                        journal.relevance_score = calculate_relevance_score(
-                            journal=journal,
-                            discipline=discipline,
-                            is_topic_match=True,  # Treat as topic match
-                            is_keyword_match=True,
-                            search_terms=search_terms,
-                            core_journals=core_journals,
-                        )
-                        existing_journals[source_id] = journal
-                break  # Found the journal
-
-    return existing_journals
-
-
 def search_journals_by_text(
     title: str,
     abstract: str,
@@ -599,39 +539,41 @@ def search_journals_by_text(
 
     # === ENHANCED ANALYSIS ===
 
-    # 1. MULTI-DISCIPLINE DETECTION - Universal Mode (supports ALL 252 subfields)
-    # Uses OpenAlex ML classification with keyword fallback
-    detected_disciplines_dicts = detect_disciplines_hybrid(
-        title=title,
-        abstract=abstract,
-        keywords=keywords,
-        prefer_universal=True,  # Use OpenAlex ML first, fallback to keywords
-    )
+    # 1. TOPIC-BASED SEARCH (OpenAlex ML-based approach) - Do this FIRST for discipline detection
+    # This uses OpenAlex's Specter 2 ML classification which covers ALL 252 subfields
+    topic_search_query = " ".join(search_terms[:8])
+    topic_ids, subfield, field, subfield_id, confidence = get_topics_from_similar_works(topic_search_query)
+    topic_journals = find_journals_by_topics(topic_ids)
+
+    # 2. MULTI-DISCIPLINE DETECTION - Construct from OpenAlex topic data
+    # Primary discipline from top subfield, with field hierarchy
+    detected_disciplines_dicts: List[Dict] = []
+    if subfield:
+        detected_disciplines_dicts.append({
+            "name": subfield,
+            "confidence": confidence,
+            "field": field,
+            "domain": "Health Sciences" if field == "Medicine" else None,
+            "numeric_id": subfield_id,
+            "openalex_subfield_id": subfield_id,
+            "source": "openalex_ml",
+        })
 
     # Log detection results
     if detected_disciplines_dicts:
-        detection_method = detected_disciplines_dicts[0].get("source", "unknown")
         disc_summary = [(d["name"], f"{d['confidence']:.0%}") for d in detected_disciplines_dicts[:5]]
-        logger.info(f"Detected disciplines ({detection_method}): {disc_summary}")
+        logger.info(f"Detected disciplines (openalex_ml): {disc_summary}")
     else:
-        logger.warning("No disciplines detected")
+        logger.warning("No disciplines detected from OpenAlex")
 
-    # 2. ARTICLE TYPE DETECTION (NEW)
+    # 3. ARTICLE TYPE DETECTION
     article_type_detector = ArticleTypeDetector()
     detected_article_type = article_type_detector.detect(abstract, title)
     article_type_dict = article_type_detector.to_dict(detected_article_type)
 
     logger.info(f"Detected article type: {detected_article_type.display_name} ({detected_article_type.confidence:.0%})")
 
-    # === HYBRID SEARCH ===
-
-    # 3. TOPIC-BASED SEARCH (ML-based approach) - Do this FIRST to get subfield
-    topic_search_query = " ".join(search_terms[:8])
-    topic_ids, subfield, field, subfield_id, confidence = get_topics_from_similar_works(topic_search_query)
-    topic_journals = find_journals_by_topics(topic_ids)
-
     # Use OpenAlex subfield as discipline (for backward compatibility)
-    # But also use multi-discipline info for enhanced scoring
     if subfield:
         discipline = subfield
     elif field:
@@ -639,7 +581,7 @@ def search_journals_by_text(
     elif detected_disciplines_dicts:
         discipline = detected_disciplines_dicts[0].get("name", "")
     else:
-        discipline = detect_discipline(combined_text)
+        discipline = "general"  # Fallback when OpenAlex detection fails
 
     # 4. SUBFIELD-BASED SEARCH - Find specialized journals
     # Search for ALL detected disciplines (not just primary)

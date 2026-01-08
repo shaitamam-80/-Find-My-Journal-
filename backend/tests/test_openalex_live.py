@@ -5,7 +5,7 @@ Run this manually to verify real API connectivity.
 Usage: pytest tests/test_openalex_live.py -v -s
 """
 import pytest
-from app.services.openalex_service import OpenAlexService
+from app.services.openalex import OpenAlexService
 
 
 class TestOpenAlexLiveAPI:

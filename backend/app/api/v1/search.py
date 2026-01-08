@@ -18,7 +18,7 @@ from app.models.journal import (
     DetectedDisciplineInfo,
     ArticleTypeInfo,
 )
-from app.services.openalex_service import openalex_service
+from app.services.openalex import openalex_service
 from app.services.db_service import db_service
 from app.services.trust_safety import verify_journals_batch
 

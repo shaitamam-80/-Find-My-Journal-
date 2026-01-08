@@ -21,7 +21,7 @@ import time
 from typing import Dict, List, Set
 from collections import defaultdict
 
-from app.services.openalex_service import OpenAlexService
+from app.services.openalex import OpenAlexService
 from app.models.journal import Journal
 
 
@@ -164,7 +164,7 @@ class TestSearchBenchmark:
         try:
             # Measure execution time
             start_time = time.time()
-            journals, discipline, _, _ = openalex_service.search_journals_by_text(
+            journals, discipline, _, _, _, _ = openalex_service.search_journals_by_text(
                 title=case["title"],
                 abstract=case["abstract"],
                 keywords=case["keywords"],
