@@ -31,9 +31,39 @@ Modules:
     - service: Service facade (backward compat)
 """
 
-__version__ = "2.1.0"
+__version__ = "2.2.0"
 
 # === Public API ===
+
+# Topics API (Phase 1 enhancement)
+from .topics import (
+    TopicsService,
+    TopicsAnalysisResult,
+    DetectedSubfield,
+    TopicHierarchy,
+    get_topics_service,
+    analyze_topics,
+    get_multi_subfields,
+)
+
+# Keywords extraction (Phase 1 enhancement)
+from .keywords import (
+    KeywordsExtractor,
+    RankedKeyword,
+    get_keywords_extractor,
+    extract_keywords,
+    get_ranked_keywords,
+)
+
+# Concepts analysis (Phase 1 enhancement)
+from .concepts import (
+    ConceptsAnalyzer,
+    Concept,
+    ConceptsAnalysisResult,
+    get_concepts_analyzer,
+    analyze_concepts,
+    get_discipline_hints,
+)
 
 # Main search functions
 from .search import (
@@ -65,6 +95,9 @@ from .scoring import calculate_relevance_score
 # Utilities
 from .utils import (
     extract_search_terms,
+    extract_search_terms_enhanced,
+    extract_bigrams,
+    extract_trigrams,
     normalize_journal_name,
 )
 
@@ -95,6 +128,27 @@ from .service import OpenAlexService, openalex_service
 __all__ = [
     # Version
     "__version__",
+    # Topics API (Phase 1)
+    "TopicsService",
+    "TopicsAnalysisResult",
+    "DetectedSubfield",
+    "TopicHierarchy",
+    "get_topics_service",
+    "analyze_topics",
+    "get_multi_subfields",
+    # Keywords extraction (Phase 1)
+    "KeywordsExtractor",
+    "RankedKeyword",
+    "get_keywords_extractor",
+    "extract_keywords",
+    "get_ranked_keywords",
+    # Concepts analysis (Phase 1)
+    "ConceptsAnalyzer",
+    "Concept",
+    "ConceptsAnalysisResult",
+    "get_concepts_analyzer",
+    "analyze_concepts",
+    "get_discipline_hints",
     # Main search functions
     "search_journals_by_text",
     "search_journals_by_keywords",
@@ -114,6 +168,9 @@ __all__ = [
     "calculate_relevance_score",
     # Utilities
     "extract_search_terms",
+    "extract_search_terms_enhanced",
+    "extract_bigrams",
+    "extract_trigrams",
     "normalize_journal_name",
     # Client
     "OpenAlexClient",
