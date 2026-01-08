@@ -63,17 +63,17 @@ export function Dashboard() {
   }, [session?.access_token])
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center group-hover:bg-slate-800 transition-colors">
+              <div className="w-10 h-10 bg-slate-900 dark:bg-teal-600 rounded-xl flex items-center justify-center group-hover:bg-slate-800 dark:group-hover:bg-teal-500 transition-colors">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="text-lg font-bold text-slate-900 tracking-tight">
+              <span className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                 FindMyJournal
               </span>
             </Link>
@@ -82,7 +82,7 @@ export function Dashboard() {
             <nav className="flex items-center gap-4">
               <Link
                 to="/search"
-                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
               >
                 <Search className="w-5 h-5" />
                 <span className="hidden sm:inline">Search</span>
@@ -90,7 +90,7 @@ export function Dashboard() {
 
               <Link
                 to="/settings"
-                className="flex items-center gap-2 px-4 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
               >
                 <Settings className="w-5 h-5" />
                 <span className="hidden sm:inline">Settings</span>
@@ -99,7 +99,7 @@ export function Dashboard() {
               {profile?.tier === 'super_admin' && (
                 <Link
                   to="/admin"
-                  className="flex items-center gap-2 px-4 py-2 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-xl transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 text-purple-600 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30 rounded-xl transition-colors"
                 >
                   <Shield className="w-5 h-5" />
                   <span className="hidden sm:inline">Admin</span>
@@ -107,12 +107,12 @@ export function Dashboard() {
               )}
 
               <div className="flex items-center gap-3">
-                <span className="hidden md:block text-sm text-gray-500">
+                <span className="hidden md:block text-sm text-gray-500 dark:text-slate-400">
                   {user?.email}
                 </span>
                 <button
                   onClick={signOut}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 hover:text-gray-800 dark:hover:text-white"
                   title="Sign out"
                 >
                   <LogOut className="w-5 h-5" />
@@ -128,8 +128,8 @@ export function Dashboard() {
         {/* Page Title */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Dashboard</h1>
-            <p className="text-slate-500 mt-1">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-1">
               Welcome back, {user?.email?.split('@')[0]}
             </p>
           </div>
@@ -137,7 +137,7 @@ export function Dashboard() {
           <button
             onClick={fetchDashboardData}
             disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             Refresh
@@ -146,9 +146,9 @@ export function Dashboard() {
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
@@ -158,11 +158,11 @@ export function Dashboard() {
             {[1, 2, 3, 4].map((i) => (
               <div
                 key={i}
-                className="bg-white border border-slate-200 rounded-2xl p-6 animate-pulse"
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 animate-pulse"
               >
-                <div className="w-10 h-10 bg-slate-200 rounded-xl mb-3" />
-                <div className="h-8 bg-slate-200 rounded w-1/2 mb-2" />
-                <div className="h-4 bg-slate-100 rounded w-2/3" />
+                <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-xl mb-3" />
+                <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-2" />
+                <div className="h-4 bg-slate-100 dark:bg-slate-600 rounded w-2/3" />
               </div>
             ))}
           </div>
@@ -187,12 +187,12 @@ export function Dashboard() {
 
           {/* Quick Actions - 1 column */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
-              <h2 className="text-lg font-semibold text-slate-900 mb-4">Quick Actions</h2>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Quick Actions</h2>
               <div className="space-y-3">
                 <Link
                   to="/search"
-                  className="flex items-center gap-3 p-4 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors"
+                  className="flex items-center gap-3 p-4 bg-slate-900 dark:bg-teal-600 text-white rounded-xl hover:bg-slate-800 dark:hover:bg-teal-500 transition-colors"
                 >
                   <Search className="w-5 h-5" />
                   <span className="font-medium">New Search</span>
@@ -200,7 +200,7 @@ export function Dashboard() {
 
                 <Link
                   to="/search"
-                  className="flex items-center gap-3 p-4 bg-teal-50 text-teal-700 border border-teal-200 rounded-xl hover:bg-teal-100 transition-colors"
+                  className="flex items-center gap-3 p-4 bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 border border-teal-200 dark:border-teal-700 rounded-xl hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-colors"
                 >
                   <BookOpen className="w-5 h-5" />
                   <span className="font-medium">Browse Saved Searches</span>
@@ -210,12 +210,12 @@ export function Dashboard() {
 
             {/* Upgrade CTA for free users */}
             {stats?.tier === 'free' && (
-              <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 text-white">
+              <div className="bg-gradient-to-br from-slate-900 to-slate-800 dark:from-teal-700 dark:to-teal-800 rounded-2xl p-6 text-white">
                 <h3 className="font-bold text-lg mb-2">Upgrade to Pro</h3>
-                <p className="text-slate-300 text-sm mb-4">
+                <p className="text-slate-300 dark:text-teal-200 text-sm mb-4">
                   Get unlimited searches and AI explanations
                 </p>
-                <button className="w-full py-3 bg-white text-slate-900 font-semibold rounded-xl hover:bg-slate-100 transition-colors">
+                <button className="w-full py-3 bg-white text-slate-900 dark:text-teal-700 font-semibold rounded-xl hover:bg-slate-100 dark:hover:bg-teal-50 transition-colors">
                   Upgrade Now
                 </button>
               </div>

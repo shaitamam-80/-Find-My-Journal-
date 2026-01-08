@@ -128,8 +128,8 @@ export function Admin() {
 
   if (isAdmin === null) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 dark:border-purple-400" />
       </div>
     )
   }
@@ -139,15 +139,15 @@ export function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <Link
                 to="/dashboard"
-                className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
               </Link>
@@ -155,13 +155,13 @@ export function Admin() {
                 <div className="w-10 h-10 bg-purple-600 rounded-xl flex items-center justify-center">
                   <Shield className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-lg font-bold text-slate-900">Admin Panel</span>
+                <span className="text-lg font-bold text-slate-900 dark:text-white">Admin Panel</span>
               </div>
             </div>
 
             <button
               onClick={signOut}
-              className="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+              className="flex items-center gap-2 px-3 py-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
             >
               <LogOut className="w-5 h-5" />
               <span className="hidden sm:inline">Sign out</span>
@@ -173,63 +173,63 @@ export function Admin() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Error */}
         {error && (
-          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-sm text-red-600">{error}</p>
+          <div className="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400 shrink-0 mt-0.5" />
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
         {/* Stats Grid */}
         {stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-blue-100 rounded-xl">
-                  <Users className="w-5 h-5 text-blue-600" />
+                <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                  <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <span className="text-slate-600 font-medium">Total Users</span>
+                <span className="text-slate-600 dark:text-slate-400 font-medium">Total Users</span>
               </div>
-              <p className="text-3xl font-bold text-slate-900">{stats.total_users}</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total_users}</p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-green-100 rounded-xl">
-                  <UserCheck className="w-5 h-5 text-green-600" />
+                <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                  <UserCheck className="w-5 h-5 text-green-600 dark:text-green-400" />
                 </div>
-                <span className="text-slate-600 font-medium">Active Today</span>
+                <span className="text-slate-600 dark:text-slate-400 font-medium">Active Today</span>
               </div>
-              <p className="text-3xl font-bold text-slate-900">{stats.active_users_today}</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.active_users_today}</p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-teal-100 rounded-xl">
-                  <Search className="w-5 h-5 text-teal-600" />
+                <div className="p-2 bg-teal-100 dark:bg-teal-900/30 rounded-xl">
+                  <Search className="w-5 h-5 text-teal-600 dark:text-teal-400" />
                 </div>
-                <span className="text-slate-600 font-medium">Searches Today</span>
+                <span className="text-slate-600 dark:text-slate-400 font-medium">Searches Today</span>
               </div>
-              <p className="text-3xl font-bold text-slate-900">{stats.total_searches_today}</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.total_searches_today}</p>
             </div>
 
-            <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6">
               <div className="flex items-center gap-3 mb-3">
-                <div className="p-2 bg-amber-100 rounded-xl">
-                  <TrendingUp className="w-5 h-5 text-amber-600" />
+                <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+                  <TrendingUp className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                 </div>
-                <span className="text-slate-600 font-medium">New This Week</span>
+                <span className="text-slate-600 dark:text-slate-400 font-medium">New This Week</span>
               </div>
-              <p className="text-3xl font-bold text-slate-900">{stats.new_users_week}</p>
+              <p className="text-3xl font-bold text-slate-900 dark:text-white">{stats.new_users_week}</p>
             </div>
           </div>
         )}
 
         {/* Users Table */}
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden">
           {/* Table Header */}
-          <div className="p-6 border-b border-slate-200">
+          <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <h2 className="text-lg font-semibold text-slate-900">User Management</h2>
+              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">User Management</h2>
 
               <div className="flex gap-3">
                 {/* Search */}
@@ -241,7 +241,7 @@ export function Admin() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="Search by email..."
-                    className="w-full sm:w-64 pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-slate-300"
+                    className="w-full sm:w-64 pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-slate-300 dark:focus:border-slate-500"
                   />
                 </div>
 
@@ -252,7 +252,7 @@ export function Admin() {
                     setTierFilter(e.target.value)
                     setPage(1)
                   }}
-                  className="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-slate-300"
+                  className="px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-slate-300 dark:focus:border-slate-500"
                 >
                   <option value="">All Tiers</option>
                   <option value="free">Free</option>
@@ -264,10 +264,10 @@ export function Admin() {
                 <button
                   onClick={fetchData}
                   disabled={loading}
-                  className="p-2 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50"
+                  className="p-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors disabled:opacity-50"
                 >
                   <RefreshCw
-                    className={`w-5 h-5 text-slate-600 ${loading ? 'animate-spin' : ''}`}
+                    className={`w-5 h-5 text-slate-600 dark:text-slate-300 ${loading ? 'animate-spin' : ''}`}
                   />
                 </button>
               </div>
@@ -277,37 +277,37 @@ export function Admin() {
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-slate-50">
+              <thead className="bg-slate-50 dark:bg-slate-700/50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                     Tier
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                     Searches Today
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                     Joined
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-slate-50">
+                  <tr key={u.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50">
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-medium text-slate-900">
+                        <p className="font-medium text-slate-900 dark:text-white">
                           {u.display_name || u.email.split('@')[0]}
                         </p>
-                        <p className="text-sm text-slate-500">{u.email}</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">{u.email}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -317,10 +317,10 @@ export function Admin() {
                         disabled={u.id === user?.id}
                         className={`px-3 py-1 rounded-full text-sm font-medium border-0 cursor-pointer ${
                           u.tier === 'super_admin'
-                            ? 'bg-purple-100 text-purple-700'
+                            ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400'
                             : u.tier === 'paid'
-                              ? 'bg-teal-100 text-teal-700'
-                              : 'bg-slate-100 text-slate-700'
+                              ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400'
+                              : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'
                         } ${u.id === user?.id ? 'cursor-not-allowed opacity-50' : ''}`}
                       >
                         <option value="free">Free</option>
@@ -331,7 +331,7 @@ export function Admin() {
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium ${
-                          u.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                          u.is_active ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
                         }`}
                       >
                         {u.is_active ? (
@@ -342,8 +342,8 @@ export function Admin() {
                         {u.is_active ? 'Active' : 'Inactive'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-900">{u.credits_used_today}</td>
-                    <td className="px-6 py-4 text-slate-500 text-sm">
+                    <td className="px-6 py-4 text-slate-900 dark:text-white">{u.credits_used_today}</td>
+                    <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-sm">
                       {u.created_at ? new Date(u.created_at).toLocaleDateString() : '-'}
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -352,8 +352,8 @@ export function Admin() {
                           onClick={() => handleToggleUserStatus(u.id, u.is_active)}
                           className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                             u.is_active
-                              ? 'text-red-600 hover:bg-red-50'
-                              : 'text-green-600 hover:bg-green-50'
+                              ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30'
+                              : 'text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/30'
                           }`}
                         >
                           {u.is_active ? 'Deactivate' : 'Activate'}
@@ -367,24 +367,24 @@ export function Admin() {
           </div>
 
           {/* Pagination */}
-          <div className="px-6 py-4 border-t border-slate-200 flex items-center justify-between">
-            <p className="text-sm text-slate-600">
+          <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Page {page} of {totalPages}
             </p>
             <div className="flex gap-2">
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="p-2 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronLeft className="w-5 h-5 text-slate-600" />
+                <ChevronLeft className="w-5 h-5 text-slate-600 dark:text-slate-300" />
               </button>
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="p-2 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronRight className="w-5 h-5 text-slate-600" />
+                <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-300" />
               </button>
             </div>
           </div>

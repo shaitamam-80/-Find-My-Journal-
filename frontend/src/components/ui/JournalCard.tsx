@@ -129,7 +129,7 @@ const MatchScoreBadge = memo(function MatchScoreBadge({
       >
         <span className="text-xl font-bold text-white">{score}%</span>
       </div>
-      <span className="text-xs text-gray-500 mt-1 font-medium">Match</span>
+      <span className="text-xs text-gray-500 dark:text-slate-400 mt-1 font-medium">Match</span>
     </div>
   )
 })
@@ -148,18 +148,18 @@ const JournalBadges = memo(function JournalBadges({
 }) {
   return (
     <div className="flex items-center gap-3 mb-2 flex-wrap">
-      <span className="px-2.5 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded-full">
+      <span className="px-2.5 py-1 bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-xs font-semibold rounded-full">
         {acronym}
       </span>
 
       {publisher && (
-        <span className="px-2.5 py-1 bg-gray-50 text-gray-500 text-xs rounded-full">
+        <span className="px-2.5 py-1 bg-gray-50 dark:bg-slate-700 text-gray-500 dark:text-slate-400 text-xs rounded-full">
           {publisher}
         </span>
       )}
 
       {isOA && (
-        <span className="px-2.5 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full flex items-center gap-1">
+        <span className="px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold rounded-full flex items-center gap-1">
           <Unlock className="w-3 h-3" />
           Open Access
         </span>
@@ -179,26 +179,26 @@ const MetricsRow = memo(function MetricsRow({
   apcUsd: number | null
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 mt-3">
+    <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 dark:text-slate-300 mt-3">
       {metrics.h_index !== null && (
-        <div className="flex items-center gap-1.5 bg-teal-50 px-3 py-1.5 rounded-lg">
-          <TrendingUp className="w-4 h-4 text-teal-600" />
+        <div className="flex items-center gap-1.5 bg-teal-50 dark:bg-teal-900/30 px-3 py-1.5 rounded-lg">
+          <TrendingUp className="w-4 h-4 text-teal-600 dark:text-teal-400" />
           <span>
             Journal H-Index:{' '}
-            <strong className="text-teal-700">{metrics.h_index}</strong>
+            <strong className="text-teal-700 dark:text-teal-400">{metrics.h_index}</strong>
           </span>
         </div>
       )}
 
       {metrics.two_yr_mean_citedness !== null && (
         <div
-          className="flex items-center gap-1.5 bg-blue-50 px-3 py-1.5 rounded-lg"
+          className="flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-lg"
           title="Average citations per paper in the last 2 years"
         >
-          <TrendingUp className="w-4 h-4 text-blue-600" />
+          <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
           <span>
             2yr Citations:{' '}
-            <strong className="text-blue-700">
+            <strong className="text-blue-700 dark:text-blue-400">
               {metrics.two_yr_mean_citedness.toFixed(1)}
             </strong>
           </span>
@@ -206,11 +206,11 @@ const MetricsRow = memo(function MetricsRow({
       )}
 
       {metrics.works_count !== null && (
-        <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1.5 rounded-lg">
-          <FileText className="w-4 h-4 text-gray-500" />
+        <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-slate-700 px-3 py-1.5 rounded-lg">
+          <FileText className="w-4 h-4 text-gray-500 dark:text-slate-400" />
           <span>
             Works:{' '}
-            <strong className="text-gray-700">
+            <strong className="text-gray-700 dark:text-slate-300">
               {metrics.works_count.toLocaleString()}
             </strong>
           </span>
@@ -218,9 +218,9 @@ const MetricsRow = memo(function MetricsRow({
       )}
 
       {apcUsd !== null && (
-        <div className="flex items-center gap-1.5 bg-amber-50 px-3 py-1.5 rounded-lg">
-          <DollarSign className="w-4 h-4 text-amber-500" />
-          <span className="text-amber-700">APC: ${apcUsd}</span>
+        <div className="flex items-center gap-1.5 bg-amber-50 dark:bg-amber-900/30 px-3 py-1.5 rounded-lg">
+          <DollarSign className="w-4 h-4 text-amber-500 dark:text-amber-400" />
+          <span className="text-amber-700 dark:text-amber-400">APC: ${apcUsd}</span>
         </div>
       )}
     </div>
@@ -235,18 +235,18 @@ const TopicsList = memo(function TopicsList({ topics }: { topics: string[] }) {
 
   return (
     <div className="mt-5">
-      <h4 className="text-sm font-semibold text-gray-600 mb-2">Topics:</h4>
+      <h4 className="text-sm font-semibold text-gray-600 dark:text-slate-400 mb-2">Topics:</h4>
       <div className="flex flex-wrap gap-2">
         {topics.slice(0, MAX_VISIBLE).map((topic, i) => (
           <span
             key={i}
-            className="px-3 py-1.5 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg"
+            className="px-3 py-1.5 bg-gray-100 dark:bg-slate-700 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-lg"
           >
             {topic}
           </span>
         ))}
         {topics.length > MAX_VISIBLE && (
-          <span className="px-3 py-1.5 bg-gray-50 text-gray-400 text-sm rounded-lg">
+          <span className="px-3 py-1.5 bg-gray-50 dark:bg-slate-700/50 text-gray-400 dark:text-slate-500 text-sm rounded-lg">
             +{topics.length - MAX_VISIBLE} more
           </span>
         )}
@@ -271,8 +271,8 @@ const SaveButton = memo(function SaveButton({
       disabled={isLoading}
       className={`flex items-center gap-2 px-4 py-3.5 font-semibold rounded-xl transition-all ${
         isSaved
-          ? 'bg-teal-100 text-teal-700 hover:bg-teal-200'
-          : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          ? 'bg-teal-100 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 hover:bg-teal-200 dark:hover:bg-teal-900/50'
+          : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
       } disabled:opacity-50`}
       aria-label={isSaved ? 'Remove from saved' : 'Save journal'}
     >
@@ -341,22 +341,22 @@ export const JournalCard = memo(function JournalCard({
 
   return (
     <article
-      className={`bg-white rounded-2xl border ${
+      className={`bg-white dark:bg-slate-800 rounded-2xl border ${
         isExpanded
-          ? 'border-teal-200 shadow-lg'
-          : 'border-slate-200 shadow-sm hover:shadow-md'
+          ? 'border-teal-200 dark:border-teal-700 shadow-lg'
+          : 'border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md'
       } overflow-hidden transition-all duration-300`}
       aria-expanded={isExpanded}
     >
       {/* Header - Always visible, clickable to expand */}
       <button
         onClick={onToggle}
-        className="w-full p-6 text-start hover:bg-gray-50/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-inset"
+        className="w-full p-6 text-start hover:bg-gray-50/50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-inset"
         aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${journal.name} details`}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-bold text-gray-800 truncate mb-1">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-white truncate mb-1">
               {journal.name}
             </h3>
 
@@ -376,13 +376,13 @@ export const JournalCard = memo(function JournalCard({
           {/* Expand/Collapse Icon */}
           <div
             className={`p-2 rounded-full transition-colors ${
-              isExpanded ? 'bg-teal-50' : 'bg-slate-100'
+              isExpanded ? 'bg-teal-50 dark:bg-teal-900/30' : 'bg-slate-100 dark:bg-slate-700'
             }`}
             aria-hidden="true"
           >
             {isExpanded ? (
               <ChevronUp
-                className={`w-5 h-5 ${isExpanded ? 'text-teal-600' : 'text-slate-400'}`}
+                className={`w-5 h-5 ${isExpanded ? 'text-teal-600 dark:text-teal-400' : 'text-slate-400'}`}
               />
             ) : (
               <ChevronDown className="w-5 h-5 text-slate-400" />
@@ -393,7 +393,7 @@ export const JournalCard = memo(function JournalCard({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="px-6 pb-6 border-t border-gray-100">
+        <div className="px-6 pb-6 border-t border-gray-100 dark:border-slate-700">
           {/* Category Badge */}
           <div className={`mt-5 inline-flex items-center gap-2 px-3 py-1.5 ${config.bg} ${config.border} border rounded-full`}>
             <Sparkles className={`w-4 h-4 ${config.text}`} />
@@ -404,7 +404,7 @@ export const JournalCard = memo(function JournalCard({
 
           {/* Match Reason */}
           {journal.match_reason && (
-            <p className="mt-4 text-gray-600 text-sm leading-relaxed">
+            <p className="mt-4 text-gray-600 dark:text-slate-400 text-sm leading-relaxed">
               {journal.match_reason}
             </p>
           )}
@@ -419,7 +419,7 @@ export const JournalCard = memo(function JournalCard({
                 href={journal.homepage_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex-1 min-w-[200px] py-3.5 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+                className="flex-1 min-w-[200px] py-3.5 bg-slate-900 dark:bg-teal-600 text-white font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-teal-500 transition-all flex items-center justify-center gap-2"
               >
                 <ExternalLink className="w-4 h-4" />
                 Visit Journal Website

@@ -53,16 +53,16 @@ export function AuthCallback() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
-        <div className="bg-white rounded-2xl p-8 shadow-sm border border-slate-200 max-w-md w-full text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center px-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-sm border border-slate-200 dark:border-slate-700 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <BookOpen className="w-8 h-8 text-red-600 dark:text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Authentication Error</h1>
-          <p className="text-slate-500 mb-6">{error}</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Authentication Error</h1>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">{error}</p>
           <button
             onClick={() => navigate('/login', { replace: true })}
-            className="px-6 py-3 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-all"
+            className="px-6 py-3 bg-slate-900 dark:bg-teal-600 text-white font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-teal-500 transition-all"
           >
             Back to Login
           </button>
@@ -72,13 +72,13 @@ export function AuthCallback() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
       <div className="text-center">
-        <div className="w-16 h-16 bg-slate-900 rounded-2xl flex items-center justify-center mx-auto mb-4">
+        <div className="w-16 h-16 bg-slate-900 dark:bg-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
           <BookOpen className="w-8 h-8 text-white" />
         </div>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 mx-auto mb-4"></div>
-        <p className="text-slate-600">Completing sign in...</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900 dark:border-teal-400 mx-auto mb-4"></div>
+        <p className="text-slate-600 dark:text-slate-400">Completing sign in...</p>
       </div>
     </div>
   )

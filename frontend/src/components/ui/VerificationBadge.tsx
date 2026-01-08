@@ -21,30 +21,30 @@ const badgeConfig: Record<BadgeColor, {
   iconColor: string
 }> = {
   verified: {
-    bgColor: 'bg-teal-50',
-    textColor: 'text-teal-700',
-    borderColor: 'border-teal-200',
+    bgColor: 'bg-teal-50 dark:bg-teal-900/30',
+    textColor: 'text-teal-700 dark:text-teal-300',
+    borderColor: 'border-teal-200 dark:border-teal-700',
     Icon: CheckCircle,
-    iconColor: 'text-teal-600',
+    iconColor: 'text-teal-600 dark:text-teal-400',
   },
   caution: {
-    bgColor: 'bg-amber-50',
-    textColor: 'text-amber-700',
-    borderColor: 'border-amber-200',
+    bgColor: 'bg-amber-50 dark:bg-amber-900/30',
+    textColor: 'text-amber-700 dark:text-amber-300',
+    borderColor: 'border-amber-200 dark:border-amber-700',
     Icon: AlertTriangle,
-    iconColor: 'text-amber-600',
+    iconColor: 'text-amber-600 dark:text-amber-400',
   },
   high_risk: {
-    bgColor: 'bg-red-50',
-    textColor: 'text-red-700',
-    borderColor: 'border-red-200',
+    bgColor: 'bg-red-50 dark:bg-red-900/30',
+    textColor: 'text-red-700 dark:text-red-300',
+    borderColor: 'border-red-200 dark:border-red-700',
     Icon: XCircle,
-    iconColor: 'text-red-600',
+    iconColor: 'text-red-600 dark:text-red-400',
   },
   unverified: {
-    bgColor: 'bg-slate-50',
-    textColor: 'text-slate-500',
-    borderColor: 'border-slate-200',
+    bgColor: 'bg-slate-50 dark:bg-slate-700',
+    textColor: 'text-slate-500 dark:text-slate-400',
+    borderColor: 'border-slate-200 dark:border-slate-600',
     Icon: HelpCircle,
     iconColor: 'text-slate-400',
   },
@@ -108,19 +108,19 @@ export function VerificationBadge({
         <div
           className={cn(
             'absolute top-full start-0 mt-2 w-80 p-4 rounded-xl border shadow-lg z-50',
-            'bg-white',
+            'bg-white dark:bg-slate-800',
             config.borderColor,
           )}
         >
           {/* Header */}
-          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100 dark:border-slate-700">
             <Icon className={cn('w-5 h-5', config.iconColor)} />
             <div>
               <p className={cn('font-semibold', config.textColor)}>
                 {verification.status_text}
               </p>
               {verification.subtitle && (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Verified by: {verification.subtitle}
                 </p>
               )}
@@ -130,10 +130,10 @@ export function VerificationBadge({
           {/* Reasons */}
           {verification.reasons && verification.reasons.length > 0 && (
             <div className="mb-3">
-              <p className="text-xs font-medium text-slate-600 mb-1.5">Details:</p>
+              <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Details:</p>
               <ul className="space-y-1">
                 {verification.reasons.map((reason, i) => (
-                  <li key={i} className="text-sm text-slate-600 flex items-start gap-1.5">
+                  <li key={i} className="text-sm text-slate-600 dark:text-slate-300 flex items-start gap-1.5">
                     <span className="text-slate-400 mt-0.5">•</span>
                     <span>{reason}</span>
                   </li>
@@ -145,7 +145,7 @@ export function VerificationBadge({
           {/* Sources Checked */}
           {verification.sources_checked && verification.sources_checked.length > 0 && (
             <div className="mb-3">
-              <p className="text-xs font-medium text-slate-600 mb-1.5">Sources checked:</p>
+              <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Sources checked:</p>
               <div className="flex flex-wrap gap-1">
                 {verification.sources_checked.map((source) => (
                   <span
@@ -153,8 +153,8 @@ export function VerificationBadge({
                     className={cn(
                       'px-2 py-0.5 rounded-full text-xs',
                       source === verification.verified_by
-                        ? 'bg-teal-100 text-teal-700 font-medium'
-                        : 'bg-slate-100 text-slate-500',
+                        ? 'bg-teal-100 dark:bg-teal-900/50 text-teal-700 dark:text-teal-300 font-medium'
+                        : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400',
                     )}
                   >
                     {sourceLabels[source] || source}
@@ -170,8 +170,8 @@ export function VerificationBadge({
             <div className={cn(
               'p-2.5 rounded-lg text-xs',
               verification.badge_color === 'high_risk'
-                ? 'bg-red-50 text-red-700'
-                : 'bg-amber-50 text-amber-700',
+                ? 'bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300'
+                : 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300',
             )}>
               <p className="font-medium mb-1">
                 {verification.badge_color === 'high_risk'
@@ -187,10 +187,10 @@ export function VerificationBadge({
           )}
 
           {/* Methodology link */}
-          <div className="mt-3 pt-3 border-t border-slate-100">
+          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700">
             <a
               href="#methodology"
-              className="text-xs text-teal-600 hover:text-teal-700 flex items-center gap-1"
+              className="text-xs text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 flex items-center gap-1"
               onClick={(e) => e.stopPropagation()}
             >
               Learn about our methodology

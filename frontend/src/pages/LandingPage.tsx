@@ -5,6 +5,7 @@ import {
   FileText, Globe, Award, Clock, Users, CheckCircle, ArrowRight,
   Menu, X, Target, Layers
 } from 'lucide-react'
+import { ThemeToggle } from '../components/ui/ThemeToggle'
 
 export function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -30,31 +31,31 @@ export function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-slate-900">
       {/* Skip to main content link for keyboard navigation */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-60 focus:px-4 focus:py-2 focus:bg-white focus:text-slate-900 focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-teal-600"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-60 focus:px-4 focus:py-2 focus:bg-white dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-white focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-teal-600"
       >
         Skip to main content
       </a>
 
       {/* Side Menu */}
-      <div className={`fixed top-0 start-0 h-full w-72 bg-white border-e border-slate-200 shadow-xl z-50 transform transition-transform duration-300 ${sideMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={`fixed top-0 start-0 h-full w-72 bg-white dark:bg-slate-800 border-e border-slate-200 dark:border-slate-700 shadow-xl z-50 transform transition-transform duration-300 ${sideMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-slate-900 dark:bg-teal-600 rounded-xl flex items-center justify-center">
                 <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-slate-900">FindMyJournal</span>
+              <span className="font-bold text-slate-900 dark:text-white">FindMyJournal</span>
             </div>
             <button
               onClick={() => setSideMenuOpen(false)}
-              className="p-2 hover:bg-slate-100 rounded-lg"
+              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg"
               aria-label="Close menu"
             >
-              <X className="w-5 h-5 text-slate-500" aria-hidden="true" />
+              <X className="w-5 h-5 text-slate-500 dark:text-slate-400" aria-hidden="true" />
             </button>
           </div>
 
@@ -63,7 +64,7 @@ export function LandingPage() {
               <button
                 key={item.id}
                 onClick={() => scrollToSection(item.id)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 hover:text-teal-600 hover:bg-slate-50 rounded-xl transition-all"
+                className="w-full flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-all"
                 aria-label={`Navigate to ${item.name} section`}
               >
                 <span aria-hidden="true">{item.icon}</span>
@@ -72,16 +73,16 @@ export function LandingPage() {
             ))}
           </nav>
 
-          <div className="mt-8 pt-8 border-t border-slate-200 space-y-3">
+          <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-700 space-y-3">
             <Link
               to="/login"
-              className="block w-full py-3 text-center text-slate-600 font-semibold hover:bg-slate-50 rounded-xl transition-colors"
+              className="block w-full py-3 text-center text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors"
             >
               Log In
             </Link>
             <Link
               to="/signup"
-              className="block w-full py-3 text-center bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-all"
+              className="block w-full py-3 text-center bg-slate-900 dark:bg-teal-600 text-white font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-teal-500 transition-all"
             >
               Sign Up Free
             </Link>
@@ -91,27 +92,27 @@ export function LandingPage() {
 
       {/* Overlay */}
       {sideMenuOpen && (
-        <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setSideMenuOpen(false)} />
+        <div className="fixed inset-0 bg-black/20 dark:bg-black/50 z-40" onClick={() => setSideMenuOpen(false)} />
       )}
 
       {/* Top Navigation */}
       <nav className={`fixed top-0 start-0 end-0 z-30 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 backdrop-blur-sm shadow-sm border-b border-slate-200' : 'bg-transparent'
+        isScrolled ? 'bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm shadow-sm border-b border-slate-200 dark:border-slate-700' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setSideMenuOpen(true)}
-                className="p-2 hover:bg-slate-100 rounded-xl transition-colors lg:hidden"
+                className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors lg:hidden"
                 aria-label="Open menu"
               >
-                <Menu className="w-6 h-6 text-slate-600" aria-hidden="true" />
+                <Menu className="w-6 h-6 text-slate-600 dark:text-slate-300" aria-hidden="true" />
               </button>
-              <div className="w-11 h-11 bg-slate-900 rounded-2xl flex items-center justify-center">
+              <div className="w-11 h-11 bg-slate-900 dark:bg-teal-600 rounded-2xl flex items-center justify-center">
                 <BookOpen className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-slate-900">Find<span className="text-teal-600">My</span>Journal</span>
+              <span className="text-xl font-bold text-slate-900 dark:text-white">Find<span className="text-teal-600 dark:text-teal-400">My</span>Journal</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -120,7 +121,7 @@ export function LandingPage() {
                 <button
                   key={item.id}
                   onClick={() => scrollToSection(item.id)}
-                  className="text-slate-600 hover:text-teal-600 font-medium transition-colors"
+                  className="text-slate-600 dark:text-slate-300 hover:text-teal-600 dark:hover:text-teal-400 font-medium transition-colors"
                 >
                   {item.name}
                 </button>
@@ -128,10 +129,11 @@ export function LandingPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <Link to="/login" className="px-5 py-2.5 text-slate-600 font-semibold hover:text-slate-900 transition-colors">
+              <ThemeToggle />
+              <Link to="/login" className="px-5 py-2.5 text-slate-600 dark:text-slate-300 font-semibold hover:text-slate-900 dark:hover:text-white transition-colors">
                 Log In
               </Link>
-              <Link to="/signup" className="px-6 py-2.5 bg-slate-900 text-white font-semibold rounded-xl hover:bg-slate-800 transition-all">
+              <Link to="/signup" className="px-6 py-2.5 bg-slate-900 dark:bg-teal-600 text-white font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-teal-500 transition-all">
                 Sign Up
               </Link>
             </div>
@@ -141,38 +143,38 @@ export function LandingPage() {
 
       {/* Hero Section */}
       <main id="main-content">
-        <section id="hero" className="relative pt-32 pb-20 px-6 bg-slate-50">
+        <section id="hero" className="relative pt-32 pb-20 px-6 bg-slate-50 dark:bg-slate-800">
           <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-50 border border-teal-200 rounded-full text-teal-600 text-sm font-medium mb-8">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-700 rounded-full text-teal-600 dark:text-teal-400 text-sm font-medium mb-8">
               <Zap className="w-4 h-4" />
               <span>Powered by Advanced AI</span>
             </div>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-slate-900 mb-6 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
               Find the Perfect Home
               <br />
-              <span className="text-teal-600">
+              <span className="text-teal-600 dark:text-teal-400">
                 for Your Research
               </span>
             </h1>
 
-            <p className="text-xl text-slate-600 mb-10 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-600 dark:text-slate-300 mb-10 max-w-2xl mx-auto leading-relaxed">
               The intelligent platform that analyzes your paper and matches it with the most suitable academic journals -
               in seconds, not weeks.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/signup" className="group px-8 py-4 bg-slate-900 text-white font-bold text-lg rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
+              <Link to="/signup" className="group px-8 py-4 bg-slate-900 dark:bg-teal-600 text-white font-bold text-lg rounded-2xl hover:bg-slate-800 dark:hover:bg-teal-500 transition-all flex items-center justify-center gap-2">
                 Get Started Free
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <button className="px-8 py-4 bg-white text-slate-700 font-semibold text-lg rounded-2xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all">
+              <button className="px-8 py-4 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-lg rounded-2xl border border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-600 transition-all">
                 Watch Demo
               </button>
             </div>
 
-            <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-slate-500">
+            <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-slate-500 dark:text-slate-400">
               <div className="flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
                 <span className="font-medium">Powered by OpenAlex</span>
@@ -191,13 +193,13 @@ export function LandingPage() {
       </section>
 
       {/* About Section - White Cards with Border */}
-      <section id="about" className="py-24 px-6 bg-white">
+      <section id="about" className="py-24 px-6 bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">
-              What is <span className="text-teal-600">FindMyJournal</span>?
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">
+              What is <span className="text-teal-600 dark:text-teal-400">FindMyJournal</span>?
             </h2>
-            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
               An AI-powered platform that helps researchers find the most suitable academic journal for their work.
             </p>
           </div>
@@ -208,12 +210,12 @@ export function LandingPage() {
               { icon: <Clock className="w-8 h-8" />, title: "Save Time", desc: "Instead of spending weeks searching manually, get personalized recommendations in seconds." },
               { icon: <BarChart2 className="w-8 h-8" />, title: "Quality Indicators", desc: "View journal metrics including H-index, citation counts, and Open Access status to make informed decisions." }
             ].map((item, i) => (
-              <div key={i} className="bg-white rounded-2xl p-8 border border-slate-200 hover:border-teal-200 hover:shadow-lg transition-all group">
-                <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center text-teal-600 mb-6 group-hover:bg-teal-50 transition-colors">
+              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 hover:border-teal-200 dark:hover:border-teal-600 hover:shadow-lg transition-all group">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center text-teal-600 dark:text-teal-400 mb-6 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/30 transition-colors">
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{item.title}</h3>
-                <p className="text-slate-600 leading-relaxed">{item.desc}</p>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{item.title}</h3>
+                <p className="text-slate-600 dark:text-slate-300 leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -221,11 +223,11 @@ export function LandingPage() {
       </section>
 
       {/* Goals Section - Light Background */}
-      <section className="py-24 px-6 bg-slate-50">
+      <section className="py-24 px-6 bg-slate-50 dark:bg-slate-800">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">Our Goals</h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Our Goals</h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
               We believe every researcher deserves to publish their work in the right place.
             </p>
           </div>
@@ -237,12 +239,12 @@ export function LandingPage() {
               { icon: <Award className="w-6 h-6" />, title: "Quality Without Compromise", desc: "Ensuring matches only with high-quality journals." },
               { icon: <Users className="w-6 h-6" />, title: "Community Support", desc: "Building a supportive and collaborative researcher community." }
             ].map((goal, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 border border-slate-200 hover:border-teal-200 hover:shadow-md transition-all group">
-                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-teal-600 mb-4 group-hover:bg-teal-50 transition-colors">
+              <div key={i} className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-teal-200 dark:hover:border-teal-600 hover:shadow-md transition-all group">
+                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 mb-4 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/30 transition-colors">
                   {goal.icon}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{goal.title}</h3>
-                <p className="text-slate-600 text-sm">{goal.desc}</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{goal.title}</h3>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">{goal.desc}</p>
               </div>
             ))}
           </div>
@@ -250,15 +252,15 @@ export function LandingPage() {
       </section>
 
       {/* How It Works Section */}
-      <section id="how" className="py-24 px-6 bg-white">
+      <section id="how" className="py-24 px-6 bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">How Does It Work?</h2>
-            <p className="text-xl text-slate-600">Three simple steps to find your perfect journal.</p>
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">How Does It Work?</h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300">Three simple steps to find your perfect journal.</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 relative">
-            <div className="hidden md:block absolute top-16 start-[20%] end-[20%] h-0.5 bg-slate-200 rounded-full" />
+            <div className="hidden md:block absolute top-16 start-[20%] end-[20%] h-0.5 bg-slate-200 dark:bg-slate-700 rounded-full" />
 
             {[
               { step: "01", title: "Upload Your Abstract", desc: "Simply copy and paste your paper's abstract or enter the title and keywords.", icon: <FileText className="w-8 h-8" /> },
@@ -266,12 +268,12 @@ export function LandingPage() {
               { step: "03", title: "Get Recommendations", desc: "Receive a ranked list of suitable journals with H-index, citation metrics, and Open Access information.", icon: <CheckCircle className="w-8 h-8" /> }
             ].map((item, i) => (
               <div key={i} className="relative text-center group">
-                <div className="w-20 h-20 mx-auto bg-slate-900 rounded-3xl flex items-center justify-center text-white mb-6 group-hover:bg-teal-600 transition-colors relative z-10">
+                <div className="w-20 h-20 mx-auto bg-slate-900 dark:bg-teal-600 rounded-3xl flex items-center justify-center text-white mb-6 group-hover:bg-teal-600 dark:group-hover:bg-teal-500 transition-colors relative z-10">
                   {item.icon}
                 </div>
-                <div className="text-sm font-bold text-teal-600 mb-2">Step {item.step}</div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{item.title}</h3>
-                <p className="text-slate-600">{item.desc}</p>
+                <div className="text-sm font-bold text-teal-600 dark:text-teal-400 mb-2">Step {item.step}</div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">{item.title}</h3>
+                <p className="text-slate-600 dark:text-slate-300">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -279,11 +281,11 @@ export function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 px-6 bg-slate-50">
+      <section id="features" className="py-24 px-6 bg-slate-50 dark:bg-slate-800">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-900 mb-4">Advanced Features</h2>
-            <p className="text-xl text-slate-600">Everything you need to find the perfect journal.</p>
+            <h2 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Advanced Features</h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300">Everything you need to find the perfect journal.</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -295,12 +297,12 @@ export function LandingPage() {
               { icon: <Globe className="w-6 h-6" />, title: "Support for 40+ Languages", desc: "Find journals in different languages and regions." },
               { icon: <FileText className="w-6 h-6" />, title: "Open Access Detection", desc: "Easily identify open access journals and their publication fees." }
             ].map((feature, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 border border-slate-200 hover:border-teal-200 hover:shadow-md transition-all group">
-                <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center text-teal-600 mb-4 group-hover:bg-teal-50 transition-colors">
+              <div key={i} className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-700 hover:border-teal-200 dark:hover:border-teal-600 hover:shadow-md transition-all group">
+                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-700 rounded-xl flex items-center justify-center text-teal-600 dark:text-teal-400 mb-4 group-hover:bg-teal-50 dark:group-hover:bg-teal-900/30 transition-colors">
                   {feature.icon}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-slate-600 text-sm">{feature.desc}</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{feature.title}</h3>
+                <p className="text-slate-600 dark:text-slate-400 text-sm">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -308,12 +310,12 @@ export function LandingPage() {
       </section>
 
       {/* Data Source Section */}
-      <section className="py-20 px-6 bg-white">
+      <section className="py-20 px-6 bg-white dark:bg-slate-900">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-slate-900 rounded-3xl p-12">
+          <div className="bg-slate-900 dark:bg-slate-800 rounded-3xl p-12 border dark:border-slate-700">
             <div className="text-center">
               <h3 className="text-2xl font-bold text-white mb-4">Powered by OpenAlex</h3>
-              <p className="text-slate-300 max-w-2xl mx-auto">
+              <p className="text-slate-300 dark:text-slate-400 max-w-2xl mx-auto">
                 Access comprehensive academic journal data from OpenAlex, an open catalog of the global research system with data on publications, authors, institutions, and more.
               </p>
             </div>
@@ -322,15 +324,15 @@ export function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 px-6 bg-slate-50">
+      <section className="py-24 px-6 bg-slate-50 dark:bg-slate-800">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
             Ready to Find Your Perfect Journal?
           </h2>
-          <p className="text-slate-600 text-lg mb-8 max-w-xl mx-auto">
+          <p className="text-slate-600 dark:text-slate-300 text-lg mb-8 max-w-xl mx-auto">
             Start finding the perfect journal for your research today.
           </p>
-          <Link to="/signup" className="inline-block px-10 py-4 bg-slate-900 text-white font-bold text-lg rounded-2xl hover:bg-slate-800 transition-all">
+          <Link to="/signup" className="inline-block px-10 py-4 bg-slate-900 dark:bg-teal-600 text-white font-bold text-lg rounded-2xl hover:bg-slate-800 dark:hover:bg-teal-500 transition-all">
             Start Free - No Credit Card Required
           </Link>
         </div>
@@ -338,15 +340,15 @@ export function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-12 px-6">
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12 px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center">
+            <div className="w-10 h-10 bg-slate-900 dark:bg-teal-600 rounded-xl flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <span className="text-lg font-bold text-slate-900">FindMyJournal</span>
+            <span className="text-lg font-bold text-slate-900 dark:text-white">FindMyJournal</span>
           </div>
-          <p className="text-slate-500 text-sm">&copy; 2024 FindMyJournal. All rights reserved.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">&copy; 2024 FindMyJournal. All rights reserved.</p>
         </div>
       </footer>
     </div>

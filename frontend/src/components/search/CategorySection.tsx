@@ -46,10 +46,10 @@ export function CategorySection({
           <Icon className="w-5 h-5" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-800">{config.title}</h2>
-          <p className="text-sm text-gray-500">{config.subtitle}</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white">{config.title}</h2>
+          <p className="text-sm text-gray-500 dark:text-slate-400">{config.subtitle}</p>
         </div>
-        <span className="ms-auto px-4 py-1.5 bg-white text-gray-600 text-sm font-semibold rounded-full shadow-sm border border-gray-100">
+        <span className="ms-auto px-4 py-1.5 bg-white dark:bg-slate-800 text-gray-600 dark:text-slate-300 text-sm font-semibold rounded-full shadow-sm border border-gray-100 dark:border-slate-700">
           {journals.length} {journals.length === 1 ? 'journal' : 'journals'}
         </span>
       </div>
