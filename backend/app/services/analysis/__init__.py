@@ -1,8 +1,8 @@
 """
 Analysis Services for Find My Journal
 
-Article type detection, topic validation, and dynamic statistics.
-Discipline detection now uses OpenAlex ML directly via openalex.search module.
+Article type detection, topic validation, dynamic statistics,
+and smart analysis orchestration.
 """
 
 from .article_type_detector import (
@@ -26,6 +26,32 @@ from .dynamic_stats import (
     calculate_percentile_score,
 )
 
+# Smart Analyzer (Phase 2)
+from .smart_analyzer import (
+    SmartAnalyzer,
+    AnalysisResult,
+    get_smart_analyzer,
+    analyze_paper,
+)
+
+# Confidence Scoring (Phase 2)
+from .confidence import (
+    ConfidenceScorer,
+    ConfidenceScore,
+    ConfidenceFactor,
+    get_confidence_scorer,
+    calculate_confidence,
+)
+
+# LLM Trigger Detection (Phase 2)
+from .triggers import (
+    LLMTriggerDetector,
+    TriggerResult,
+    TriggerType,
+    get_trigger_detector,
+    should_use_llm,
+)
+
 __all__ = [
     # Article type detection
     "ArticleTypeDetector",
@@ -41,4 +67,21 @@ __all__ = [
     "get_stats_calculator",
     "get_subfield_stats",
     "calculate_percentile_score",
+    # Smart Analyzer (Phase 2)
+    "SmartAnalyzer",
+    "AnalysisResult",
+    "get_smart_analyzer",
+    "analyze_paper",
+    # Confidence Scoring (Phase 2)
+    "ConfidenceScorer",
+    "ConfidenceScore",
+    "ConfidenceFactor",
+    "get_confidence_scorer",
+    "calculate_confidence",
+    # LLM Trigger Detection (Phase 2)
+    "LLMTriggerDetector",
+    "TriggerResult",
+    "TriggerType",
+    "get_trigger_detector",
+    "should_use_llm",
 ]
