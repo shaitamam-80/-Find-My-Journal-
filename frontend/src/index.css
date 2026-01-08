@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "./styles/design-tokens.css";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ===== DESIGN SYSTEM: Academic Navy/Slate ===== */
 :root {
   /* Font Variables */
@@ -140,9 +143,10 @@ body {
   transition: background-color var(--transition-base), color var(--transition-base);
 }
 
-.dark body {
-  color: var(--color-neutral-800);
-  background: var(--color-neutral-50);
+.dark body,
+html.dark body {
+  color: #e5e5e5;
+  background: #0f172a;
 }
 
 /* Monospace for queries and code */
