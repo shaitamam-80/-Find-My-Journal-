@@ -3,7 +3,10 @@ Smart Analyzer - Main Orchestrator for Paper Analysis
 
 Combines OpenAlex analysis with optional LLM enrichment.
 This is the main entry point for enhanced paper analysis.
+
+Phase 3: Now includes Gemini LLM integration for complex cases.
 """
+import asyncio
 import logging
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any
@@ -26,7 +29,7 @@ from app.services.openalex.concepts import (
 from app.services.openalex.utils import extract_search_terms
 
 from .confidence import ConfidenceScorer, ConfidenceScore, get_confidence_scorer
-from .triggers import LLMTriggerDetector, TriggerResult, get_trigger_detector
+from .triggers import LLMTriggerDetector, TriggerResult, TriggerType, get_trigger_detector
 
 logger = logging.getLogger(__name__)
 
@@ -191,20 +194,29 @@ class SmartAnalyzer:
             detected_disciplines_count=len(result.disciplines),
         )
 
-        # Step 6: LLM trigger detection
-        should_llm, reasons = self.trigger_detector.should_use_llm(
+        # Step 6: LLM trigger detection (get full results for enrichment)
+        trigger_results = self.trigger_detector.detect_all(
             text=combined_text,
+            title=title,
             confidence_score=result.confidence.overall,
             topics_count=result.topics_found,
             disciplines_count=len(result.disciplines),
         )
 
+        # Determine if LLM should be used
+        activated = [r for r in trigger_results if r.activated]
+        high_priority = {TriggerType.LOW_CONFIDENCE, TriggerType.NON_ENGLISH}
+        has_high_priority = any(r.trigger_type in high_priority for r in activated)
+        should_llm = len(activated) >= 2 or has_high_priority
+
         result.needs_llm_enrichment = should_llm
-        result.enrichment_reasons = reasons
+        result.enrichment_reasons = [r.details for r in activated]
 
         # Step 7: LLM enrichment (if enabled and triggered)
         if self.enable_llm and should_llm and not skip_llm:
-            result = self._enrich_with_llm(result, title, abstract, user_kw)
+            result = self._enrich_with_llm(
+                result, title, abstract, user_kw, trigger_results
+            )
 
         # Log summary
         logger.info(
@@ -223,28 +235,133 @@ class SmartAnalyzer:
         title: str,
         abstract: str,
         user_keywords: List[str],
+        trigger_results: List[TriggerResult] = None,
     ) -> AnalysisResult:
         """
-        Enrich analysis with LLM (placeholder for Phase 3).
+        Enrich analysis with LLM via Gemini.
+
+        Phase 3: Full implementation with GeminiAnalysisService.
 
         Args:
             result: Current analysis result.
             title: Paper title.
             abstract: Paper abstract.
             user_keywords: User keywords.
+            trigger_results: Detailed trigger detection results.
 
         Returns:
             Enriched AnalysisResult.
         """
-        # TODO: Phase 3 - Implement Gemini integration
-        logger.info(f"LLM enrichment would be triggered: {result.enrichment_reasons}")
+        # Import here to avoid circular imports
+        from app.services.gemini import (
+            get_gemini_analysis_service,
+            LLMEnrichmentResult,
+        )
 
-        # For now, just mark as needing enrichment but not enriched
-        result.llm_enriched = False
-        result.llm_additions = {
-            "note": "LLM enrichment not yet implemented (Phase 3)",
-            "would_address": result.enrichment_reasons,
-        }
+        analysis_service = get_gemini_analysis_service()
+
+        if not analysis_service.is_configured:
+            logger.warning("Gemini not configured, skipping LLM enrichment")
+            result.llm_enriched = False
+            result.llm_additions = {
+                "note": "Gemini API not configured",
+                "would_address": result.enrichment_reasons,
+            }
+            return result
+
+        # Determine which enrichments to run based on triggers
+        trigger_results = trigger_results or []
+        activated_triggers = {r.trigger_type for r in trigger_results if r.activated}
+
+        # Extract abbreviations from trigger results
+        abbreviations = []
+        for tr in trigger_results:
+            if tr.trigger_type == TriggerType.ABBREVIATIONS and tr.extracted_items:
+                abbreviations = tr.extracted_items
+                break
+
+        # Check for Hebrew/non-English
+        has_hebrew = TriggerType.NON_ENGLISH in activated_triggers
+
+        # Check for cross-disciplinary
+        is_cross = TriggerType.CROSS_DISCIPLINARY in activated_triggers
+
+        # Run async enrichment in sync context
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        try:
+            enrichment: LLMEnrichmentResult = loop.run_until_complete(
+                analysis_service.enrich_analysis(
+                    title=title,
+                    abstract=abstract,
+                    discipline=result.primary_discipline or "Unknown",
+                    confidence=result.confidence.overall if result.confidence else 0.0,
+                    keywords=[k.keyword for k in result.keywords],
+                    topics_count=result.topics_found,
+                    abbreviations=abbreviations,
+                    has_hebrew=has_hebrew,
+                    is_cross_disciplinary=is_cross,
+                )
+            )
+
+            # Apply enrichment to result
+            result.llm_enriched = True
+            result.llm_additions = enrichment.to_dict()
+
+            # Merge additional keywords
+            if enrichment.additional_keywords:
+                existing_kw = {k.keyword.lower() for k in result.keywords}
+                for kw in enrichment.additional_keywords:
+                    if kw.lower() not in existing_kw:
+                        result.keywords.append(
+                            RankedKeyword(
+                                keyword=kw,
+                                score=0.5,  # Medium score for LLM keywords
+                                frequency=1,
+                                source="llm",
+                            )
+                        )
+
+            # Update confidence if LLM provided boost
+            if enrichment.confidence_boost > 0 and result.confidence:
+                result.confidence.overall = min(
+                    1.0, result.confidence.overall + enrichment.confidence_boost
+                )
+
+            # Add cross-discipline info
+            if enrichment.cross_disciplines:
+                for cd in enrichment.cross_disciplines:
+                    if cd.level == "primary" and cd.name != result.primary_discipline:
+                        # Add as secondary discipline
+                        result.disciplines.append(
+                            DetectedSubfield(
+                                subfield_name=cd.name,
+                                subfield_id="llm-detected",
+                                field_name=cd.name,
+                                field_id="llm-detected",
+                                domain_name="",
+                                domain_id="",
+                                confidence=0.6,
+                                works_count=0,
+                            )
+                        )
+
+            logger.info(
+                f"LLM enrichment complete: {len(enrichment.enrichment_sources)} sources, "
+                f"{len(enrichment.additional_keywords)} new keywords"
+            )
+
+        except Exception as e:
+            logger.error(f"LLM enrichment failed: {e}")
+            result.llm_enriched = False
+            result.llm_additions = {
+                "error": str(e),
+                "would_address": result.enrichment_reasons,
+            }
 
         return result
 
