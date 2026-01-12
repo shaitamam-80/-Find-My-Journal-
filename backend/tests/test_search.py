@@ -257,13 +257,15 @@ class TestOpenAlexService:
         ]
         mock_pyalex.Works.return_value = mock_works
 
-        journals, discipline, field, confidence, detected_disciplines, article_type = self.service.search_journals_by_text(
+        journals, discipline, field, confidence, detected_disciplines, article_type, analysis_metadata = self.service.search_journals_by_text(
             title="Deep Learning for Image Classification",
             abstract="We present a neural network algorithm for machine learning based image classification.",
         )
 
         # Discipline should be detected (could be from ML or keywords)
         assert discipline is not None or detected_disciplines
+        # Analysis metadata should always be present (Phase 4)
+        assert analysis_metadata is not None
 
 
 class TestJournalModel:
@@ -481,7 +483,7 @@ class TestTopicBasedSearch:
         mock_sources.__getitem__.return_value = mock_source
         mock_pyalex.Sources.return_value = mock_sources
 
-        journals, discipline, field, confidence, detected_disciplines, article_type = self.service.search_journals_by_text(
+        journals, discipline, field, confidence, detected_disciplines, article_type, analysis_metadata = self.service.search_journals_by_text(
             title="Deep Learning for Medical Imaging",
             abstract="We apply neural networks for medical image classification.",
         )
@@ -489,3 +491,5 @@ class TestTopicBasedSearch:
         assert isinstance(journals, list)
         # With universal mode, discipline could be any valid OpenAlex subfield
         assert discipline or detected_disciplines
+        # Analysis metadata should always be present (Phase 4)
+        assert analysis_metadata is not None

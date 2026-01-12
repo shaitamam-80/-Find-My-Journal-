@@ -17,6 +17,8 @@ from app.models.journal import (
     DisciplineDetection,
     DetectedDisciplineInfo,
     ArticleTypeInfo,
+    AnalysisMetadata,
+    ConfidenceFactors,
 )
 from app.services.openalex import openalex_service
 from app.services.db_service import db_service
@@ -52,7 +54,7 @@ async def search_journals(
         HTTPException 429: If daily limit reached (free users)
         HTTPException 401: If not authenticated
     """
-    # Search for journals (enhanced with multi-discipline and article type)
+    # Search for journals (enhanced with SmartAnalyzer - Phase 4)
     (
         journals,
         discipline,
@@ -60,11 +62,13 @@ async def search_journals(
         confidence,
         detected_disciplines_raw,
         article_type_raw,
+        analysis_metadata,
     ) = openalex_service.search_journals_by_text(
         title=request.title,
         abstract=request.abstract,
         keywords=request.keywords,
         prefer_open_access=request.prefer_open_access,
+        enable_llm=request.enable_llm if hasattr(request, 'enable_llm') else False,
     )
 
     # Build discipline detection object (Story 2.1 - backward compatibility)
@@ -133,12 +137,36 @@ async def search_journals(
     # Increment search counter
     await increment_search_count(user.id)
 
+    # Build analysis metadata from raw dict (Phase 4)
+    analysis_meta = None
+    if analysis_metadata:
+        analysis_meta = AnalysisMetadata(
+            confidence_score=analysis_metadata.get("confidence_score", 0),
+            confidence_factors=ConfidenceFactors(
+                topics=analysis_metadata.get("confidence_factors", {}).get("topics", 0),
+                works=analysis_metadata.get("confidence_factors", {}).get("works", 0),
+                keywords=analysis_metadata.get("confidence_factors", {}).get("keywords", 0),
+                discipline=analysis_metadata.get("confidence_factors", {}).get("discipline", 0),
+                diversity=analysis_metadata.get("confidence_factors", {}).get("diversity", 0),
+            ),
+            works_analyzed=analysis_metadata.get("works_analyzed", 0),
+            topics_found=analysis_metadata.get("topics_found", 0),
+            keywords_extracted=analysis_metadata.get("keywords_extracted", []),
+            discipline_hints=analysis_metadata.get("discipline_hints", []),
+            methodology_hints=analysis_metadata.get("methodology_hints", []),
+            needs_llm_enrichment=analysis_metadata.get("needs_llm_enrichment", False),
+            enrichment_reasons=analysis_metadata.get("enrichment_reasons", []),
+            llm_enriched=analysis_metadata.get("llm_enriched", False),
+            llm_additions=analysis_metadata.get("llm_additions"),
+        )
+
     return SearchResponse(
         query=query_summary,
         discipline=discipline,
         discipline_detection=discipline_detection,  # Story 2.1 (backward compat)
-        detected_disciplines=detected_disciplines,  # NEW: All detected disciplines
-        article_type=article_type,  # NEW: Detected article type
+        detected_disciplines=detected_disciplines,  # All detected disciplines
+        article_type=article_type,  # Detected article type
+        analysis_metadata=analysis_meta,  # Phase 4: SmartAnalyzer metadata
         total_found=len(journals),
         journals=journals,
         search_id=search_id,

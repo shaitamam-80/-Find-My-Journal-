@@ -27,14 +27,14 @@ logger = logging.getLogger(__name__)
 def _get_analysis_imports():
     """Lazy import analysis modules to break circular import."""
     from app.services.analysis import (
-        detect_disciplines_hybrid,
         ArticleTypeDetector,
+        get_smart_analyzer,
     )
     from app.services.analysis.dynamic_stats import (
         get_subfield_stats,
         calculate_percentile_score,
     )
-    return detect_disciplines_hybrid, ArticleTypeDetector, get_subfield_stats, calculate_percentile_score
+    return get_smart_analyzer, ArticleTypeDetector, get_subfield_stats, calculate_percentile_score
 
 
 class UniversalSearchResult:
@@ -85,15 +85,36 @@ def search_journals_universal(
         UniversalSearchResult with journals and metadata
     """
     # Lazy imports to avoid circular dependency
-    detect_disciplines_hybrid, ArticleTypeDetector, get_subfield_stats, calculate_percentile_score = _get_analysis_imports()
+    get_smart_analyzer, ArticleTypeDetector, get_subfield_stats, calculate_percentile_score = _get_analysis_imports()
 
-    # 1. Detect disciplines (Universal mode)
-    detected_disciplines = detect_disciplines_hybrid(
+    # 1. Use SmartAnalyzer for discipline detection (Phase 4)
+    smart_analyzer = get_smart_analyzer(enable_llm=False)
+    analysis_result = smart_analyzer.analyze(
         title=title,
         abstract=abstract,
-        keywords=keywords,
-        prefer_universal=True,
+        user_keywords=keywords,
     )
+
+    # Convert SmartAnalyzer disciplines to dict format
+    detected_disciplines = []
+    for disc in analysis_result.disciplines:
+        # Extract numeric ID from subfield_id string if possible
+        numeric_id = None
+        if disc.subfield_id and disc.subfield_id != "llm-detected":
+            try:
+                numeric_id = int(disc.subfield_id.split("/")[-1])
+            except (ValueError, AttributeError):
+                pass
+
+        detected_disciplines.append({
+            "name": disc.subfield_name,
+            "confidence": disc.confidence,
+            "field": disc.field_name,
+            "domain": disc.domain_name,
+            "numeric_id": numeric_id,
+            "openalex_subfield_id": disc.subfield_id if disc.subfield_id != "llm-detected" else None,
+            "source": "smart_analyzer",
+        })
 
     if not detected_disciplines:
         logger.warning("No disciplines detected")

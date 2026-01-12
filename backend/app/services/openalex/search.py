@@ -3,6 +3,8 @@ Journal Search Operations
 
 Hybrid search combining keywords and topic matching.
 Enhanced with multi-discipline detection, article type awareness, and topic validation.
+
+Phase 4: Now uses SmartAnalyzer for orchestrated paper analysis.
 """
 import logging
 from collections import Counter
@@ -21,11 +23,16 @@ from .scoring import (
 )
 from .journals import convert_to_journal, categorize_journals, merge_journal_results
 
-# Import analysis modules (discipline detection uses OpenAlex directly now)
+# Import analysis modules - using lazy imports for SmartAnalyzer to avoid circular imports
 from app.services.analysis import (
     ArticleTypeDetector,
     TopicRelevanceValidator,
 )
+
+# TYPE_CHECKING for type hints without runtime import
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.services.analysis import get_smart_analyzer, AnalysisResult
 
 logger = logging.getLogger(__name__)
 
@@ -511,18 +518,20 @@ def search_journals_by_text(
     abstract: str,
     keywords: List[str] = None,
     prefer_open_access: bool = False,
-) -> Tuple[List[Journal], str, str, float, List[Dict], Optional[Dict]]:
+    enable_llm: bool = False,
+) -> Tuple[List[Journal], str, str, float, List[Dict], Optional[Dict], Optional[Dict]]:
     """
     Search for journals based on article title and abstract.
 
     Uses HYBRID approach: Keywords + Topics.
-    Enhanced with multi-discipline detection, article type awareness, and topic validation.
+    Enhanced with SmartAnalyzer for orchestrated paper analysis.
 
     Args:
         title: Article title.
         abstract: Article abstract.
         keywords: Optional additional keywords.
         prefer_open_access: Prioritize OA journals.
+        enable_llm: Enable LLM enrichment for complex cases.
 
     Returns:
         Tuple of:
@@ -532,39 +541,68 @@ def search_journals_by_text(
         - confidence score (0-1) for discipline detection
         - detected_disciplines: List of all detected disciplines with confidence
         - article_type: Detected article type info
+        - analysis_metadata: SmartAnalyzer metadata (NEW)
     """
     core_journals = load_core_journals()
-    combined_text = f"{title} {abstract}"
-    search_terms = extract_search_terms(combined_text, keywords or [])
 
-    # === ENHANCED ANALYSIS ===
+    # === SMART ANALYSIS (Phase 4) ===
+    # Lazy import to avoid circular imports
+    from app.services.analysis import get_smart_analyzer, AnalysisResult
 
-    # 1. TOPIC-BASED SEARCH (OpenAlex ML-based approach) - Do this FIRST for discipline detection
-    # This uses OpenAlex's Specter 2 ML classification which covers ALL 252 subfields
-    topic_search_query = " ".join(search_terms[:8])
-    topic_ids, subfield, field, subfield_id, confidence = get_topics_from_similar_works(topic_search_query)
+    # Use SmartAnalyzer for orchestrated paper analysis
+    smart_analyzer = get_smart_analyzer(enable_llm=enable_llm)
+    analysis_result: AnalysisResult = smart_analyzer.analyze(
+        title=title,
+        abstract=abstract,
+        user_keywords=keywords,
+    )
+
+    # Extract search terms from analysis result
+    search_terms = analysis_result.search_terms or extract_search_terms(
+        f"{title} {abstract}", keywords or []
+    )
+
+    # Extract discipline info from SmartAnalyzer
+    subfield = analysis_result.primary_discipline or ""
+    field = analysis_result.primary_field or ""
+    confidence = analysis_result.discipline_confidence
+
+    # Get topic IDs for journal search
+    topic_ids = analysis_result.topic_ids
+
+    # 1. TOPIC-BASED SEARCH using SmartAnalyzer's topic IDs
     topic_journals = find_journals_by_topics(topic_ids)
 
-    # 2. MULTI-DISCIPLINE DETECTION - Construct from OpenAlex topic data
-    # Primary discipline from top subfield, with field hierarchy
+    # Get subfield_id from disciplines if available
+    subfield_id: Optional[int] = None
+    if analysis_result.disciplines:
+        primary = analysis_result.disciplines[0]
+        # Extract numeric ID from subfield_id string (e.g., "https://openalex.org/subfields/1234" -> 1234)
+        if primary.subfield_id and primary.subfield_id != "llm-detected":
+            try:
+                subfield_id = int(primary.subfield_id.split("/")[-1])
+            except (ValueError, AttributeError):
+                pass
+
+    # 2. MULTI-DISCIPLINE DETECTION from SmartAnalyzer
     detected_disciplines_dicts: List[Dict] = []
-    if subfield:
+    for disc in analysis_result.disciplines:
         detected_disciplines_dicts.append({
-            "name": subfield,
-            "confidence": confidence,
-            "field": field,
-            "domain": "Health Sciences" if field == "Medicine" else None,
-            "numeric_id": subfield_id,
-            "openalex_subfield_id": subfield_id,
-            "source": "openalex_ml",
+            "name": disc.subfield_name,
+            "confidence": disc.confidence,
+            "field": disc.field_name,
+            "domain": disc.domain_name or None,
+            "numeric_id": None,  # Will be extracted if needed
+            "openalex_subfield_id": disc.subfield_id if disc.subfield_id != "llm-detected" else None,
+            "source": "smart_analyzer",
         })
 
     # Log detection results
     if detected_disciplines_dicts:
         disc_summary = [(d["name"], f"{d['confidence']:.0%}") for d in detected_disciplines_dicts[:5]]
-        logger.info(f"Detected disciplines (openalex_ml): {disc_summary}")
+        logger.info(f"Detected disciplines (smart_analyzer): {disc_summary}")
     else:
-        logger.warning("No disciplines detected from OpenAlex")
+        logger.warning("No disciplines detected from SmartAnalyzer")
 
     # 3. ARTICLE TYPE DETECTION
     article_type_detector = ArticleTypeDetector()
@@ -751,6 +789,35 @@ def search_journals_by_text(
                 j.match_reason = "Broader search result"
                 categorized.append(j)
 
+    # Build analysis metadata from SmartAnalyzer result
+    analysis_metadata: Optional[Dict] = None
+    if analysis_result:
+        # Extract confidence factors by name from the list
+        factors_dict = {}
+        if analysis_result.confidence and analysis_result.confidence.factors:
+            for factor in analysis_result.confidence.factors:
+                factors_dict[factor.name] = factor.score
+
+        analysis_metadata = {
+            "confidence_score": analysis_result.confidence.overall if analysis_result.confidence else 0,
+            "confidence_factors": {
+                "topics": factors_dict.get("topics_found", 0),
+                "works": factors_dict.get("works_count", 0),
+                "keywords": factors_dict.get("keywords_quality", 0),
+                "discipline": factors_dict.get("discipline_clarity", 0),
+                "diversity": factors_dict.get("keyword_diversity", 0),
+            },
+            "works_analyzed": analysis_result.works_analyzed,
+            "topics_found": analysis_result.topics_found,
+            "keywords_extracted": [k.keyword for k in analysis_result.keywords[:10]],
+            "discipline_hints": analysis_result.discipline_hints,
+            "methodology_hints": analysis_result.methodology_hints,
+            "needs_llm_enrichment": analysis_result.needs_llm_enrichment,
+            "enrichment_reasons": analysis_result.enrichment_reasons,
+            "llm_enriched": analysis_result.llm_enriched,
+            "llm_additions": analysis_result.llm_additions if analysis_result.llm_enriched else None,
+        }
+
     return (
         categorized[:15],
         discipline,
@@ -758,4 +825,5 @@ def search_journals_by_text(
         confidence,
         detected_disciplines_dicts,
         article_type_dict,
+        analysis_metadata,
     )

@@ -137,6 +137,12 @@ class SearchRequest(BaseModel):
     prefer_open_access: bool = False
     min_works_count: Optional[int] = Field(None, ge=0)
 
+    # Smart Analysis (Phase 4)
+    enable_llm: bool = Field(
+        default=False,
+        description="Enable LLM enrichment for complex/ambiguous papers"
+    )
+
     # Privacy
     incognito_mode: bool = Field(
         default=False,
@@ -150,6 +156,7 @@ class SearchRequest(BaseModel):
                 "abstract": "This study explores the application of convolutional neural networks for automated detection of abnormalities in chest X-rays...",
                 "keywords": ["deep learning", "medical imaging", "CNN"],
                 "prefer_open_access": True,
+                "enable_llm": False,
                 "incognito_mode": False
             }
         }
@@ -182,6 +189,63 @@ class ArticleTypeInfo(BaseModel):
     preferred_journal_types: List[str] = Field(default_factory=list)
 
 
+class ConfidenceFactors(BaseModel):
+    """Breakdown of confidence score factors (Phase 4)."""
+    topics: float = Field(default=0, ge=0, le=1, description="Topics found factor")
+    works: float = Field(default=0, ge=0, le=1, description="Works analyzed factor")
+    keywords: float = Field(default=0, ge=0, le=1, description="Keywords quality factor")
+    discipline: float = Field(default=0, ge=0, le=1, description="Discipline clarity factor")
+    diversity: float = Field(default=0, ge=0, le=1, description="Keyword diversity factor")
+
+
+class AnalysisMetadata(BaseModel):
+    """
+    Metadata from SmartAnalyzer about the analysis quality and process (Phase 4).
+
+    Provides transparency into how the analysis was performed.
+    """
+    confidence_score: float = Field(
+        default=0,
+        ge=0,
+        le=1,
+        description="Overall confidence in the analysis (0-1)"
+    )
+    confidence_factors: ConfidenceFactors = Field(
+        default_factory=ConfidenceFactors,
+        description="Breakdown of confidence score components"
+    )
+    works_analyzed: int = Field(default=0, description="Number of OpenAlex works analyzed")
+    topics_found: int = Field(default=0, description="Number of topics found")
+    keywords_extracted: List[str] = Field(
+        default_factory=list,
+        description="Top keywords extracted from analysis"
+    )
+    discipline_hints: List[str] = Field(
+        default_factory=list,
+        description="Additional discipline hints from concepts"
+    )
+    methodology_hints: List[str] = Field(
+        default_factory=list,
+        description="Methodology hints detected"
+    )
+    needs_llm_enrichment: bool = Field(
+        default=False,
+        description="Whether LLM enrichment was recommended"
+    )
+    enrichment_reasons: List[str] = Field(
+        default_factory=list,
+        description="Reasons why LLM enrichment was/wasn't triggered"
+    )
+    llm_enriched: bool = Field(
+        default=False,
+        description="Whether LLM enrichment was actually performed"
+    )
+    llm_additions: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Data added by LLM enrichment (if performed)"
+    )
+
+
 class SearchResponse(BaseModel):
     """Response from journal search."""
 
@@ -195,6 +259,10 @@ class SearchResponse(BaseModel):
     article_type: Optional[ArticleTypeInfo] = Field(
         None,
         description="Detected article type (SR, RCT, cohort, etc.)"
+    )
+    analysis_metadata: Optional[AnalysisMetadata] = Field(
+        None,
+        description="SmartAnalyzer metadata (Phase 4)"
     )
     total_found: int
     journals: List[Journal]
