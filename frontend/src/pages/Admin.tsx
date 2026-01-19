@@ -87,7 +87,7 @@ export function Admin() {
       setTotalPages(usersData.total_pages)
       setStats(statsData)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load admin data')
+      setError(err instanceof Error ? err.message : 'לא הצלחנו לטעון את הנתונים. נסה שוב')
     } finally {
       setLoading(false)
     }
@@ -109,7 +109,7 @@ export function Admin() {
       }
       fetchData()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update user')
+      setError(err instanceof Error ? err.message : 'לא הצלחנו לעדכן את המשתמש')
     }
   }
 
@@ -122,7 +122,7 @@ export function Admin() {
       })
       fetchData()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update user tier')
+      setError(err instanceof Error ? err.message : 'לא הצלחנו לעדכן את הרמה')
     }
   }
 

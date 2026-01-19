@@ -46,7 +46,7 @@ export function Search() {
       })
       await refreshLimits()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Search failed')
+      setError(err instanceof Error ? err.message : 'החיפוש נכשל. נסה שוב')
     } finally {
       setLoading(false)
     }

@@ -69,7 +69,7 @@ export function Settings() {
       setCountry(profileData.country || '')
       setEmailNotifications(profileData.email_notifications)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load settings')
+      setError(err instanceof Error ? err.message : 'לא הצלחנו לטעון את ההגדרות')
     } finally {
       setLoading(false)
     }
@@ -95,7 +95,7 @@ export function Settings() {
       setSuccess('Settings saved successfully!')
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save settings')
+      setError(err instanceof Error ? err.message : 'לא הצלחנו לשמור את ההגדרות')
     } finally {
       setSaving(false)
     }
@@ -108,7 +108,7 @@ export function Settings() {
       await api.deleteMyAccount(session.access_token)
       await signOut()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete account')
+      setError(err instanceof Error ? err.message : 'לא הצלחנו למחוק את החשבון')
     }
   }
 

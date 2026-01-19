@@ -52,7 +52,7 @@ export function Dashboard() {
       setStats(statsData)
       setActivities(activityData.activities)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load dashboard')
+      setError(err instanceof Error ? err.message : 'לא הצלחנו לטעון את הדשבורד')
     } finally {
       setLoading(false)
     }
