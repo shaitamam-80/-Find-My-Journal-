@@ -67,18 +67,21 @@ class OpenAlexService:
         abstract: str,
         keywords: List[str] = None,
         prefer_open_access: bool = False,
-    ) -> Tuple[List[Journal], str, str, float, List[Dict], Optional[Dict]]:
+        enable_llm: bool = False,
+    ) -> Tuple[List[Journal], str, str, float, List[Dict], Optional[Dict], Optional[Dict]]:
         """
         Search for journals based on article title and abstract.
 
         Uses HYBRID approach: Keywords + Topics for best results.
-        Enhanced with multi-discipline detection and article type awareness.
+        Enhanced with multi-discipline detection, article type awareness,
+        and SmartAnalyzer integration (Phase 4).
 
         Args:
             title: Article title.
             abstract: Article abstract.
             keywords: Optional additional keywords.
             prefer_open_access: Prioritize OA journals.
+            enable_llm: Enable LLM enrichment for complex cases.
 
         Returns:
             Tuple of:
@@ -88,12 +91,14 @@ class OpenAlexService:
             - confidence score
             - detected_disciplines: List of all detected disciplines
             - article_type: Detected article type info
+            - analysis_metadata: SmartAnalyzer metadata (Phase 4)
         """
         return search_journals_by_text(
             title=title,
             abstract=abstract,
             keywords=keywords,
             prefer_open_access=prefer_open_access,
+            enable_llm=enable_llm,
         )
 
 
