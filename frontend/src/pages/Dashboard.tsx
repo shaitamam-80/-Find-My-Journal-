@@ -4,6 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
 import { StatsOverview } from '../components/dashboard/StatsOverview'
 import { RecentActivity } from '../components/dashboard/RecentActivity'
+import { SkeletonStats, SkeletonCard } from '../components/ui/Skeleton'
 import {
   BookOpen,
   Search,
@@ -154,17 +155,8 @@ export function Dashboard() {
 
         {/* Stats Overview */}
         {loading && !stats ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6 animate-pulse"
-              >
-                <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-xl mb-3" />
-                <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-2" />
-                <div className="h-4 bg-slate-100 dark:bg-slate-600 rounded w-2/3" />
-              </div>
-            ))}
+          <div className="mb-8">
+            <SkeletonStats />
           </div>
         ) : stats ? (
           <div className="mb-8">

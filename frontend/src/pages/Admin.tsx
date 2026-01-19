@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
 import type { UserListItem, PlatformStats } from '../types'
+import { SkeletonTable, SkeletonStats } from '../components/ui/Skeleton'
 import {
   Users,
   Search,
@@ -126,10 +127,15 @@ export function Admin() {
     }
   }
 
-  if (isAdmin === null) {
+  if (isAdmin === null || loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 dark:border-purple-400" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <SkeletonStats />
+          <div className="mt-8 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+            <SkeletonTable />
+          </div>
+        </div>
       </div>
     )
   }

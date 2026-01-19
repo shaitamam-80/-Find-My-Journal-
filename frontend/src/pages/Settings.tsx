@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
 import type { ProfileResponse, UsageStats } from '../types'
+import { SkeletonForm } from '../components/ui/Skeleton'
 import {
   BookOpen,
   User,
@@ -114,8 +115,12 @@ export function Settings() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900 dark:border-teal-400" />
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-8">
+            <SkeletonForm />
+          </div>
+        </div>
       </div>
     )
   }
