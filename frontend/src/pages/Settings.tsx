@@ -385,7 +385,7 @@ export function Settings() {
                   >
                     {profile?.tier === 'super_admin'
                       ? 'Admin'
-                      : profile?.tier?.charAt(0).toUpperCase() + profile?.tier?.slice(1)}
+                      : (profile?.tier?.charAt(0).toUpperCase() ?? '') + (profile?.tier?.slice(1) ?? '')}
                   </span>
                 </div>
 

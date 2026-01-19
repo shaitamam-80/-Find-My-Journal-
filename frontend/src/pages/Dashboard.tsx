@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
 import { StatsOverview } from '../components/dashboard/StatsOverview'
 import { RecentActivity } from '../components/dashboard/RecentActivity'
-import { SkeletonStats, SkeletonCard } from '../components/ui/Skeleton'
+import { SkeletonStats } from '../components/ui/Skeleton'
 import {
   BookOpen,
   Search,
