@@ -82,13 +82,26 @@ cd frontend && npx playwright test --headed
 - `tests/` - pytest test suite
 
 ### Frontend Structure (`frontend/src/`)
+
+**Core directories:**
 - `pages/` - Login, SignUp, Search pages
-- `components/` - Reusable components (JournalCard, ProtectedRoute)
-- `contexts/` - React context providers
+- `components/` - Reusable UI components
+- `contexts/` - React Context providers (Auth, Theme)
 - `services/` - API client services
 - `lib/` - Utility functions
 - `types/` - TypeScript type definitions
 - `tests/e2e/` - Playwright E2E tests
+
+**Feature modules (recommended structure):**
+
+- `features/search/` - Search functionality
+  - `SearchForm.tsx` - Abstract input + submit button
+  - `AbstractValidator.tsx` - Word count/quality feedback before submission
+- `features/results/` - Results display
+  - `JournalCard.tsx` - Individual journal result card
+  - `ResultsFeed.tsx` - List of journal results
+  - `FilterSidebar.tsx` - Faceted filters (Open Access, etc.)
+  - `MatchScore.tsx` - Visual match score indicator (ring/bar)
 
 ### External Services
 - **Supabase**: PostgreSQL database + GoTrue authentication
@@ -143,6 +156,20 @@ When `incognito_mode=True`, query text is NOT logged to the database.
 
 ## Design System
 
+### Target User Persona: "The Stressed Scholar"
+
+- **Profile:** Post-doc researcher, high anxiety regarding career, often working late
+- **Cognitive State:** Expert in their field, novice in journal selection
+- **Psychological Needs:**
+  - **Reduction of Uncertainty:** Immediate validation that the system understood their abstract
+  - **Efficiency:** Cannot waste time deciphering complex UI
+
+### UX Principles
+
+- **"Don't Make Me Think" (Krug):** Search interface must be simple - one box, one button
+- **"Aesthetic-Usability Effect":** Clean, academic aesthetic increases trust in algorithm accuracy
+- **"Defensive Design":** Handle bad input gracefully without shaming the user
+
 ### Design Tokens (HSL-based)
 Located at `frontend/src/styles/design-tokens.css` - supports light/dark modes.
 
@@ -162,6 +189,23 @@ Located at `frontend/src/styles/design-tokens.css` - supports light/dark modes.
 --status-niche: blue              /* Blue - Niche specialists */
 --status-methodology: purple      /* Purple - Methods focused */
 --status-broad: amber             /* Amber - Broad scope */
+
+/* Feedback Colors */
+--color-success: #22c55e;         /* High Match / Good */
+--color-warning: #f59e0b;         /* Medium Match / Check */
+--color-destructive: #ef4444;     /* Predatory Flag / Error */
+```
+
+### Dark Mode Tokens
+```css
+.dark {
+  --color-background: #0f172a;    /* Slate 900 */
+  --color-foreground: #f8fafc;    /* Slate 50 */
+  --color-surface: #1e293b;       /* Slate 800 */
+  --color-border: #334155;        /* Slate 700 */
+  --color-muted: #334155;         /* Slate 700 */
+  --color-muted-foreground: #94a3b8; /* Slate 400 */
+}
 ```
 
 ### MedAI Hub Visual Principles
@@ -184,18 +228,47 @@ Located at `frontend/src/styles/design-tokens.css` - supports light/dark modes.
 - **Hebrew:** Assistant (400-700)
 - **Code:** JetBrains Mono (400-500)
 
-### RTL Support
-Uses Tailwind logical properties for RTL compatibility:
-- `ms-*` / `me-*` instead of `ml-*` / `mr-*`
-- `ps-*` / `pe-*` instead of `pl-*` / `pr-*`
-- `start-*` / `end-*` instead of `left-*` / `right-*`
+### RTL Support (MANDATORY)
+
+**All layout must use Tailwind logical properties for Hebrew/English support:**
+
+- `ms-*` / `me-*` instead of `ml-*` / `mr-*` (margin)
+- `ps-*` / `pe-*` instead of `pl-*` / `pr-*` (padding)
+- `start-*` / `end-*` instead of `left-*` / `right-*` (positioning)
 - `text-start` / `text-end` instead of `text-left` / `text-right`
+- `rounded-s-*` / `rounded-e-*` instead of `rounded-l-*` / `rounded-r-*`
+- `border-s-*` / `border-e-*` instead of `border-l-*` / `border-r-*`
+
+**NEVER use directional classes** (`ml-`, `mr-`, `pl-`, `pr-`, `left-`, `right-`, `text-left`, `text-right`)
+
+### Touch Targets & Accessibility
+
+- **Minimum touch target:** 44px for all interactive elements
+- **Spacing:** Generous density for scanning (comfortable, not compact)
+- **Focus states:** Visible focus rings on all interactive elements
+
+### Loading States
+
+- Use `Skeleton` components during API processing
+- Staggered fade-in for result lists (use `motion-safe:` wrapper)
+- Pulse animation on submit button during loading
+
+### Error UX Tone
+**Use encouraging, helpful messages - not technical jargon:**
+
+| Bad | Good |
+| --- | --- |
+| "Invalid Input" | "נדרש עוד טקסט לניתוח מדויק (מינימום 50 מילים)" |
+| "Error 400" | "משהו השתבש. נסה שוב?" |
+| "Rate limit exceeded" | "הגעת למגבלת החיפושים היומית. חזור מחר או שדרג לחשבון פרימיום" |
+| "Network error" | "בעיית חיבור. בדוק את האינטרנט ונסה שוב" |
 
 ### Reusable Components
 - `StatusBadge` - Journal category badges (top-tier, niche, methodology, broad)
 - `MatchScoreBadge` - Color-coded match score display (high/medium/low)
 - `ThemeToggle` - Dark/light mode toggle button
 - `useDarkMode` hook - Dark mode state management
+- `Skeleton` - Loading placeholder components
 
 ## Coding Conventions
 
