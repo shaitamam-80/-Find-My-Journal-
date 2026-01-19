@@ -101,8 +101,8 @@ export function Login() {
         </div>
 
         {/* Decorative elements */}
-        <div className="absolute top-20 right-20 w-32 h-32 bg-teal-100/50 dark:bg-teal-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 left-20 w-40 h-40 bg-amber-100/30 dark:bg-amber-500/10 rounded-full blur-3xl" />
+        <div className="absolute top-20 end-20 w-32 h-32 bg-teal-100/50 dark:bg-teal-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 start-20 w-40 h-40 bg-amber-100/30 dark:bg-amber-500/10 rounded-full blur-3xl" />
       </div>
 
       {/* Right Panel - Form */}
@@ -117,7 +117,7 @@ export function Login() {
             <span className="font-semibold text-slate-900 dark:text-white">FindMyJournal</span>
           </Link>
 
-          <div className="flex items-center gap-4 ml-auto">
+          <div className="flex items-center gap-4 ms-auto">
             <ThemeToggle />
             <Link
               to="/signup"
@@ -146,7 +146,7 @@ export function Login() {
 
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 dark:border-red-500 rounded-r-lg">
+              <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border-s-4 border-red-400 dark:border-red-500 rounded-e-lg">
                 <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
               </div>
             )}

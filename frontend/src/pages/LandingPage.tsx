@@ -35,7 +35,7 @@ export function LandingPage() {
       {/* Skip to main content link for keyboard navigation */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-60 focus:px-4 focus:py-2 focus:bg-white dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-white focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-teal-600"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:start-4 focus:z-60 focus:px-4 focus:py-2 focus:bg-white dark:focus:bg-slate-800 focus:text-slate-900 dark:focus:text-white focus:rounded-lg focus:shadow-lg focus:ring-2 focus:ring-teal-600"
       >
         Skip to main content
       </a>

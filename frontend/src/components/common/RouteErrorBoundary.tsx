@@ -57,7 +57,7 @@ export class RouteErrorBoundary extends Component<RouteErrorBoundaryProps, Route
 
             {/* Show error details in development */}
             {import.meta.env.DEV && this.state.error && (
-              <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-3 mb-6 text-left">
+              <div className="bg-slate-50 dark:bg-slate-700 rounded-lg p-3 mb-6 text-start">
                 <p className="text-xs font-mono text-red-600 dark:text-red-400 break-all">
                   {this.state.error.message}
                 </p>

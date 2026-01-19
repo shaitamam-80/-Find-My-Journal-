@@ -111,7 +111,7 @@ export function AIAnalysisHeader({ analysis }: AIAnalysisHeaderProps) {
                         className="px-3 py-1.5 bg-white dark:bg-slate-600 text-slate-700 dark:text-slate-200 text-sm font-medium rounded-full border border-purple-200 dark:border-purple-700 shadow-sm"
                       >
                         {disc.name}
-                        <span className="ml-1.5 text-purple-600 dark:text-purple-400 text-xs">
+                        <span className="ms-1.5 text-purple-600 dark:text-purple-400 text-xs">
                           {Math.round(disc.confidence * 100)}%
                         </span>
                       </span>
