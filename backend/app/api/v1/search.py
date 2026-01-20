@@ -87,8 +87,8 @@ async def search_journals(
             name=d["name"],
             confidence=d["confidence"],
             evidence=d.get("evidence", []),
-            openalex_field_id=d.get("openalex_field_id"),
-            openalex_subfield_id=d.get("openalex_subfield_id"),
+            openalex_field_id=str(d["openalex_field_id"]) if d.get("openalex_field_id") else None,
+            openalex_subfield_id=str(d["openalex_subfield_id"]) if d.get("openalex_subfield_id") else None,
         )
         for d in detected_disciplines_raw
     ] if detected_disciplines_raw else []
