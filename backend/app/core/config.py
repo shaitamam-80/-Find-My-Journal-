@@ -1,6 +1,7 @@
 """
 Application configuration using pydantic-settings.
 Loads environment variables from .env file.
+Build trigger: 2026-01-20
 """
 from functools import lru_cache
 from pathlib import Path
