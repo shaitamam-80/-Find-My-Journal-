@@ -71,3 +71,4 @@ def get_settings() -> Settings:
     Uses lru_cache to avoid reading .env file on every call.
     """
     return Settings()
+# Build trigger Tue, Jan 20, 2026  9:16:16 PM
