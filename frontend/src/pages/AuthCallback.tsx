@@ -10,7 +10,7 @@ export function AuthCallback() {
   useEffect(() => {
     const handleAuthCallback = async () => {
       try {
-        // Check URL for error first
+        // Check URL hash for error first (implicit flow returns errors in hash)
         const hashParams = new URLSearchParams(window.location.hash.substring(1))
         const errorDescription = hashParams.get('error_description')
 
@@ -19,34 +19,19 @@ export function AuthCallback() {
           return
         }
 
-        // Check for PKCE code flow (code in query params)
-        const urlParams = new URLSearchParams(window.location.search)
-        const code = urlParams.get('code')
+        // For implicit flow, Supabase auto-detects tokens in URL hash
+        // when detectSessionInUrl is true. We just need to wait for it.
 
-        if (code) {
-          // Exchange the code for a session
-          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
-
-          if (exchangeError) {
-            console.error('Code exchange error:', exchangeError)
-            setError(exchangeError.message)
-            return
-          }
-        }
-
-        // Wait for Supabase to process the auth state
-        // The onAuthStateChange listener in AuthContext will handle the session
+        // Set up auth state listener first
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          console.log('Auth state changed:', event, !!session)
           if (event === 'SIGNED_IN' && session) {
             subscription.unsubscribe()
             navigate('/search', { replace: true })
-          } else if (event === 'SIGNED_OUT') {
-            subscription.unsubscribe()
-            navigate('/login', { replace: true })
           }
         })
 
-        // Also check current session in case auth state already changed
+        // Check if session already exists (might have been set by detectSessionInUrl)
         const { data, error: sessionError } = await supabase.auth.getSession()
 
         if (sessionError) {
@@ -57,19 +42,21 @@ export function AuthCallback() {
         }
 
         if (data.session) {
+          console.log('Session found immediately')
           subscription.unsubscribe()
           navigate('/search', { replace: true })
         } else {
-          // Give it a moment to process, then redirect to login if still no session
+          // Give Supabase time to process the hash tokens
           setTimeout(async () => {
             const { data: retryData } = await supabase.auth.getSession()
+            console.log('Retry session check:', !!retryData.session)
             if (retryData.session) {
               navigate('/search', { replace: true })
             } else {
               navigate('/login', { replace: true })
             }
             subscription.unsubscribe()
-          }, 2000)
+          }, 1500)
         }
       } catch (err) {
         console.error('Unexpected auth callback error:', err)
